@@ -1,0 +1,358 @@
+.hero {
+  background: linear-gradient(135deg, #eef6f7 0%, #f7f9fb 62%, #e7f1f1 100%);
+  color: #101d2e;
+  padding: 76px 0 64px;
+  border-bottom: 1px solid #d9e3e6;
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero__eyebrow,
+.assessment__eyebrow {
+  color: #087f78;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  margin-bottom: 16px;
+}
+
+.hero__title {
+  max-width: 720px;
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.08;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.hero__sub {
+  max-width: 620px;
+  margin-top: 18px;
+  color: #52606d;
+  font-size: 17px;
+}
+
+.hero__search {
+  width: min(100%, 700px);
+  margin-top: 30px;
+  padding: 7px 7px 7px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #c7d4d8;
+  border-radius: 6px;
+  box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.4);
+}
+
+.hero__search:focus-within {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+.hero__search-icon {
+  color: #74838b;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.hero__search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  color: #17212b;
+  font: inherit;
+  background: transparent;
+}
+
+.hero__search button,
+.assessment button {
+  border: 0;
+  border-radius: 4px;
+  background: #0d9488;
+  color: #fff;
+  padding: 13px 19px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hero__search button:hover,
+.assessment button:hover {
+  background: #087f78;
+}
+
+.journey-strip {
+  background: #101d2e;
+  padding: 20px 0;
+}
+
+.journey-strip .path-trail__label {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.journey-strip .path-trail__label--active {
+  color: #fff;
+}
+
+.journey-strip .path-trail__node {
+  background: #101d2e;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.journey-strip .path-trail__connector {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.streams {
+  padding: 66px 0 70px;
+  background: #f7f9fb;
+}
+
+.streams__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+}
+
+.streams__heading {
+  color: #0f172a;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.streams__note {
+  margin-top: 7px;
+  color: #52606d;
+  font-size: 15px;
+}
+
+.streams__view-all {
+  border: 0;
+  padding: 4px 0;
+  background: transparent;
+  color: #087f78;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.streams__view-all:hover {
+  color: #075e59;
+}
+
+.streams__status {
+  margin-top: 24px;
+  font-size: 13px;
+  color: #52606d;
+}
+
+.streams__status--error,
+.streams__empty {
+  color: #b54738;
+}
+
+.streams__grid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.stream-card {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #d3dde0;
+  border-radius: 6px;
+  color: #17212b;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stream-card:not(:disabled):hover {
+  border-color: #0d9488;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 26px -18px rgba(15, 23, 42, 0.5);
+}
+
+.stream-card--locked {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.stream-card__visual {
+  height: 122px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stream-card__visual::after {
+  content: "";
+  width: 170px;
+  height: 170px;
+  position: absolute;
+  right: -62px;
+  bottom: -98px;
+  border: 24px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+}
+
+.stream-card__visual--0 { background: #d8eef0; }
+.stream-card__visual--1 { background: #e8edf8; }
+.stream-card__visual--2 { background: #f7edcb; }
+.stream-card__visual--3 { background: #e8e2f4; }
+
+.stream-card__icon {
+  position: relative;
+  z-index: 1;
+  color: #102436;
+  font-family: Georgia, serif;
+  font-size: 49px;
+  line-height: 1;
+}
+
+.stream-card__duration {
+  position: absolute;
+  z-index: 1;
+  top: 13px;
+  right: 14px;
+  color: #52606d;
+  font-size: 10px;
+}
+
+.stream-card__body {
+  min-height: 196px;
+  padding: 17px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stream-card__body h3 {
+  color: #0f172a;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.stream-card__tagline {
+  margin-top: 8px;
+  color: #52606d;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.stream-card__desc {
+  display: none;
+}
+
+.stream-card__cta {
+  margin-top: auto;
+  padding-top: 18px;
+  color: #087f78;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stream-card--locked .stream-card__cta {
+  color: #74838b;
+}
+
+.streams__empty {
+  margin-top: 28px;
+  font-size: 14px;
+}
+
+.assessment {
+  margin-top: 32px;
+  margin-bottom: 72px;
+  padding: 38px 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  border-radius: 6px;
+  background: #101d2e;
+  color: #fff;
+}
+
+.assessment h2 {
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.assessment__eyebrow {
+  margin-bottom: 10px;
+  color: #78d9cf;
+}
+
+.assessment p:last-child {
+  max-width: 640px;
+  margin-top: 9px;
+  color: #c2ced5;
+  font-size: 15px;
+}
+
+.assessment button {
+  flex-shrink: 0;
+  padding: 13px 20px;
+}
+
+@media (max-width: 900px) {
+  .streams__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 54px 0 48px;
+  }
+
+  .hero__sub {
+    font-size: 15px;
+  }
+
+  .hero__search {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .hero__search input {
+    width: calc(100% - 42px);
+  }
+
+  .hero__search button {
+    width: 100%;
+  }
+
+  .streams__header,
+  .assessment {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .streams__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assessment {
+    margin-top: 8px;
+    margin-bottom: 40px;
+    padding: 30px 24px;
+  }
+
+  .assessment button {
+    width: 100%;
+  }
+}

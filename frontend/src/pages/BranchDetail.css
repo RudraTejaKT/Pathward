@@ -1,0 +1,290 @@
+.branch-detail__status {
+  padding: 80px 0;
+}
+
+.branch-detail-hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 32px 0 40px;
+}
+
+.branch-detail-hero .path-trail__label {
+  color: rgba(250, 249, 246, 0.55);
+}
+.branch-detail-hero .path-trail__label--active {
+  color: var(--paper);
+}
+.branch-detail-hero .path-trail__node {
+  background: var(--ink);
+  border-color: rgba(250, 249, 246, 0.25);
+}
+.branch-detail-hero .path-trail__connector {
+  background: rgba(250, 249, 246, 0.18);
+}
+
+.branch-detail__back {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  color: rgba(250, 249, 246, 0.6);
+  text-decoration: none;
+}
+.branch-detail__back:hover {
+  color: var(--paper);
+}
+
+.branch-detail-hero .branch-detail__back {
+  margin-bottom: 6px;
+}
+
+.branch-detail__eyebrow {
+  margin-top: 18px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+}
+
+.branch-detail-hero h1 {
+  margin-top: 8px;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 600;
+}
+
+.branch-detail__tagline {
+  margin-top: 10px;
+  color: rgba(250, 249, 246, 0.72);
+  font-size: 15px;
+  max-width: 520px;
+}
+
+.branch-detail-tabs {
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+}
+
+.branch-detail-tabs__row {
+  display: flex;
+  gap: 4px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 16px 6px;
+  margin-right: 20px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border-bottom: 2px solid transparent;
+}
+
+.tab-btn--active {
+  color: var(--ink);
+  border-bottom-color: var(--teal);
+  font-weight: 600;
+}
+
+.branch-detail-content {
+  padding: 44px 0 100px;
+}
+
+/* Roadmap */
+.roadmap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.roadmap-stage {
+  display: flex;
+  gap: 22px;
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.roadmap-stage:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.roadmap-stage__marker {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  z-index: 1;
+}
+
+.roadmap-stage__body h3 {
+  font-size: 19px;
+  font-weight: 600;
+  padding-top: 8px;
+}
+
+.roadmap-stage__group {
+  margin-top: 16px;
+}
+
+.roadmap-stage__label {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+
+.roadmap-stage__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  font-size: 12.5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--paper-dim);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.chip--accent {
+  background: rgba(42, 157, 143, 0.1);
+  border-color: rgba(42, 157, 143, 0.35);
+  color: #1c6d63;
+}
+
+/* Projects */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.project-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.project-card__level {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.project-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.project-card__desc {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+/* Jobs */
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.job-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.job-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.job-card__top h3 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.job-card__demand {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--steel);
+  background: var(--paper-dim);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* --- Trainee progress tracking --- */
+.progress-hint {
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+}
+
+.progress-hint a {
+  color: var(--steel);
+  font-weight: 600;
+}
+
+.roadmap-stage__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.progress-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.progress-check input {
+  accent-color: var(--teal);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.roadmap-stage--done .roadmap-stage__marker {
+  background: var(--teal);
+  color: #fff;
+}
+
+.project-card--done {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px var(--teal) inset;
+}
+
+.project-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}

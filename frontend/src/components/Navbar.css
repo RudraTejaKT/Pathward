@@ -1,0 +1,75 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(250, 249, 246, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.navbar__mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: conic-gradient(from 220deg, var(--teal), var(--amber), var(--rust), var(--teal));
+}
+
+.navbar__links {
+  display: flex;
+  gap: 28px;
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.navbar__links a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  transition: color 0.2s ease;
+}
+
+.navbar__links a:hover {
+  color: var(--ink);
+}
+
+.navbar__links {
+  align-items: center;
+}
+
+.navbar__cta {
+  background: var(--ink);
+  color: var(--paper) !important;
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+
+.navbar__logout {
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+}
+
+.navbar__logout:hover {
+  color: var(--rust);
+}
