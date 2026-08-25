@@ -345,7 +345,7 @@ router.post("/help-assistant", async (req, res) => {
     suggestedPills = ["Take Career Aptitude Test", "Explore Engineering Branches", "View Medical Universe"];
   } else if (q.includes("drm") || q.includes("screen") || q.includes("record") || q.includes("protect") || q.includes("patent")) {
     reply = `🔒 **DRM & Intellectual Property Shield**:
-Pathward employs an active DRM Shield that protects video masterclasses and proprietary course notes:
+Backlox employs an active DRM Shield that protects video masterclasses and proprietary course notes:
 1. **Dynamic Scholar Watermarking**: Overlays your verified ID to deter camcorder recording.
 2. **Keyboard Shortcut Blocking**: Disables \`PrintScreen\`, \`Ctrl+P\` (Print), \`Ctrl+S\` (Save), and DevTools inspection.
 3. **Anti-Capture Enforcement**: Complies with copyright and educational patent protections.`;
@@ -365,13 +365,13 @@ You can record timestamped lecture notes directly while watching video mastercla
     suggestedPills = ["View My Notes", "Open Course Catalog", "Summarize Lecture with AI"];
   } else if (q.includes("pay") || q.includes("razorpay") || q.includes("pro") || q.includes("price") || q.includes("buy")) {
     reply = `💳 **Razorpay Secure Checkout & Plans**:
-- **Pathward Lifetime Pro** (₹1,499): Lifetime unrestricted access to all engineering, medical, and competitive prep courses.
+- **Backlox Lifetime Pro** (₹499): Lifetime unrestricted access to all 35+ engineering, medical, and competitive prep courses.
 - **Per-Course Enrollment**: Click **"⚡ Enroll with Razorpay"** on any course page. Module 1 is always available as a Free Preview!
 - All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`;
     suggestedPills = ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"];
   } else {
-    reply = `🐙 **Octi (Your Pathward Companion)**:
-Hey there, Scholar! I'm Octi, your 8-armed companion across the Pathward Universe. I can illuminate career pathways, break down salary benchmarks, summarize complex video lectures, solve competitive exam MCQs (JEE, NEET, GATE, CAT, CLAT), and keep your study journey on track!
+    reply = `🎓 **Backlox AI (Your Academic Companion)**:
+Hey there, Scholar! I'm Backlox AI, your dedicated companion across the Backlox Universe. I can illuminate career pathways, break down salary benchmarks, summarize complex video lectures, solve competitive exam MCQs (JEE, NEET, GATE, CAT, CLAT), and keep your study journey on track!
 
 What can I help you explore today?`;
     suggestedPills = [

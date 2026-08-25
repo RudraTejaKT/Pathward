@@ -495,9 +495,9 @@ export default function Dashboard() {
                 type="button"
                 className="rail-nav-btn"
                 onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"))}
-                title="Octi AI Help Centre & Doubt Solver"
+                title="Backlox AI Advisor & Doubt Solver"
               >
-                <span className="material-symbols-outlined">help_center</span>
+                <span className="material-symbols-outlined">school</span>
               </button>
             </nav>
           </div>

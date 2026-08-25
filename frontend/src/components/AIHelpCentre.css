@@ -28,14 +28,14 @@
   border-color: var(--primary);
 }
 
-.octi-avatar-icon {
+.backlox-ai-avatar-icon {
   font-size: 26px;
   line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(197, 192, 255, 0.4));
-  animation: floatOcti 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.5));
+  animation: floatHat 3s ease-in-out infinite;
 }
 
-@keyframes floatOcti {
+@keyframes floatHat {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-3px) rotate(-4deg); }
 }
@@ -61,12 +61,12 @@
   text-transform: uppercase;
 }
 
-.octi-avatar-wrap {
-  background: rgba(197, 192, 255, 0.2);
-  border: 1px solid rgba(197, 192, 255, 0.5);
+.backlox-avatar-wrap {
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.5);
 }
 
-.octi-header-icon {
+.backlox-header-icon {
   font-size: 24px;
   line-height: 1;
 }

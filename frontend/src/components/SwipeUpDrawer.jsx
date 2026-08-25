@@ -223,11 +223,11 @@ export default function SwipeUpDrawer() {
                 }}
               >
                 <div className="tile-icon-wrap bg-purple">
-                  <span className="material-symbols-outlined">auto_awesome</span>
+                  <span className="material-symbols-outlined">school</span>
                 </div>
                 <div className="tile-text">
-                  <strong>Octi AI Assistant</strong>
-                  <span>Doubt Solver &amp; Advice</span>
+                  <strong>Backlox AI</strong>
+                  <span>Academic &amp; Doubt Solver</span>
                 </div>
               </button>
 

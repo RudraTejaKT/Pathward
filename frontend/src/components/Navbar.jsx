@@ -359,15 +359,15 @@ export default function Navbar() {
               </span>
             </button>
 
-            {/* Octi AI Trigger Pill */}
+            {/* Backlox AI Trigger Pill */}
             <button
               type="button"
               className="octi-nav-trigger-pill mono"
               onClick={handleOpenOcti}
-              title="Octi: Your AI Companion & Doubt Solver"
+              title="Backlox AI: Academic & Career Advisor"
             >
-              <span className="octi-emoji">🐙</span>
-              <span>Octi AI</span>
+              <span className="octi-emoji">🎓</span>
+              <span>Backlox AI</span>
             </button>
 
             {/* Theme Toggle Button */}

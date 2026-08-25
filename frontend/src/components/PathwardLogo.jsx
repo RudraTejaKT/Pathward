@@ -1,84 +1,94 @@
-export default function PathwardLogo({ size = "default", showText = true, className = "" }) {
-  // size options: 'small' (24px icon), 'default' (32px icon), 'large' (44px icon)
-  const iconSizes = {
-    small: { width: 26, height: 26 },
-    default: { width: 34, height: 34 },
-    large: { width: 44, height: 44 },
+export default function BackloxLogo({ size = "default", showText = true, className = "" }) {
+  // size options: 'small', 'default', 'large', 'hero'
+  const sizeMap = {
+    small: { iconWidth: 26, iconHeight: 26, fontSize: 17, capWidth: 20 },
+    default: { iconWidth: 34, iconHeight: 34, fontSize: 22, capWidth: 26 },
+    large: { iconWidth: 44, iconHeight: 44, fontSize: 28, capWidth: 34 },
+    hero: { iconWidth: 56, iconHeight: 56, fontSize: 36, capWidth: 44 },
   };
 
-  const currentSize = iconSizes[size] || iconSizes.default;
+  const current = sizeMap[size] || sizeMap.default;
 
   return (
-    <div className={`pathward-brand-mark ${className}`} style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
+    <div
+      className={`backlox-brand-logo ${className}`}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: showText ? "8px" : "0px",
+        textDecoration: "none",
+        userSelect: "none",
+        lineHeight: 1,
+      }}
+    >
+      {/* 1. Graduate Cap + Letter B Stylized Lockup SVG */}
       <svg
-        width={currentSize.width}
-        height={currentSize.height}
-        viewBox="0 0 40 40"
+        width={showText ? current.capWidth : current.iconWidth}
+        height={showText ? current.capWidth : current.iconHeight}
+        viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="pathward-logo-svg"
-        style={{ flexShrink: 0 }}
+        style={{ flexShrink: 0, overflow: "visible" }}
       >
         <defs>
-          <linearGradient id="pw-grad-primary" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#8b5cf6" />
+          <linearGradient id="backlox-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#818cf8" />
             <stop offset="50%" stopColor="#6366f1" />
-            <stop offset="100%" stopColor="#06b6d4" />
+            <stop offset="100%" stopColor="#38bdf8" />
           </linearGradient>
-          <linearGradient id="pw-grad-glow" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#c084fc" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.9" />
-          </linearGradient>
-          <filter id="pw-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          <filter id="backlox-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3" />
           </filter>
         </defs>
 
-        {/* Outer Rounded Container with subtle border glow */}
-        <rect
-          x="1.5"
-          y="1.5"
-          width="37"
-          height="37"
-          rx="10"
-          fill="rgba(19, 23, 34, 0.9)"
-          stroke="url(#pw-grad-primary)"
-          strokeWidth="1.5"
+        {/* Graduation Cap (Mortarboard Top Diamond) */}
+        <path
+          d="M6 18L24 8L42 18L24 28L6 18Z"
+          fill="currentColor"
+          className="backlox-cap-mortarboard"
+          style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
         />
 
-        {/* Ambient Inner Grid / Glow Aura */}
-        <circle cx="20" cy="20" r="12" fill="url(#pw-grad-glow)" opacity="0.15" />
-
-        {/* Dynamic Forward Career Trajectory / Stellar Beacon Mark */}
+        {/* Cap Skull Under-Cap */}
         <path
-          d="M12 28L19 13L26 21L30 11"
-          stroke="url(#pw-grad-primary)"
-          strokeWidth="2.75"
+          d="M14 22.5V30C14 34.5 24 37 24 37C24 37 34 34.5 34 30V22.5"
+          stroke="currentColor"
+          strokeWidth="3.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          filter="url(#pw-glow-filter)"
         />
 
-        {/* Orbital Focus Nodes */}
-        <circle cx="12" cy="28" r="2.2" fill="#8b5cf6" />
-        <circle cx="19" cy="13" r="2.2" fill="#6366f1" />
-        <circle cx="26" cy="21" r="2.2" fill="#38bdf8" />
-        <circle cx="30" cy="11" r="2.75" fill="#38bdf8" />
+        {/* Cap Button / Rivet */}
+        <circle cx="24" cy="18" r="2.5" fill="url(#backlox-grad)" />
 
-        {/* Compass Forward Arrow Head */}
+        {/* Tassel Ribbon & Hanging Brush */}
         <path
-          d="M24.5 11H30V16.5"
-          stroke="#38bdf8"
+          d="M9 19.5V31.5"
+          stroke="url(#backlox-grad)"
           strokeWidth="2.5"
           strokeLinecap="round"
-          strokeLinejoin="round"
+        />
+        <path
+          d="M6.5 31.5H11.5L10 39H8L6.5 31.5Z"
+          fill="url(#backlox-grad)"
         />
       </svg>
 
+      {/* 2. Bold Geometric BACKLOX Wordmark */}
       {showText && (
-        <span className="brand-title" style={{ letterSpacing: "-0.03em", fontWeight: 800 }}>
-          PATHWARD
+        <span
+          className="backlox-wordmark"
+          style={{
+            fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontWeight: 900,
+            fontSize: `${current.fontSize}px`,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            display: "inline-block",
+            color: "var(--on-surface, #ffffff)",
+          }}
+        >
+          BACKLOX
         </span>
       )}
     </div>
