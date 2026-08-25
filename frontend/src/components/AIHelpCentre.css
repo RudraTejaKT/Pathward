@@ -28,9 +28,16 @@
   border-color: var(--primary);
 }
 
-.help-icon {
-  font-size: 22px;
-  color: var(--primary);
+.octi-avatar-icon {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(197, 192, 255, 0.4));
+  animation: floatOcti 3s ease-in-out infinite;
+}
+
+@keyframes floatOcti {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-4deg); }
 }
 
 .help-btn-text-group {
@@ -41,7 +48,7 @@
 }
 
 .help-btn-label {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: 0.04em;
@@ -52,6 +59,16 @@
   color: var(--primary);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.octi-avatar-wrap {
+  background: rgba(197, 192, 255, 0.2);
+  border: 1px solid rgba(197, 192, 255, 0.5);
+}
+
+.octi-header-icon {
+  font-size: 24px;
+  line-height: 1;
 }
 
 /* Chat Window Widget */
