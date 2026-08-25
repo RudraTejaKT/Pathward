@@ -124,8 +124,13 @@ export default function Dashboard() {
   const { toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
 
-  // Navigation Rail state: 'home' | 'assignments' | 'analytics'
+  // Navigation Rail state: 'home' | 'assignments' | 'gym' | 'lectures' | 'analytics' | 'leaderboard'
   const [activeNav, setActiveNav] = useState("home");
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
   // Dynamic Chosen Course Progress State
   const [storedProgress, setStoredProgress] = useState(getStoredProgress());

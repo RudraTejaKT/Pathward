@@ -5,7 +5,7 @@ import "./AIHelpCentre.css";
 const INITIAL_MESSAGES = [
   {
     sender: "bot",
-    text: "Hello! I am your **Pathward AI Academic Advisor**.\n\nI can assist you with selecting engineering & medical branches, explaining complex lecture concepts (such as Transformer Attention or ECG clinical pathology), solving high-difficulty MCQs, taking smart notes, and course certifications. How can I assist your studies today?",
+    text: "Hello! I am **Octi**, your 8-armed companion across the Pathward Universe 🐙.\n\nI can help you with choosing engineering & medical branches, deconstructing complex concepts (like Transformer Multi-Head Attention or ECG STEMI localization), solving competitive MCQs, and planning study roadmaps. What are we exploring today?",
     time: "Just now",
   },
 ];
@@ -18,6 +18,59 @@ const DEFAULT_PROMPT_PILLS = [
   "Explain DRM & Intellectual Property Protection",
 ];
 
+function generateOfflineReply(query) {
+  const q = query.toLowerCase();
+  if (q.includes("branch") || q.includes("stream") || q.includes("pcm") || q.includes("pcb") || q.includes("12th") || q.includes("career")) {
+    return {
+      reply: `🎓 **Stream & Branch Guidance**:
+- **Engineering (PCM)**: Computer Science (CSE), AI & Data Engineering, Electronics (VLSI/Embedded), and Aerospace are top high-growth pathways. Visit the **Engineering Pathways** tab to view semester roadmaps and starting CTC benchmarks (₹12 LPA - ₹38 LPA).
+- **Medical (PCB)**: Explore **MBBS, BDS, and Allied Health Sciences** in our **Medical Universe** section with clinical case audits and PG entrance prep.
+- **Aptitude Quiz**: Take our **15-question AI Career Aptitude Assessment** to receive personalized scientific stream recommendations!`,
+      suggestedPills: ["Take Career Aptitude Test", "Explore Engineering Branches", "View Medical Universe"],
+    };
+  }
+  if (q.includes("drm") || q.includes("screen") || q.includes("record") || q.includes("protect") || q.includes("patent")) {
+    return {
+      reply: `🔒 **DRM & Intellectual Property Shield**:
+Pathward employs an active DRM Shield protecting video masterclasses and proprietary course notes:
+1. **Dynamic Scholar Watermarking**: Overlays your verified ID to deter camcorder recording.
+2. **Keyboard Shortcut Blocking**: Disables PrintScreen, Ctrl+P, Ctrl+S, and DevTools inspection.
+3. **Anti-Capture Enforcement**: Complies with copyright and educational patent protections.`,
+      suggestedPills: ["How to enroll in courses?", "Open Study Notes", "Take Stress Test"],
+    };
+  }
+  if (q.includes("stress") || q.includes("meter") || q.includes("breath") || q.includes("relax")) {
+    return {
+      reply: `⚡ **Cognitive Stress & Focus Meter**:
+The Cognitive Stress Meter in your workspace tracks your interaction density and study duration:
+- **Radial Gauge**: Visualizes stress levels (0% - 100%) with color-coded safety tiers.
+- **60s Box Breathing Tool**: Click **"Recharge Mind"** to activate guided Inhale → Hold → Exhale → Rest cycles that actively reduce mental fatigue.`,
+      suggestedPills: ["Start Box Breathing", "Practice MCQs", "Switch Light/Dark Theme"],
+    };
+  }
+  if (q.includes("pay") || q.includes("razorpay") || q.includes("pro") || q.includes("price") || q.includes("buy")) {
+    return {
+      reply: `💳 **Razorpay Secure Checkout & Plans**:
+- **Pathward Lifetime Pro** (₹499): Lifetime unrestricted access to all 35+ engineering & medical branches, courses, and verified certificates.
+- **Per-Course Enrollment**: Click **"Enroll with Razorpay"** on any course page. Module 1 is always available as a Free Preview!
+- All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`,
+      suggestedPills: ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"],
+    };
+  }
+  return {
+    reply: `🐙 **Octi (Your Pathward Companion)**:
+I'm here to help with your academic journey! You can practice **Aptitude MCQs** in the Practice Gym, watch interactive video masterclasses, submit coursework assignments, or explore full career roadmaps.
+
+Let me know what topic you'd like to dive into!`,
+    suggestedPills: [
+      "Recommend best stream for me",
+      "Explain Transformer Self-Attention",
+      "Explain 12-Lead ECG STEMI",
+      "How to publish a course as instructor?",
+    ],
+  };
+}
+
 export default function AIHelpCentre() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -25,6 +78,23 @@ export default function AIHelpCentre() {
   const [loading, setLoading] = useState(false);
   const [pills, setPills] = useState(DEFAULT_PROMPT_PILLS);
   const chatEndRef = useRef(null);
+
+  // Listen for global chat trigger events
+  useEffect(() => {
+    function handleOpenEvent() {
+      setIsOpen(true);
+    }
+    function handleToggleEvent() {
+      setIsOpen((prev) => !prev);
+    }
+    window.addEventListener("pathward:open-ai-chat", handleOpenEvent);
+    window.addEventListener("pathward:toggle-ai-chat", handleToggleEvent);
+
+    return () => {
+      window.removeEventListener("pathward:open-ai-chat", handleOpenEvent);
+      window.removeEventListener("pathward:toggle-ai-chat", handleToggleEvent);
+    };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -54,7 +124,7 @@ export default function AIHelpCentre() {
 
       const botMsg = {
         sender: "bot",
-        text: res?.reply || "I am processing your query. Please check your network or try another question.",
+        text: res?.reply || generateOfflineReply(textToSend).reply,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
@@ -63,12 +133,17 @@ export default function AIHelpCentre() {
         setPills(res.suggestedPills);
       }
     } catch {
-      const errorMsg = {
+      // Use instant fallback
+      const fallback = generateOfflineReply(textToSend);
+      const botMsg = {
         sender: "bot",
-        text: "⚠️ Could not connect to Octi. Please ensure the backend server is active on http://localhost:4000.",
+        text: fallback.reply,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages((prev) => [...prev, botMsg]);
+      if (fallback.suggestedPills) {
+        setPills(fallback.suggestedPills);
+      }
     } finally {
       setLoading(false);
     }

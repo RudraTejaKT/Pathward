@@ -14,6 +14,7 @@ export default function Navbar() {
   // Detect active workspace mode
   const isStudentDashboard = location.pathname.startsWith("/dashboard");
   const isInstructorStudio = location.pathname.startsWith("/instructor");
+  const isDedicatedWorkspace = isStudentDashboard || isInstructorStudio;
 
   // Disable navbar completely on student and instructor dashboards
   if (isStudentDashboard || isInstructorStudio) {
