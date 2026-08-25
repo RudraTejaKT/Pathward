@@ -370,8 +370,8 @@ You can record timestamped lecture notes directly while watching video mastercla
 - All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`;
     suggestedPills = ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"];
   } else {
-    reply = `🤖 **Pathward AI Assistant**:
-I am here to guide you through career streams, entrance exams (JEE, NEET, GATE, CAT, CLAT), verified video masterclasses, and platform features.
+    reply = `✨ **PathWarden AI (Universe Career & Academic Oracle)**:
+Greetings, Scholar! I am your 24/7 navigator across the Pathward Universe. I can illuminate career pathways, analyze salary benchmarks, summarize video lectures, solve competitive exam MCQs (JEE, NEET, GATE, CAT, CLAT), and guide your degree journey.
 
 How can I assist your study goals today?`;
     suggestedPills = [

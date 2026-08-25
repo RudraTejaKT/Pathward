@@ -5,17 +5,17 @@ import "./AIHelpCentre.css";
 const INITIAL_MESSAGES = [
   {
     sender: "bot",
-    text: "👋 Welcome to the **Pathward AI Campus Assistant & Help Centre**! How can I assist with your stream pathways, competitive entrance exams (JEE, NEET, GATE, CAT), course enrollment, or study tools today?",
+    text: "✨ Greetings, Scholar! I am **PathWarden AI**, your dedicated 24/7 navigator across the Pathward Universe.\n\nAsk me anything about choosing between Engineering (PCM) vs Medical (PCB) vs Law/Commerce, analyzing salary benchmarks, mastering video lectures, solving competitive exam MCQs, or unlocking certificates!",
     time: "Just now",
   },
 ];
 
 const DEFAULT_PROMPT_PILLS = [
-  "Recommend best stream after 12th",
-  "Explain Transformer Self-Attention",
-  "Explain 12-Lead ECG STEMI",
-  "How to unlock courses via Razorpay?",
-  "DRM & Anti-Screen Capture Protection",
+  "🧭 Guide my career stream after 12th",
+  "⚡ Explain Transformer Self-Attention",
+  "🩺 Explain 12-Lead ECG STEMI",
+  "💳 How to unlock courses via Razorpay?",
+  "🔒 How does DRM & IP Shield work?",
 ];
 
 export default function AIHelpCentre() {
@@ -65,7 +65,7 @@ export default function AIHelpCentre() {
     } catch {
       const errorMsg = {
         sender: "bot",
-        text: "⚠️ Could not connect to AI service. Please ensure the backend server is active on http://localhost:4000.",
+        text: "⚠️ Could not connect to PathWarden AI service. Please ensure the backend server is active on http://localhost:4000.",
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -76,17 +76,20 @@ export default function AIHelpCentre() {
 
   return (
     <div className="ai-help-centre-root">
-      {/* Floating Toggle Button */}
+      {/* Floating PathWarden AI Trigger Button */}
       {!isOpen && (
         <button
           type="button"
           className="ai-help-floating-btn glass-card animate-pulse-glow"
           onClick={() => setIsOpen(true)}
-          title="24/7 AI Campus Help Centre"
+          title="PathWarden AI: 24/7 Universe Career & Academic Oracle"
         >
           <span className="sparkle-icon">✨</span>
-          <span className="material-symbols-outlined help-icon">smart_toy</span>
-          <span className="help-btn-label mono">AI HELP</span>
+          <span className="material-symbols-outlined help-icon">explore_nearby</span>
+          <div className="help-btn-text-group">
+            <span className="help-btn-label mono">PathWarden AI</span>
+            <span className="help-btn-sub mono">Oracle</span>
+          </div>
         </button>
       )}
 
@@ -96,12 +99,12 @@ export default function AIHelpCentre() {
           <div className="ai-help-header">
             <div className="ai-help-title-box">
               <div className="bot-avatar-wrap">
-                <span className="material-symbols-outlined">psychology</span>
+                <span className="material-symbols-outlined">explore_nearby</span>
                 <span className="online-indicator" />
               </div>
               <div>
-                <h3 className="bot-name">Pathward AI Assistant</h3>
-                <span className="mono text-xs text-primary">24/7 CAMPUS HELP CENTRE</span>
+                <h3 className="bot-name">PathWarden AI</h3>
+                <span className="mono text-xs text-primary">UNIVERSE CAREER &amp; ACADEMIC ORACLE</span>
               </div>
             </div>
 
@@ -109,7 +112,7 @@ export default function AIHelpCentre() {
               type="button"
               className="ai-help-close-btn"
               onClick={() => setIsOpen(false)}
-              title="Close AI Assistant"
+              title="Close PathWarden AI"
             >
               ✕
             </button>
@@ -168,7 +171,7 @@ export default function AIHelpCentre() {
           >
             <input
               type="text"
-              placeholder="Ask anything about branches, exams, courses, notes..."
+              placeholder="Ask PathWarden anything about careers, exams, courses, notes..."
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               disabled={loading}
