@@ -131,6 +131,14 @@ export const api = {
   saveStudyNote: (note) => request("/trainee/notes", { method: "POST", auth: true, body: note }),
   deleteStudyNote: (id) => request(`/trainee/notes/${id}`, { method: "DELETE", auth: true }),
 
+  // --- Assignments & Grading ---
+  getAssignments: (courseId) => request(`/assignments${courseId ? `?courseId=${encodeURIComponent(courseId)}` : ""}`),
+  createAssignment: (payload) => request("/assignments", { method: "POST", auth: true, body: payload }),
+  submitAssignment: (assignmentId, payload) => request(`/assignments/${assignmentId}/submit`, { method: "POST", auth: true, body: payload }),
+  getAssignmentSubmissions: (assignmentId) => request(`/assignments/${assignmentId}/submissions`, { auth: true }),
+  gradeSubmission: (submissionId, payload) => request(`/assignments/submissions/${submissionId}/grade`, { method: "POST", auth: true, body: payload }),
+  getInstructorAllSubmissions: () => request("/assignments/instructor/all-submissions", { auth: true }),
+
   // --- Career Aptitude & Assessment ---
   getAssessmentQuestions: () => request("/assessment/questions"),
   evaluateAssessment: (answers) => request("/assessment/evaluate", { method: "POST", body: { answers }, optionalAuth: true }),

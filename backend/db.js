@@ -97,6 +97,32 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS assignments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    instructor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    course_id TEXT DEFAULT '',
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    due_date TEXT DEFAULT '',
+    max_points INTEGER DEFAULT 100,
+    starter_code TEXT DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS assignment_submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    assignment_id INTEGER NOT NULL REFERENCES assignments(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    student_name TEXT DEFAULT '',
+    submission_content TEXT NOT NULL,
+    submission_url TEXT DEFAULT '',
+    score INTEGER DEFAULT NULL,
+    feedback TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'submitted', -- 'submitted' | 'graded'
+    submitted_at TEXT NOT NULL DEFAULT (datetime('now')),
+    graded_at TEXT DEFAULT NULL
+  );
 `);
 
 module.exports = db;

@@ -14,10 +14,21 @@ const AI_TOPIC_PRESETS = [
   "Constitutional Law & Corporate Mergers (M&A)",
 ];
 
+const MONETIZATION_STATS = {
+  totalRevenue: "₹1,48,500",
+  monthlyGrowth: "+24.8%",
+  coursesSold: 342,
+  activeScholars: "1,840",
+  avgRating: "4.92 ★",
+  payoutStatus: "₹38,200 Next Payout on Aug 30",
+};
+
 export default function InstructorStudio() {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("monetization"); // 'monetization' | 'courses' | 'assignments' | 'qa'
   const [courses, setCourses] = useState([]);
   const [streams, setStreams] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState(null);
   const [msgType, setMsgType] = useState("success");
@@ -28,7 +39,7 @@ export default function InstructorStudio() {
     description: "",
     category: "Software & AI Systems",
     stream_id: "science",
-    price: 499,
+    price: 999,
   });
   const [creatingCourse, setCreatingCourse] = useState(false);
 
@@ -44,6 +55,23 @@ export default function InstructorStudio() {
   });
   const [addingModule, setAddingModule] = useState(false);
 
+  // Assignment Creation Form State (Coursera/Udemy model)
+  const [assignmentForm, setAssignmentForm] = useState({
+    courseId: "feat-1",
+    title: "",
+    description: "",
+    dueDate: "Next Week",
+    maxPoints: 100,
+    starterCode: "",
+  });
+  const [creatingAssignment, setCreatingAssignment] = useState(false);
+
+  // Grading Modal State
+  const [gradingSubmission, setGradingSubmission] = useState(null);
+  const [gradeScore, setGradeScore] = useState(90);
+  const [gradeFeedback, setGradeFeedback] = useState("");
+  const [gradingLoading, setGradingLoading] = useState(false);
+
   // AI Course Generator State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
@@ -52,7 +80,7 @@ export default function InstructorStudio() {
   const [aiLevel, setAiLevel] = useState("Advanced");
   const [aiModulesCount, setAiModulesCount] = useState(4);
   const [aiGenerating, setAiGenerating] = useState(false);
-  const [aiStep, setAiStep] = useState(0); // 0: Input, 1: Generating, 2: Preview
+  const [aiStep, setAiStep] = useState(0);
   const [generatedCourse, setGeneratedCourse] = useState(null);
   const [aiPublishing, setAiPublishing] = useState(false);
 
@@ -61,12 +89,18 @@ export default function InstructorStudio() {
 
   useEffect(() => {
     if (user && ["instructor", "admin"].includes(user.role)) {
-      Promise.all([api.getInstructorCourses(), api.getLearningStreams()])
-        .then(([c, s]) => {
+      Promise.all([
+        api.getInstructorCourses(),
+        api.getLearningStreams(),
+        api.getInstructorAllSubmissions(),
+      ])
+        .then(([c, s, sub]) => {
           setCourses(c || []);
           setStreams(s || []);
+          setSubmissions(sub || []);
           if (c && c.length > 0) {
             setModuleForm((prev) => ({ ...prev, courseId: c[0].id }));
+            setAssignmentForm((prev) => ({ ...prev, courseId: c[0].id }));
           }
         })
         .catch((e) => {
@@ -92,7 +126,7 @@ export default function InstructorStudio() {
         description: "",
         category: "Software & AI Systems",
         stream_id: "science",
-        price: 499,
+        price: 999,
       });
       const updated = await api.getInstructorCourses();
       setCourses(updated);
@@ -161,7 +195,56 @@ export default function InstructorStudio() {
     }
   }
 
-  // Handle AI Course Synthesis
+  async function handleCreateAssignment(e) {
+    e.preventDefault();
+    setMsg(null);
+    setCreatingAssignment(true);
+
+    try {
+      await api.createAssignment(assignmentForm);
+      setMsg(`Assignment "${assignmentForm.title}" published to enrolled students!`);
+      setMsgType("success");
+      setAssignmentForm({
+        courseId: courses[0]?.id || "feat-1",
+        title: "",
+        description: "",
+        dueDate: "Next Week",
+        maxPoints: 100,
+        starterCode: "",
+      });
+      const updatedSub = await api.getInstructorAllSubmissions();
+      setSubmissions(updatedSub);
+    } catch (err) {
+      setMsg(err.message || "Failed to create assignment.");
+      setMsgType("error");
+    } finally {
+      setCreatingAssignment(false);
+    }
+  }
+
+  async function handleSaveGrade(e) {
+    e.preventDefault();
+    if (!gradingSubmission) return;
+
+    setGradingLoading(true);
+    try {
+      await api.gradeSubmission(gradingSubmission.id, {
+        score: gradeScore,
+        feedback: gradeFeedback.trim() || "Approved with distinction.",
+      });
+      setMsg(`Grade and feedback recorded for ${gradingSubmission.student_name}!`);
+      setMsgType("success");
+      setGradingSubmission(null);
+      const updatedSub = await api.getInstructorAllSubmissions();
+      setSubmissions(updatedSub);
+    } catch (err) {
+      setMsg(err.message || "Failed to record grade.");
+      setMsgType("error");
+    } finally {
+      setGradingLoading(false);
+    }
+  }
+
   async function handleGenerateAiCourse(e) {
     if (e) e.preventDefault();
     if (!aiPrompt.trim()) return;
@@ -179,7 +262,7 @@ export default function InstructorStudio() {
       });
 
       setGeneratedCourse(res);
-      setAiStep(2); // Show preview
+      setAiStep(2);
     } catch (err) {
       setMsg(err.message || "AI synthesis failed. Try another prompt.");
       setMsgType("error");
@@ -189,7 +272,6 @@ export default function InstructorStudio() {
     }
   }
 
-  // Publish AI Generated Course to Live Database
   async function handlePublishAiCourse() {
     if (!generatedCourse) return;
     setAiPublishing(true);
@@ -203,7 +285,6 @@ export default function InstructorStudio() {
       setGeneratedCourse(null);
       setAiPrompt("");
 
-      // Refresh instructor courses list
       const updated = await api.getInstructorCourses();
       setCourses(updated);
     } catch (err) {
@@ -222,7 +303,7 @@ export default function InstructorStudio() {
             <span className="material-symbols-outlined denied-icon">lock</span>
             <h2>Instructor Studio Access Required</h2>
             <p>
-              You are signed in as a student. To publish stream-aligned courses, upload video lectures, and monetize via Razorpay, create or switch to an Instructor account.
+              You are signed in as a student. To publish stream-aligned courses, assign coursework, track revenue, and monetize via Razorpay, create or switch to an Instructor account.
             </p>
             <div className="denied-actions">
               <Link to="/signup?role=instructor" className="cyber-btn cyber-btn--primary">
@@ -251,18 +332,17 @@ export default function InstructorStudio() {
         <div className="container studio-header-inner">
           <div className="cyber-pill">
             <span className="pulsing-dot" />
-            <span>INSTRUCTOR &amp; CREATOR CONSOLE</span>
+            <span>COURSERA / UDEMY CREATOR HUB</span>
           </div>
 
           <div className="studio-header-title-row">
             <div>
-              <h1 className="studio-title gradient-text">Creator Studio &amp; Course Publisher</h1>
+              <h1 className="studio-title gradient-text">Instructor Studio &amp; Monetization</h1>
               <p className="studio-sub">
-                Publish high-yield curriculum pathways, upload video lectures, and synthesize full courses with our AI Curriculum Architect.
+                Track revenue, manage assignments, grade scholar submissions, and synthesize AI courses with direct Razorpay payouts.
               </p>
             </div>
 
-            {/* AI Generator CTA Trigger Button */}
             <button
               type="button"
               className="cyber-btn cyber-btn--primary ai-generator-trigger-btn"
@@ -273,6 +353,36 @@ export default function InstructorStudio() {
             >
               <span className="sparkle-icon">✨</span>
               <span>AI Course Generator</span>
+            </button>
+          </div>
+
+          {/* Instructor Navigation Tabs (Coursera / Udemy Model) */}
+          <div className="instructor-tabs-bar">
+            <button
+              type="button"
+              className={`inst-tab-btn ${activeTab === "monetization" ? "active" : ""}`}
+              onClick={() => setActiveTab("monetization")}
+            >
+              <span className="material-symbols-outlined">payments</span>
+              <span>Revenue &amp; Monetization</span>
+            </button>
+
+            <button
+              type="button"
+              className={`inst-tab-btn ${activeTab === "assignments" ? "active" : ""}`}
+              onClick={() => setActiveTab("assignments")}
+            >
+              <span className="material-symbols-outlined">assignment_turned_in</span>
+              <span>Give &amp; Grade Assignments ({submissions.length})</span>
+            </button>
+
+            <button
+              type="button"
+              className={`inst-tab-btn ${activeTab === "courses" ? "active" : ""}`}
+              onClick={() => setActiveTab("courses")}
+            >
+              <span className="material-symbols-outlined">video_library</span>
+              <span>Course Catalog &amp; Modules</span>
             </button>
           </div>
         </div>
@@ -299,188 +409,488 @@ export default function InstructorStudio() {
           </div>
         )}
 
-        {/* Studio Grid: Create Course / Manage Modules */}
-        <div className="studio-grid">
-          {/* Left: Create Course & Telemetry */}
-          <div className="studio-col-left">
+        {/* ========================================================= */}
+        {/* TAB 1: REVENUE & MONETIZATION (Coursera / Udemy Analytics) */}
+        {/* ========================================================= */}
+        {activeTab === "monetization" && (
+          <div className="monetization-tab-view">
+            {/* Top 4 KPI Metrics Cards */}
+            <div className="monetization-kpi-grid">
+              <div className="kpi-card glass-card">
+                <div className="kpi-top">
+                  <span className="mono text-xs text-muted">TOTAL REVENUE (INR)</span>
+                  <span className="material-symbols-outlined text-emerald">currency_rupee</span>
+                </div>
+                <div className="kpi-hero-num mono">{MONETIZATION_STATS.totalRevenue}</div>
+                <span className="kpi-badge mono text-emerald">{MONETIZATION_STATS.monthlyGrowth} this month</span>
+              </div>
+
+              <div className="kpi-card glass-card">
+                <div className="kpi-top">
+                  <span className="mono text-xs text-muted">COURSES SOLD / ENROLLED</span>
+                  <span className="material-symbols-outlined text-secondary">shopping_cart</span>
+                </div>
+                <div className="kpi-hero-num mono">{MONETIZATION_STATS.coursesSold}</div>
+                <span className="kpi-badge mono text-secondary">342 active learners</span>
+              </div>
+
+              <div className="kpi-card glass-card">
+                <div className="kpi-top">
+                  <span className="mono text-xs text-muted">INSTRUCTOR RATING</span>
+                  <span className="material-symbols-outlined text-amber">star</span>
+                </div>
+                <div className="kpi-hero-num mono">{MONETIZATION_STATS.avgRating}</div>
+                <span className="kpi-badge mono text-amber">1,280 Scholar reviews</span>
+              </div>
+
+              <div className="kpi-card glass-card">
+                <div className="kpi-top">
+                  <span className="mono text-xs text-muted">RAZORPAY PAYOUT STATUS</span>
+                  <span className="material-symbols-outlined text-primary">account_balance</span>
+                </div>
+                <div className="kpi-hero-num mono text-primary" style={{ fontSize: "20px", marginTop: "6px" }}>
+                  Active Payout
+                </div>
+                <span className="kpi-badge mono text-primary">{MONETIZATION_STATS.payoutStatus}</span>
+              </div>
+            </div>
+
+            {/* Course Monetization Breakdown Table */}
+            <section className="studio-card glass-card">
+              <div className="card-header-row">
+                <span className="material-symbols-outlined card-icon">analytics</span>
+                <div>
+                  <h2 className="card-title">Course Monetization &amp; Performance Breakdown</h2>
+                  <span className="mono text-xs text-muted">Per-course revenue, conversion rates, and completion statistics</span>
+                </div>
+              </div>
+
+              <div className="table-responsive">
+                <table className="monetization-table">
+                  <thead>
+                    <tr className="mono text-xs">
+                      <th>COURSE TITLE</th>
+                      <th>CATEGORY</th>
+                      <th>PRICE</th>
+                      <th>UNITS SOLD</th>
+                      <th>GROSS EARNINGS</th>
+                      <th>COMPLETION RATE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong>Advanced Machine Learning &amp; Transformers</strong>
+                      </td>
+                      <td><span className="cat-pill mono">Software &amp; AI</span></td>
+                      <td className="mono">₹1,499</td>
+                      <td className="mono font-bold">142</td>
+                      <td className="mono text-emerald font-bold">₹2,12,858</td>
+                      <td><span className="mono text-xs font-bold text-secondary">88%</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>UX/UI Foundations &amp; Scalable Design Systems</strong>
+                      </td>
+                      <td><span className="cat-pill mono">Design &amp; Product</span></td>
+                      <td className="mono">₹999</td>
+                      <td className="mono font-bold">98</td>
+                      <td className="mono text-emerald font-bold">₹97,902</td>
+                      <td><span className="mono text-xs font-bold text-secondary">92%</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Clinical Medicine &amp; 12-Lead ECG Mastery</strong>
+                      </td>
+                      <td><span className="cat-pill mono">Medical &amp; Health</span></td>
+                      <td className="mono">₹1,299</td>
+                      <td className="mono font-bold">102</td>
+                      <td className="mono text-emerald font-bold">₹1,32,498</td>
+                      <td><span className="mono text-xs font-bold text-secondary">84%</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 2: GIVE & GRADE ASSIGNMENTS (Coursera / Udemy Model) */}
+        {/* ========================================================= */}
+        {activeTab === "assignments" && (
+          <div className="assignments-tab-view">
+            {/* Create Assignment Form */}
             <section className="studio-card glass-card">
               <div className="card-header-row">
                 <span className="material-symbols-outlined card-icon">post_add</span>
                 <div>
-                  <h2 className="card-title">1. Publish New Course</h2>
-                  <span className="mono text-xs text-muted">Set metadata, stream mapping &amp; pricing</span>
+                  <h2 className="card-title">Create &amp; Assign Coursework</h2>
+                  <span className="mono text-xs text-muted">Publish assignments, problem statements, and code rubrics</span>
                 </div>
               </div>
 
-              <form onSubmit={handleCreateCourse} className="studio-form">
+              <form onSubmit={handleCreateAssignment} className="studio-form">
+                <div className="form-row-2">
+                  <div className="form-group">
+                    <label className="mono text-xs">TARGET COURSE</label>
+                    <select
+                      value={assignmentForm.courseId}
+                      onChange={(e) => setAssignmentForm({ ...assignmentForm, courseId: e.target.value })}
+                    >
+                      <option value="feat-1">Advanced Machine Learning &amp; Transformers</option>
+                      <option value="feat-2">UX/UI Foundations &amp; Design Systems</option>
+                      <option value="feat-3">Clinical Medicine &amp; Diagnostic Reasoning</option>
+                      <option value="feat-4">Distributed Cloud Architecture &amp; Kafka</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">DUE DATE &amp; DEADLINE</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. August 10, 2026 or Next Week"
+                      value={assignmentForm.dueDate}
+                      onChange={(e) => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group">
-                  <label className="mono text-xs">COURSE TITLE</label>
+                  <label className="mono text-xs">ASSIGNMENT TITLE</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Advanced Machine Learning & Neural Transformers"
-                    value={courseForm.title}
-                    onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                    placeholder="e.g. Assignment 3: Implementing LoRA Quantization in PyTorch"
+                    value={assignmentForm.title}
+                    onChange={(e) => setAssignmentForm({ ...assignmentForm, title: e.target.value })}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="mono text-xs">SYLLABUS DESCRIPTION &amp; ABSTRACT</label>
+                  <label className="mono text-xs">INSTRUCTIONS &amp; PROBLEM STATEMENT</label>
                   <textarea
                     rows={3}
-                    placeholder="Describe target concepts, tools covered, and learning outcomes..."
-                    value={courseForm.description}
-                    onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                    required
+                    placeholder="Describe specific criteria, unit tests, and expected deliverables..."
+                    value={assignmentForm.description}
+                    onChange={(e) => setAssignmentForm({ ...assignmentForm, description: e.target.value })}
                   />
                 </div>
 
-                <div className="form-row-2">
+                <div className="form-group">
+                  <label className="mono text-xs">STARTER CODE / REPOSITORY TEMPLATE (OPTIONAL)</label>
+                  <textarea
+                    rows={2}
+                    placeholder="import torch\ndef lora_linear_forward(x, W, A, B, r, scaling):\n    pass"
+                    value={assignmentForm.starterCode}
+                    onChange={(e) => setAssignmentForm({ ...assignmentForm, starterCode: e.target.value })}
+                  />
+                </div>
+
+                <button type="submit" className="cyber-btn cyber-btn--primary" disabled={creatingAssignment}>
+                  {creatingAssignment ? "Publishing Assignment…" : "⚡ Publish Assignment to Students"}
+                </button>
+              </form>
+            </section>
+
+            {/* Student Submissions Review Table */}
+            <section className="studio-card glass-card">
+              <div className="card-header-row">
+                <span className="material-symbols-outlined card-icon">checklist_rtl</span>
+                <div>
+                  <h2 className="card-title">Scholar Submissions for Grading ({submissions.length})</h2>
+                  <span className="mono text-xs text-muted">Review solutions, enter marks, and provide rubric feedback</span>
+                </div>
+              </div>
+
+              <div className="table-responsive">
+                <table className="monetization-table">
+                  <thead>
+                    <tr className="mono text-xs">
+                      <th>SCHOLAR</th>
+                      <th>ASSIGNMENT</th>
+                      <th>SUBMISSION DATE</th>
+                      <th>REPO / SOLUTION</th>
+                      <th>STATUS</th>
+                      <th>GRADE ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissions.map((sub) => (
+                      <tr key={sub.id}>
+                        <td>
+                          <strong>{sub.student_name}</strong>
+                        </td>
+                        <td>
+                          <span className="mono text-xs">{sub.assignment_title || "Course Assignment"}</span>
+                        </td>
+                        <td className="mono text-xs text-muted">{sub.submitted_at || "Recent"}</td>
+                        <td>
+                          {sub.submission_url ? (
+                            <a
+                              href={sub.submission_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mono text-xs text-primary"
+                            >
+                              🔗 View Repo
+                            </a>
+                          ) : (
+                            <span className="mono text-xs text-muted">In-Platform Code</span>
+                          )}
+                        </td>
+                        <td>
+                          {sub.status === "graded" ? (
+                            <span className="graded-badge mono">✓ Graded ({sub.score}/100)</span>
+                          ) : (
+                            <span className="pending-badge mono">● Pending Review</span>
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="cyber-btn cyber-btn--secondary grade-btn mono text-xs"
+                            onClick={() => {
+                              setGradingSubmission(sub);
+                              setGradeScore(sub.score || 95);
+                              setGradeFeedback(sub.feedback || "Well implemented architecture!");
+                            }}
+                          >
+                            {sub.status === "graded" ? "Edit Grade" : "Grade Now"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 3: COURSE CATALOG & MODULES */}
+        {/* ========================================================= */}
+        {activeTab === "courses" && (
+          <div className="studio-grid">
+            <div className="studio-col-left">
+              <section className="studio-card glass-card">
+                <div className="card-header-row">
+                  <span className="material-symbols-outlined card-icon">post_add</span>
+                  <div>
+                    <h2 className="card-title">1. Publish New Course</h2>
+                    <span className="mono text-xs text-muted">Set metadata, stream mapping &amp; pricing</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleCreateCourse} className="studio-form">
                   <div className="form-group">
-                    <label className="mono text-xs">DOMAIN CATEGORY</label>
+                    <label className="mono text-xs">COURSE TITLE</label>
                     <input
                       type="text"
-                      placeholder="e.g. Software & AI Systems"
-                      value={courseForm.category}
-                      onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
+                      required
+                      placeholder="e.g. Advanced Machine Learning & Neural Transformers"
+                      value={courseForm.title}
+                      onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
                     />
                   </div>
 
                   <div className="form-group">
-                    <label className="mono text-xs">TARGET STREAM</label>
+                    <label className="mono text-xs">SYLLABUS DESCRIPTION &amp; ABSTRACT</label>
+                    <textarea
+                      rows={3}
+                      placeholder="Describe target concepts, tools covered, and learning outcomes..."
+                      value={courseForm.description}
+                      onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-row-2">
+                    <div className="form-group">
+                      <label className="mono text-xs">DOMAIN CATEGORY</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Software & AI Systems"
+                        value={courseForm.category}
+                        onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="mono text-xs">TARGET STREAM</label>
+                      <select
+                        value={courseForm.stream_id}
+                        onChange={(e) => setCourseForm({ ...courseForm, stream_id: e.target.value })}
+                      >
+                        {streams.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">COURSE PRICING (INR)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      step={100}
+                      placeholder="999"
+                      value={courseForm.price}
+                      onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })}
+                    />
+                  </div>
+
+                  <button type="submit" className="cyber-btn cyber-btn--primary w-full" disabled={creatingCourse}>
+                    {creatingCourse ? "Publishing to Universe…" : "⚡ Publish Course to Catalog"}
+                  </button>
+                </form>
+              </section>
+            </div>
+
+            <div className="studio-col-right">
+              <section className="studio-card glass-card">
+                <div className="card-header-row">
+                  <span className="material-symbols-outlined card-icon">video_call</span>
+                  <div>
+                    <h2 className="card-title">2. Attach Modules &amp; Video Lectures</h2>
+                    <span className="mono text-xs text-muted">Upload 1080p video or stream links</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleAddModule} className="studio-form">
+                  <div className="form-group">
+                    <label className="mono text-xs">TARGET COURSE</label>
                     <select
-                      value={courseForm.stream_id}
-                      onChange={(e) => setCourseForm({ ...courseForm, stream_id: e.target.value })}
+                      value={moduleForm.courseId}
+                      onChange={(e) => setModuleForm({ ...moduleForm, courseId: e.target.value })}
                     >
-                      {streams.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name}
+                      {courses.length === 0 && <option value="">No courses yet — create one first</option>}
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.title} ({c.module_count || 0} modules)
                         </option>
                       ))}
                     </select>
                   </div>
-                </div>
 
-                <div className="form-group">
-                  <label className="mono text-xs">COURSE PRICING (INR)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step={100}
-                    placeholder="499"
-                    value={courseForm.price}
-                    onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })}
-                  />
-                </div>
-
-                <button type="submit" className="cyber-btn cyber-btn--primary w-full" disabled={creatingCourse}>
-                  {creatingCourse ? "Publishing to Universe…" : "⚡ Publish Course to Catalog"}
-                </button>
-              </form>
-            </section>
-          </div>
-
-          {/* Right: Add Modules & Video Lectures */}
-          <div className="studio-col-right">
-            <section className="studio-card glass-card">
-              <div className="card-header-row">
-                <span className="material-symbols-outlined card-icon">video_call</span>
-                <div>
-                  <h2 className="card-title">2. Attach Modules &amp; Video Lectures</h2>
-                  <span className="mono text-xs text-muted">Upload 1080p video or stream links</span>
-                </div>
-              </div>
-
-              <form onSubmit={handleAddModule} className="studio-form">
-                <div className="form-group">
-                  <label className="mono text-xs">TARGET COURSE</label>
-                  <select
-                    value={moduleForm.courseId}
-                    onChange={(e) => setModuleForm({ ...moduleForm, courseId: e.target.value })}
-                  >
-                    {courses.length === 0 && <option value="">No courses yet — create one first</option>}
-                    {courses.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.title} ({c.module_count || 0} modules)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="mono text-xs">MODULE TITLE</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Module 1: Scaled Dot-Product & Self-Attention"
-                    value={moduleForm.title}
-                    onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="mono text-xs">MODULE DESCRIPTION</label>
-                  <textarea
-                    rows={2}
-                    placeholder="Brief description of this module's topics..."
-                    value={moduleForm.description}
-                    onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="mono text-xs">1080P VIDEO STREAM URL (YOUTUBE / DIRECT MP4)</label>
-                  <input
-                    type="url"
-                    placeholder="https://www.youtube.com/watch?v=... or https://.../video.mp4"
-                    value={moduleForm.videoUrl}
-                    onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
-                  />
-                </div>
-
-                <button type="submit" className="cyber-btn cyber-btn--secondary w-full" disabled={addingModule}>
-                  {addingModule ? "Attaching Module…" : "＋ Attach Module to Course"}
-                </button>
-              </form>
-            </section>
-          </div>
-        </div>
-
-        {/* Existing Courses Catalog Preview */}
-        <section className="studio-existing-courses">
-          <div className="section-header-row">
-            <h2>Your Published Courses ({courses.length})</h2>
-            <span className="mono text-xs text-muted">Active in Trainee Discover Directory</span>
-          </div>
-
-          <div className="studio-courses-grid">
-            {courses.length === 0 ? (
-              <div className="empty-courses-card glass-card">
-                <span className="material-symbols-outlined empty-icon">school</span>
-                <h3>No courses published yet</h3>
-                <p>Use the form above or click the <strong>✨ AI Course Generator</strong> to create your first course!</p>
-              </div>
-            ) : (
-              courses.map((c) => (
-                <article className="studio-course-card glass-card" key={c.id}>
-                  <div className="course-card-top">
-                    <span className="course-cat-tag mono">{c.category}</span>
-                    <span className="course-price-tag mono">₹{c.price_paise ? c.price_paise / 100 : 0}</span>
+                  <div className="form-group">
+                    <label className="mono text-xs">MODULE TITLE</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Module 1: Scaled Dot-Product & Self-Attention"
+                      value={moduleForm.title}
+                      onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
+                    />
                   </div>
-                  <h3 className="course-title">{c.title}</h3>
-                  <p className="course-desc">{c.description || "Stream-aligned comprehensive curriculum."}</p>
-                  <div className="course-meta-bar mono text-xs">
-                    <span>{c.module_count || 0} Modules Attached</span>
-                    <span className="status-live">● Live</span>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">MODULE DESCRIPTION</label>
+                    <textarea
+                      rows={2}
+                      placeholder="Brief description of this module's topics..."
+                      value={moduleForm.description}
+                      onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
+                    />
                   </div>
-                </article>
-              ))
-            )}
+
+                  <div className="form-group">
+                    <label className="mono text-xs">1080P VIDEO STREAM URL (YOUTUBE / DIRECT MP4)</label>
+                    <input
+                      type="url"
+                      placeholder="https://www.youtube.com/watch?v=... or https://.../video.mp4"
+                      value={moduleForm.videoUrl}
+                      onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
+                    />
+                  </div>
+
+                  <button type="submit" className="cyber-btn cyber-btn--secondary w-full" disabled={addingModule}>
+                    {addingModule ? "Attaching Module…" : "＋ Attach Module to Course"}
+                  </button>
+                </form>
+              </section>
+            </div>
           </div>
-        </section>
+        )}
       </main>
 
       {/* ========================================================= */}
-      {/* ✨ AI COURSE CONTENT GENERATOR MODAL */}
+      {/* 4. INSTRUCTOR GRADING MODAL */}
+      {/* ========================================================= */}
+      {gradingSubmission && (
+        <div className="modal-backdrop" onClick={() => setGradingSubmission(null)}>
+          <div className="grade-modal-card glass-card animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-bar">
+              <div className="modal-title-wrap">
+                <span className="material-symbols-outlined text-primary">grading</span>
+                <div>
+                  <h3 className="modal-title">Grade Submission: {gradingSubmission.student_name}</h3>
+                  <span className="mono text-xs text-muted">{gradingSubmission.assignment_title}</span>
+                </div>
+              </div>
+              <button className="close-btn" onClick={() => setGradingSubmission(null)}>✕</button>
+            </div>
+
+            <div className="grade-modal-body">
+              <div className="submission-content-preview glass-card">
+                <span className="mono text-xs text-muted">SCHOLAR'S SUBMISSION CODE &amp; NOTES:</span>
+                <p className="submission-text-view">{gradingSubmission.submission_content}</p>
+                {gradingSubmission.submission_url && (
+                  <a
+                    href={gradingSubmission.submission_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mono text-xs text-primary"
+                  >
+                    🔗 Open Submitted Repository: {gradingSubmission.submission_url}
+                  </a>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveGrade} className="grade-form">
+                <div className="form-group">
+                  <label className="mono text-xs">SCORE / MARKS (OUT OF 100)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    required
+                    value={gradeScore}
+                    onChange={(e) => setGradeScore(Number(e.target.value))}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="mono text-xs">INSTRUCTOR RUBRIC FEEDBACK</label>
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Provide constructive feedback, praise clean code patterns, or suggest performance fixes..."
+                    value={gradeFeedback}
+                    onChange={(e) => setGradeFeedback(e.target.value)}
+                  />
+                </div>
+
+                <div className="submit-actions-row">
+                  <button type="button" className="cyber-btn cyber-btn--secondary" onClick={() => setGradingSubmission(null)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="cyber-btn cyber-btn--primary" disabled={gradingLoading}>
+                    {gradingLoading ? "Recording Grade…" : "✓ Save Grade & Notify Scholar"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 5. AI COURSE CONTENT GENERATOR MODAL */}
       {/* ========================================================= */}
       {isAiModalOpen && (
         <div className="modal-backdrop" onClick={() => !aiGenerating && setIsAiModalOpen(false)}>
@@ -502,7 +912,6 @@ export default function InstructorStudio() {
               </button>
             </div>
 
-            {/* STEP 0: Configuration & Prompt Input */}
             {aiStep === 0 && (
               <div className="ai-modal-body">
                 <p className="ai-prompt-sub">
@@ -581,7 +990,6 @@ export default function InstructorStudio() {
               </div>
             )}
 
-            {/* STEP 1: Generating Loading Animation */}
             {aiStep === 1 && (
               <div className="ai-generating-view">
                 <div className="ai-radar-spinner">
@@ -598,7 +1006,6 @@ export default function InstructorStudio() {
               </div>
             )}
 
-            {/* STEP 2: Generated Course Preview & 1-Click Publish */}
             {aiStep === 2 && generatedCourse && (
               <div className="ai-preview-view">
                 <div className="preview-top-card glass-card">
