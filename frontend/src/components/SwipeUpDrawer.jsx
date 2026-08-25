@@ -16,7 +16,7 @@ export default function SwipeUpDrawer() {
   const [currentY, setCurrentY] = useState(null);
   const [storedProgress, setStoredProgress] = useState(getStoredProgress());
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -193,7 +193,7 @@ export default function SwipeUpDrawer() {
                 </div>
                 <div className="tile-text">
                   <strong>Practice Gym</strong>
-                  <span>Aptitude &amp; Coding Simulator</span>
+                  <span>Aptitude &amp; Exam Matrix</span>
                 </div>
               </button>
 
@@ -302,7 +302,29 @@ export default function SwipeUpDrawer() {
               </button>
 
               {user ? (
-                <span className="mono text-xs text-muted">Logged in as {user.name}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span className="mono text-xs text-muted">@{user.name ? user.name.split(" ")[0] : "Scholar"}</span>
+                  <button
+                    type="button"
+                    className="mono text-xs"
+                    style={{
+                      background: "rgba(239, 68, 68, 0.15)",
+                      border: "1px solid rgba(239, 68, 68, 0.35)",
+                      color: "#f87171",
+                      padding: "4px 10px",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                    onClick={() => {
+                      setIsOpen(false);
+                      logout();
+                      navigate("/login");
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
               ) : (
                 <button
                   type="button"
