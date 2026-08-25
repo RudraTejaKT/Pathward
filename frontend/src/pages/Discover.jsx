@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { enrollCourse, setActiveCourse } from "../lib/coursesData.js";
 import "./Discover.css";
 
 const FEATURED_COURSES = [
@@ -115,9 +116,13 @@ export default function Discover() {
   function handleEnroll(course) {
     const isEnrolled = enrolledCourses[course.id];
     setEnrolledCourses((prev) => ({ ...prev, [course.id]: !isEnrolled }));
+    if (!isEnrolled) {
+      enrollCourse(course.id);
+      setActiveCourse(course.id);
+    }
     setToastMessage(
       !isEnrolled
-        ? `Added "${course.title}" to your learning queue!`
+        ? `Added "${course.title}" to your learning queue & dashboard!`
         : `Removed "${course.title}" from your queue.`
     );
     setTimeout(() => setToastMessage(null), 3000);
@@ -147,25 +152,6 @@ export default function Discover() {
 
   return (
     <div className="discover-root">
-      {/* Top Floating App Header */}
-      <header className="discover-header">
-        <div className="discover-header__inner">
-          <div className="discover-brand">
-            <span className="discover-logo-icon material-symbols-outlined">school</span>
-            <span className="discover-brand-title">Discover</span>
-          </div>
-          <Link to={user ? "/dashboard" : "/login"} className="discover-profile-link">
-            {user?.name ? (
-              <div className="discover-avatar-initials">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-            ) : (
-              <span className="material-symbols-outlined discover-avatar-icon">account_circle</span>
-            )}
-          </Link>
-        </div>
-      </header>
-
       {/* Main Discover Content */}
       <main className="discover-main">
         {/* Toast Notification */}

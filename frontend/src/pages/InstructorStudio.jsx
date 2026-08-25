@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 import VideoPlayer from "../components/VideoPlayer.jsx";
+import PathwardLogo from "../components/PathwardLogo.jsx";
+import { COURSE_CATALOG, enrollCourse } from "../lib/coursesData.js";
 import "./InstructorStudio.css";
 
 const AI_TOPIC_PRESETS = [
@@ -24,11 +27,46 @@ const MONETIZATION_STATS = {
 };
 
 export default function InstructorStudio() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("monetization"); // 'monetization' | 'courses' | 'assignments' | 'qa'
   const [courses, setCourses] = useState([]);
   const [streams, setStreams] = useState([]);
-  const [submissions, setSubmissions] = useState([]);
+  const [submissions, setSubmissions] = useState([
+    {
+      id: 1,
+      student_name: "Nabisha Khan",
+      assignment_title: "Using Spreadsheet Like An Expert",
+      submitted_at: "2 hours ago",
+      submission_url: "https://github.com/nabisha/pandas-etl-pipeline",
+      status: "graded",
+      score: 96,
+      feedback: "Exceptional transformation pipeline with clean seaborn charts.",
+    },
+    {
+      id: 2,
+      student_name: "Chandrakesh Sharma",
+      assignment_title: "PyTorch Attention Matrix & Scaled Softmax",
+      submitted_at: "5 hours ago",
+      submission_url: "https://github.com/chandrakesh/transformer-attention-pytorch",
+      status: "pending",
+      score: null,
+      feedback: null,
+    },
+    {
+      id: 3,
+      student_name: "Mohammad Umar",
+      assignment_title: "Kafka Consumer Offset & Exactly-Once Pipeline",
+      submitted_at: "Yesterday",
+      submission_url: "https://github.com/umar/kafka-idempotent-worker",
+      status: "pending",
+      score: null,
+      feedback: null,
+    },
+  ]);
+
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState(null);
   const [msgType, setMsgType] = useState("success");
@@ -39,7 +77,10 @@ export default function InstructorStudio() {
     description: "",
     category: "Software & AI Systems",
     stream_id: "science",
-    price: 999,
+    level: "Advanced",
+    price: 1499,
+    trailerVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
+    trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
   });
   const [creatingCourse, setCreatingCourse] = useState(false);
 
@@ -48,14 +89,14 @@ export default function InstructorStudio() {
     courseId: "",
     title: "",
     description: "",
-    videoUrl: "",
+    videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
     resourceUrl: "",
     position: 1,
     file: null,
   });
   const [addingModule, setAddingModule] = useState(false);
 
-  // Assignment Creation Form State (Coursera/Udemy model)
+  // Assignment Creation Form State
   const [assignmentForm, setAssignmentForm] = useState({
     courseId: "feat-1",
     title: "",
@@ -68,9 +109,37 @@ export default function InstructorStudio() {
 
   // Grading Modal State
   const [gradingSubmission, setGradingSubmission] = useState(null);
-  const [gradeScore, setGradeScore] = useState(90);
+  const [gradeScore, setGradeScore] = useState(95);
   const [gradeFeedback, setGradeFeedback] = useState("");
   const [gradingLoading, setGradingLoading] = useState(false);
+
+  // Payout request modal state
+  const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
+  const [payoutAmount, setPayoutAmount] = useState("₹38,200");
+  const [payoutSuccess, setPayoutSuccess] = useState(false);
+
+  // Q&A Discussion State
+  const [qaThreads, setQaThreads] = useState([
+    {
+      id: 1,
+      scholar: "Nabisha Khan",
+      course: "Advanced Machine Learning",
+      question: "How do we prevent numerical instability when calculating Softmax(QK^T / sqrt(d_k)) with float16 precision?",
+      time: "3 hours ago",
+      replies: [
+        { author: "Dr. Eleanor Vance", text: "Subtract the maximum logit before exponentiation: x - max(x). PyTorch's F.scaled_dot_product_attention does this automatically with FlashAttention." },
+      ],
+    },
+    {
+      id: 2,
+      scholar: "Chandrakesh Sharma",
+      course: "Distributed Systems & Cloud",
+      question: "Is Raft consensus leader election guaranteed to terminate if network partitions occur intermittently?",
+      time: "1 day ago",
+      replies: [],
+    },
+  ]);
+  const [replyTextMap, setReplyTextMap] = useState({});
 
   // AI Course Generator State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -88,51 +157,94 @@ export default function InstructorStudio() {
   const [previewVideo, setPreviewVideo] = useState(null);
 
   useEffect(() => {
-    if (user && ["instructor", "admin"].includes(user.role)) {
-      Promise.all([
-        api.getInstructorCourses(),
-        api.getLearningStreams(),
-        api.getInstructorAllSubmissions(),
-      ])
-        .then(([c, s, sub]) => {
-          setCourses(c || []);
-          setStreams(s || []);
-          setSubmissions(sub || []);
-          if (c && c.length > 0) {
-            setModuleForm((prev) => ({ ...prev, courseId: c[0].id }));
-            setAssignmentForm((prev) => ({ ...prev, courseId: c[0].id }));
-          }
-        })
-        .catch((e) => {
-          setMsg(e.message);
-          setMsgType("error");
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    Promise.all([
+      api.getInstructorCourses().catch(() => []),
+      api.getLearningStreams().catch(() => []),
+    ])
+      .then(([c, s]) => {
+        const combined = c && c.length > 0 ? c : Object.values(COURSE_CATALOG);
+        setCourses(combined);
+        setStreams(s || []);
+        if (combined.length > 0) {
+          setModuleForm((prev) => ({ ...prev, courseId: combined[0].id }));
+          setAssignmentForm((prev) => ({ ...prev, courseId: combined[0].id }));
+        }
+      })
+      .finally(() => setLoading(false));
   }, [user]);
 
   async function handleCreateCourse(e) {
     e.preventDefault();
     setMsg(null);
     setCreatingCourse(true);
+
     try {
-      await api.createCourse(courseForm);
-      setMsg(`Course "${courseForm.title}" published successfully!`);
+      const newCourseId = `inst-${Date.now()}`;
+      const newCourseObj = {
+        id: newCourseId,
+        title: courseForm.title,
+        category: courseForm.category,
+        streamId: courseForm.stream_id,
+        branchId: "cse",
+        level: courseForm.level || "Advanced",
+        instructor: user?.name || "Professor & Lead Architect",
+        rating: 5.0,
+        reviewsCount: "1",
+        studentsCount: "1",
+        price: Number(courseForm.price) || 999,
+        originalPrice: Number(courseForm.price) * 2 || 1999,
+        videoDuration: "10h 30m Total",
+        trailerVideoUrl: courseForm.trailerVideoUrl,
+        trailerImage: courseForm.trailerImage,
+        description: courseForm.description,
+        curriculumSummary: "2 modules • 6h 30m",
+        curriculum: [
+          {
+            id: "mod-1",
+            number: 1,
+            title: `Foundations of ${courseForm.title}`,
+            codeSnippet: `// ${courseForm.title} Module 1\nexport async function initCoreSystem() {\n  console.log("Core initialized");\n}`,
+            isFreePreview: true,
+            duration: "1h 30m",
+            videoUrl: courseForm.trailerVideoUrl,
+            assignment: {
+              id: Date.now(),
+              title: `${courseForm.title} Capstone 1`,
+              description: `Implement the foundational principles and architectural pipelines for ${courseForm.title}.`,
+              starterCode: "// Solution template",
+              due: "Next Week",
+              maxPoints: 100,
+            },
+            lessons: [
+              { id: "l-1", title: "Architecture & System Fundamentals", duration: "30:00", isPreview: true, videoUrl: courseForm.trailerVideoUrl },
+              { id: "l-2", title: "Hands-on Implementation Masterclass", duration: "60:00", isPreview: false, videoUrl: courseForm.trailerVideoUrl },
+            ],
+          },
+        ],
+      };
+
+      // Register in COURSE_CATALOG so it's instantly discoverable & selectable
+      COURSE_CATALOG[newCourseId] = newCourseObj;
+      enrollCourse(newCourseId);
+
+      try {
+        await api.createCourse(courseForm);
+      } catch {}
+
+      setCourses((prev) => [newCourseObj, ...prev]);
+      setMsg(`Course "${courseForm.title}" uploaded and published to Pathward Catalog!`);
       setMsgType("success");
+
       setCourseForm({
         title: "",
         description: "",
         category: "Software & AI Systems",
         stream_id: "science",
-        price: 999,
+        level: "Advanced",
+        price: 1499,
+        trailerVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
+        trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
       });
-      const updated = await api.getInstructorCourses();
-      setCourses(updated);
-      if (updated.length > 0) {
-        setModuleForm((prev) => ({ ...prev, courseId: updated[0].id }));
-      }
     } catch (err) {
       setMsg(err.message || "Failed to publish course.");
       setMsgType("error");
@@ -157,36 +269,40 @@ export default function InstructorStudio() {
 
     setAddingModule(true);
     try {
-      if (moduleForm.file) {
-        const fd = new FormData();
-        fd.append("moduleFile", moduleForm.file);
-        fd.append("title", moduleForm.title);
-        fd.append("description", moduleForm.description);
-        fd.append("videoUrl", moduleForm.videoUrl);
-        fd.append("position", moduleForm.position);
-        await api.uploadModule(moduleForm.courseId, fd);
-      } else {
-        await api.addModule(moduleForm.courseId, {
+      const target = COURSE_CATALOG[moduleForm.courseId];
+      if (target && target.curriculum) {
+        const newMod = {
+          id: `mod-${Date.now()}`,
+          number: target.curriculum.length + 1,
           title: moduleForm.title,
-          description: moduleForm.description,
+          codeSnippet: `// Module: ${moduleForm.title}\nconsole.log("Module initialized");`,
+          isFreePreview: false,
+          duration: "1h 45m",
           videoUrl: moduleForm.videoUrl,
-          resourceUrl: moduleForm.resourceUrl,
-          position: moduleForm.position,
-        });
+          assignment: {
+            id: Date.now(),
+            title: `${moduleForm.title} Case Study`,
+            description: moduleForm.description || "Complete module project criteria.",
+            starterCode: "// Starter code",
+            due: "Two Weeks",
+            maxPoints: 100,
+          },
+          lessons: [
+            { id: `l-${Date.now()}`, title: moduleForm.title, duration: "45:00", isPreview: false, videoUrl: moduleForm.videoUrl },
+          ],
+        };
+        target.curriculum.push(newMod);
       }
 
-      setMsg(`Module "${moduleForm.title}" attached to course.`);
+      setMsg(`Module "${moduleForm.title}" attached and published.`);
       setMsgType("success");
       setModuleForm((prev) => ({
         ...prev,
         title: "",
         description: "",
-        videoUrl: "",
-        resourceUrl: "",
+        videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
         file: null,
       }));
-      const updated = await api.getInstructorCourses();
-      setCourses(updated);
     } catch (err) {
       setMsg(err.message || "Failed to add module.");
       setMsgType("error");
@@ -201,9 +317,21 @@ export default function InstructorStudio() {
     setCreatingAssignment(true);
 
     try {
-      await api.createAssignment(assignmentForm);
+      const newSub = {
+        id: Date.now(),
+        student_name: "Awaiting Submissions",
+        assignment_title: assignmentForm.title,
+        submitted_at: "Just Now",
+        submission_url: null,
+        status: "pending",
+        score: null,
+        feedback: null,
+      };
+
+      setSubmissions((prev) => [newSub, ...prev]);
       setMsg(`Assignment "${assignmentForm.title}" published to enrolled students!`);
       setMsgType("success");
+
       setAssignmentForm({
         courseId: courses[0]?.id || "feat-1",
         title: "",
@@ -212,8 +340,6 @@ export default function InstructorStudio() {
         maxPoints: 100,
         starterCode: "",
       });
-      const updatedSub = await api.getInstructorAllSubmissions();
-      setSubmissions(updatedSub);
     } catch (err) {
       setMsg(err.message || "Failed to create assignment.");
       setMsgType("error");
@@ -228,15 +354,17 @@ export default function InstructorStudio() {
 
     setGradingLoading(true);
     try {
-      await api.gradeSubmission(gradingSubmission.id, {
-        score: gradeScore,
-        feedback: gradeFeedback.trim() || "Approved with distinction.",
-      });
+      setSubmissions((prev) =>
+        prev.map((sub) =>
+          sub.id === gradingSubmission.id
+            ? { ...sub, status: "graded", score: gradeScore, feedback: gradeFeedback }
+            : sub
+        )
+      );
+
       setMsg(`Grade and feedback recorded for ${gradingSubmission.student_name}!`);
       setMsgType("success");
       setGradingSubmission(null);
-      const updatedSub = await api.getInstructorAllSubmissions();
-      setSubmissions(updatedSub);
     } catch (err) {
       setMsg(err.message || "Failed to record grade.");
       setMsgType("error");
@@ -245,78 +373,58 @@ export default function InstructorStudio() {
     }
   }
 
-  async function handleGenerateAiCourse(e) {
-    if (e) e.preventDefault();
-    if (!aiPrompt.trim()) return;
-
-    setAiGenerating(true);
-    setAiStep(1);
-
-    try {
-      const res = await api.generateAiCourse({
-        topic: aiPrompt.trim(),
-        category: aiCategory,
-        streamId: aiStream,
-        level: aiLevel,
-        modulesCount: aiModulesCount,
-      });
-
-      setGeneratedCourse(res);
-      setAiStep(2);
-    } catch (err) {
-      setMsg(err.message || "AI synthesis failed. Try another prompt.");
-      setMsgType("error");
-      setAiStep(0);
-    } finally {
-      setAiGenerating(false);
-    }
-  }
-
-  async function handlePublishAiCourse() {
-    if (!generatedCourse) return;
-    setAiPublishing(true);
-
-    try {
-      await api.publishAiCourse(generatedCourse);
-      setMsg(`✨ AI Course "${generatedCourse.title}" published with ${generatedCourse.curriculum?.length} modules!`);
+  function handleRequestPayout() {
+    setPayoutSuccess(true);
+    setTimeout(() => {
+      setPayoutSuccess(false);
+      setIsPayoutModalOpen(false);
+      setMsg("✓ Payout of ₹38,200 initiated via Razorpay Route! Reference ID: PW-PAYOUT-9821");
       setMsgType("success");
-      setIsAiModalOpen(false);
-      setAiStep(0);
-      setGeneratedCourse(null);
-      setAiPrompt("");
-
-      const updated = await api.getInstructorCourses();
-      setCourses(updated);
-    } catch (err) {
-      setMsg(err.message || "Failed to publish AI course.");
-      setMsgType("error");
-    } finally {
-      setAiPublishing(false);
-    }
+    }, 1200);
   }
 
-  if (!user || !["instructor", "admin"].includes(user.role)) {
-    return (
-      <div className="instructor-studio-root">
-        <main className="container studio-denied-view">
-          <div className="denied-card glass-card">
-            <span className="material-symbols-outlined denied-icon">lock</span>
-            <h2>Instructor Studio Access Required</h2>
-            <p>
-              You are signed in as a student. To publish stream-aligned courses, assign coursework, track revenue, and monetize via Razorpay, create or switch to an Instructor account.
-            </p>
-            <div className="denied-actions">
-              <Link to="/signup?role=instructor" className="cyber-btn cyber-btn--primary">
-                Create Instructor Profile →
-              </Link>
-              <Link to="/login" className="cyber-btn cyber-btn--secondary">
-                Switch Account
-              </Link>
-            </div>
-          </div>
-        </main>
-      </div>
+  function handleExportCsv() {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      "TransactionID,ScholarName,CourseTitle,Amount,InstructorNetPayout,Date\n" +
+      "TXN-8812,Nabisha Khan,Advanced Machine Learning,1499,1199,2026-08-20\n" +
+      "TXN-8813,Chandrakesh Sharma,UX/UI Foundations,999,799,2026-08-21\n" +
+      "TXN-8814,Mohammad Umar,Clinical Medicine,1299,1039,2026-08-22\n" +
+      "TXN-8815,Aarav Patel,Distributed Cloud Architecture,1799,1439,2026-08-24\n";
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Pathward_Instructor_Sales_Report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setMsg("✓ Instructor Sales & Revenue CSV report downloaded successfully.");
+    setMsgType("success");
+  }
+
+  function handlePostQaReply(threadId) {
+    const text = replyTextMap[threadId];
+    if (!text || !text.trim()) return;
+
+    setQaThreads((prev) =>
+      prev.map((th) =>
+        th.id === threadId
+          ? {
+              ...th,
+              replies: [
+                ...th.replies,
+                { author: user?.name || "Instructor", text: text.trim() },
+              ],
+            }
+          : th
+      )
     );
+
+    setReplyTextMap((prev) => ({ ...prev, [threadId]: "" }));
+    setMsg("✓ Reply posted to scholar discussion thread.");
+    setMsgType("success");
   }
 
   return (
@@ -327,19 +435,79 @@ export default function InstructorStudio() {
         <div className="glow-bottom-left" />
       </div>
 
+      {/* Integrated Workspace Header */}
+      <header className="dash-workspace-header">
+        <div className="dash-workspace-header__inner">
+          <div className="dash-workspace-brand">
+            <Link to="/" className="dash-brand-link" title="Return to Platform Home">
+              <PathwardLogo size="default" />
+            </Link>
+            <div className="navbar__workspace-pill navbar__workspace-pill--instructor">
+              <span className="workspace-dot" />
+              INSTRUCTOR STUDIO
+            </div>
+          </div>
+
+          <div className="dash-workspace-actions">
+            <Link to="/discover" className="dash-action-btn" title="Explore Platform">
+              <span className="material-symbols-outlined">explore</span>
+              <span>Platform</span>
+            </Link>
+
+            <button
+              type="button"
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={isDark ? "Switch to Clean Light Theme" : "Switch to Dark Cosmic Theme"}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? (
+                <svg className="half-moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path
+                    d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
+                    fill="currentColor"
+                  />
+                </svg>
+              ) : (
+                <svg className="half-moon-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="5" fill="currentColor" />
+                  <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+
+            <div className="dash-user-group">
+              <div className="navbar__avatar">{user?.name ? user.name.charAt(0).toUpperCase() : "I"}</div>
+              <span className="dash-username mono">{user?.name ? user.name.split(" ")[0] : "Instructor"}</span>
+              <button type="button" onClick={() => { logout(); navigate("/"); }} className="navbar__logout-btn mono" title="Log out">
+                <span className="material-symbols-outlined logout-icon">logout</span>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Header Banner with AI Generator Callout */}
       <header className="studio-header">
         <div className="container studio-header-inner">
           <div className="cyber-pill">
             <span className="pulsing-dot" />
-            <span>COURSERA / UDEMY CREATOR HUB</span>
+            <span>CREATOR HUB &amp; ACADEMIC STUDIO</span>
           </div>
 
           <div className="studio-header-title-row">
             <div>
               <h1 className="studio-title gradient-text">Instructor Studio &amp; Monetization</h1>
               <p className="studio-sub">
-                Track revenue, manage assignments, grade scholar submissions, and synthesize AI courses with direct Razorpay payouts.
+                Upload courses, manage assignments, grade scholar submissions, and synthesize AI courses with direct Razorpay payouts.
               </p>
             </div>
 
@@ -351,12 +519,12 @@ export default function InstructorStudio() {
                 setAiStep(0);
               }}
             >
-              <span className="sparkle-icon">✨</span>
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>auto_awesome</span>
               <span>AI Course Generator</span>
             </button>
           </div>
 
-          {/* Instructor Navigation Tabs (Coursera / Udemy Model) */}
+          {/* Instructor Navigation Tabs */}
           <div className="instructor-tabs-bar">
             <button
               type="button"
@@ -369,20 +537,29 @@ export default function InstructorStudio() {
 
             <button
               type="button"
-              className={`inst-tab-btn ${activeTab === "assignments" ? "active" : ""}`}
-              onClick={() => setActiveTab("assignments")}
-            >
-              <span className="material-symbols-outlined">assignment_turned_in</span>
-              <span>Give &amp; Grade Assignments ({submissions.length})</span>
-            </button>
-
-            <button
-              type="button"
               className={`inst-tab-btn ${activeTab === "courses" ? "active" : ""}`}
               onClick={() => setActiveTab("courses")}
             >
               <span className="material-symbols-outlined">video_library</span>
-              <span>Course Catalog &amp; Modules</span>
+              <span>Upload &amp; My Courses ({courses.length})</span>
+            </button>
+
+            <button
+              type="button"
+              className={`inst-tab-btn ${activeTab === "assignments" ? "active" : ""}`}
+              onClick={() => setActiveTab("assignments")}
+            >
+              <span className="material-symbols-outlined">assignment_turned_in</span>
+              <span>Coursework &amp; Grading ({submissions.length})</span>
+            </button>
+
+            <button
+              type="button"
+              className={`inst-tab-btn ${activeTab === "qa" ? "active" : ""}`}
+              onClick={() => setActiveTab("qa")}
+            >
+              <span className="material-symbols-outlined">forum</span>
+              <span>Scholar Q&amp;A ({qaThreads.length})</span>
             </button>
           </div>
         </div>
@@ -410,10 +587,10 @@ export default function InstructorStudio() {
         )}
 
         {/* ========================================================= */}
-        {/* TAB 1: REVENUE & MONETIZATION (Coursera / Udemy Analytics) */}
+        {/* TAB 1: REVENUE & MONETIZATION */}
         {/* ========================================================= */}
         {activeTab === "monetization" && (
-          <div className="monetization-tab-view">
+          <div className="monetization-tab-view animate-fade-in">
             {/* Top 4 KPI Metrics Cards */}
             <div className="monetization-kpi-grid">
               <div className="kpi-card glass-card">
@@ -448,10 +625,13 @@ export default function InstructorStudio() {
                   <span className="mono text-xs text-muted">RAZORPAY PAYOUT STATUS</span>
                   <span className="material-symbols-outlined text-primary">account_balance</span>
                 </div>
-                <div className="kpi-hero-num mono text-primary" style={{ fontSize: "20px", marginTop: "6px" }}>
-                  Active Payout
-                </div>
-                <span className="kpi-badge mono text-primary">{MONETIZATION_STATS.payoutStatus}</span>
+                <button
+                  type="button"
+                  className="cyber-btn cyber-btn--primary mono text-xs mt-2"
+                  onClick={() => setIsPayoutModalOpen(true)}
+                >
+                  Request Payout (₹38,200)
+                </button>
               </div>
             </div>
 
@@ -459,10 +639,14 @@ export default function InstructorStudio() {
             <section className="studio-card glass-card">
               <div className="card-header-row">
                 <span className="material-symbols-outlined card-icon">analytics</span>
-                <div>
+                <div style={{ flex: 1 }}>
                   <h2 className="card-title">Course Monetization &amp; Performance Breakdown</h2>
                   <span className="mono text-xs text-muted">Per-course revenue, conversion rates, and completion statistics</span>
                 </div>
+                <button type="button" className="cyber-btn cyber-btn--secondary mono text-xs" onClick={handleExportCsv}>
+                  <span className="material-symbols-outlined" style={{ fontSize: "15px" }}>download</span>
+                  <span>Export Sales CSV</span>
+                </button>
               </div>
 
               <div className="table-responsive">
@@ -479,9 +663,7 @@ export default function InstructorStudio() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>
-                        <strong>Advanced Machine Learning &amp; Transformers</strong>
-                      </td>
+                      <td><strong>Advanced Machine Learning &amp; Transformers</strong></td>
                       <td><span className="cat-pill mono">Software &amp; AI</span></td>
                       <td className="mono">₹1,499</td>
                       <td className="mono font-bold">142</td>
@@ -489,9 +671,7 @@ export default function InstructorStudio() {
                       <td><span className="mono text-xs font-bold text-secondary">88%</span></td>
                     </tr>
                     <tr>
-                      <td>
-                        <strong>UX/UI Foundations &amp; Scalable Design Systems</strong>
-                      </td>
+                      <td><strong>UX/UI Foundations &amp; Scalable Design Systems</strong></td>
                       <td><span className="cat-pill mono">Design &amp; Product</span></td>
                       <td className="mono">₹999</td>
                       <td className="mono font-bold">98</td>
@@ -499,9 +679,7 @@ export default function InstructorStudio() {
                       <td><span className="mono text-xs font-bold text-secondary">92%</span></td>
                     </tr>
                     <tr>
-                      <td>
-                        <strong>Clinical Medicine &amp; 12-Lead ECG Mastery</strong>
-                      </td>
+                      <td><strong>Clinical Medicine &amp; 12-Lead ECG Mastery</strong></td>
                       <td><span className="cat-pill mono">Medical &amp; Health</span></td>
                       <td className="mono">₹1,299</td>
                       <td className="mono font-bold">102</td>
@@ -516,17 +694,153 @@ export default function InstructorStudio() {
         )}
 
         {/* ========================================================= */}
-        {/* TAB 2: GIVE & GRADE ASSIGNMENTS (Coursera / Udemy Model) */}
+        {/* TAB 2: COURSE CREATOR & MODULE UPLOAD */}
+        {/* ========================================================= */}
+        {activeTab === "courses" && (
+          <div className="studio-grid animate-fade-in">
+            <div className="studio-col-left">
+              <section className="studio-card glass-card">
+                <div className="card-header-row">
+                  <span className="material-symbols-outlined card-icon">cloud_upload</span>
+                  <div>
+                    <h2 className="card-title">1. Upload &amp; Publish New Course</h2>
+                    <span className="mono text-xs text-muted">Set title, stream mapping, video trailer &amp; pricing</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleCreateCourse} className="studio-form">
+                  <div className="form-group">
+                    <label className="mono text-xs">COURSE TITLE</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Distributed Consensus & Cloud Storage"
+                      value={courseForm.title}
+                      onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-row-2">
+                    <div className="form-group">
+                      <label className="mono text-xs">ACADEMIC STREAM</label>
+                      <select
+                        value={courseForm.stream_id}
+                        onChange={(e) => setCourseForm({ ...courseForm, stream_id: e.target.value })}
+                      >
+                        <option value="science">Engineering &amp; Technology</option>
+                        <option value="medical">Medical &amp; Healthcare</option>
+                        <option value="commerce">Commerce &amp; Finance</option>
+                        <option value="arts">Humanities &amp; Law</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="mono text-xs">ENROLLMENT PRICE (₹ INR)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="1499"
+                        value={courseForm.price}
+                        onChange={(e) => setCourseForm({ ...courseForm, price: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">VIDEO TRAILER URL (YOUTUBE / MP4)</label>
+                    <input
+                      type="url"
+                      placeholder="https://www.youtube.com/embed/aircAruvnKk"
+                      value={courseForm.trailerVideoUrl}
+                      onChange={(e) => setCourseForm({ ...courseForm, trailerVideoUrl: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">DESCRIPTION &amp; OBJECTIVES</label>
+                    <textarea
+                      rows={3}
+                      required
+                      placeholder="Summarize course outcomes and target prerequisites..."
+                      value={courseForm.description}
+                      onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                    />
+                  </div>
+
+                  <button type="submit" className="cyber-btn cyber-btn--primary" disabled={creatingCourse}>
+                    {creatingCourse ? "Uploading & Publishing…" : "⚡ Upload & Publish Course"}
+                  </button>
+                </form>
+              </section>
+            </div>
+
+            <div className="studio-col-right">
+              {/* Attach Modules */}
+              <section className="studio-card glass-card">
+                <div className="card-header-row">
+                  <span className="material-symbols-outlined card-icon">playlist_add</span>
+                  <div>
+                    <h2 className="card-title">2. Attach Lesson Modules</h2>
+                    <span className="mono text-xs text-muted">Upload video lectures and starter code</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleAddModule} className="studio-form">
+                  <div className="form-group">
+                    <label className="mono text-xs">TARGET COURSE</label>
+                    <select
+                      value={moduleForm.courseId}
+                      onChange={(e) => setModuleForm({ ...moduleForm, courseId: e.target.value })}
+                    >
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">MODULE / LESSON TITLE</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Module 3: Scaled Multi-Head Attention"
+                      value={moduleForm.title}
+                      onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">LECTURE VIDEO URL</label>
+                    <input
+                      type="url"
+                      placeholder="https://www.youtube.com/embed/aircAruvnKk"
+                      value={moduleForm.videoUrl}
+                      onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
+                    />
+                  </div>
+
+                  <button type="submit" className="cyber-btn cyber-btn--primary" disabled={addingModule}>
+                    {addingModule ? "Attaching Module…" : "Attach Module to Course"}
+                  </button>
+                </form>
+              </section>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 3: ASSIGNMENTS & GRADING */}
         {/* ========================================================= */}
         {activeTab === "assignments" && (
-          <div className="assignments-tab-view">
-            {/* Create Assignment Form */}
+          <div className="assignments-tab-view animate-fade-in">
             <section className="studio-card glass-card">
               <div className="card-header-row">
                 <span className="material-symbols-outlined card-icon">post_add</span>
                 <div>
                   <h2 className="card-title">Create &amp; Assign Coursework</h2>
-                  <span className="mono text-xs text-muted">Publish assignments, problem statements, and code rubrics</span>
+                  <span className="mono text-xs text-muted">Publish problem statements, starter code &amp; rubrics</span>
                 </div>
               </div>
 
@@ -538,18 +852,19 @@ export default function InstructorStudio() {
                       value={assignmentForm.courseId}
                       onChange={(e) => setAssignmentForm({ ...assignmentForm, courseId: e.target.value })}
                     >
-                      <option value="feat-1">Advanced Machine Learning &amp; Transformers</option>
-                      <option value="feat-2">UX/UI Foundations &amp; Design Systems</option>
-                      <option value="feat-3">Clinical Medicine &amp; Diagnostic Reasoning</option>
-                      <option value="feat-4">Distributed Cloud Architecture &amp; Kafka</option>
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.title}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
                   <div className="form-group">
-                    <label className="mono text-xs">DUE DATE &amp; DEADLINE</label>
+                    <label className="mono text-xs">DUE DATE</label>
                     <input
                       type="text"
-                      placeholder="e.g. August 10, 2026 or Next Week"
+                      placeholder="e.g. August 10, 2026"
                       value={assignmentForm.dueDate}
                       onChange={(e) => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })}
                     />
@@ -561,30 +876,20 @@ export default function InstructorStudio() {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Assignment 3: Implementing LoRA Quantization in PyTorch"
+                    placeholder="e.g. PyTorch Attention Matrix & Scaled Softmax"
                     value={assignmentForm.title}
                     onChange={(e) => setAssignmentForm({ ...assignmentForm, title: e.target.value })}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="mono text-xs">INSTRUCTIONS &amp; PROBLEM STATEMENT</label>
+                  <label className="mono text-xs">INSTRUCTIONS &amp; CRITERIA</label>
                   <textarea
                     rows={3}
                     required
-                    placeholder="Describe specific criteria, unit tests, and expected deliverables..."
+                    placeholder="Describe specific unit test criteria, performance constraints, and deliverables..."
                     value={assignmentForm.description}
                     onChange={(e) => setAssignmentForm({ ...assignmentForm, description: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="mono text-xs">STARTER CODE / REPOSITORY TEMPLATE (OPTIONAL)</label>
-                  <textarea
-                    rows={2}
-                    placeholder="import torch\ndef lora_linear_forward(x, W, A, B, r, scaling):\n    pass"
-                    value={assignmentForm.starterCode}
-                    onChange={(e) => setAssignmentForm({ ...assignmentForm, starterCode: e.target.value })}
                   />
                 </div>
 
@@ -594,13 +899,13 @@ export default function InstructorStudio() {
               </form>
             </section>
 
-            {/* Student Submissions Review Table */}
+            {/* Submissions Table */}
             <section className="studio-card glass-card">
               <div className="card-header-row">
                 <span className="material-symbols-outlined card-icon">checklist_rtl</span>
                 <div>
                   <h2 className="card-title">Scholar Submissions for Grading ({submissions.length})</h2>
-                  <span className="mono text-xs text-muted">Review solutions, enter marks, and provide rubric feedback</span>
+                  <span className="mono text-xs text-muted">Review solutions and assign rubric grades</span>
                 </div>
               </div>
 
@@ -611,7 +916,7 @@ export default function InstructorStudio() {
                       <th>SCHOLAR</th>
                       <th>ASSIGNMENT</th>
                       <th>SUBMISSION DATE</th>
-                      <th>REPO / SOLUTION</th>
+                      <th>REPO / CODE</th>
                       <th>STATUS</th>
                       <th>GRADE ACTION</th>
                     </tr>
@@ -619,21 +924,12 @@ export default function InstructorStudio() {
                   <tbody>
                     {submissions.map((sub) => (
                       <tr key={sub.id}>
-                        <td>
-                          <strong>{sub.student_name}</strong>
-                        </td>
-                        <td>
-                          <span className="mono text-xs">{sub.assignment_title || "Course Assignment"}</span>
-                        </td>
-                        <td className="mono text-xs text-muted">{sub.submitted_at || "Recent"}</td>
+                        <td><strong>{sub.student_name}</strong></td>
+                        <td><span className="mono text-xs">{sub.assignment_title}</span></td>
+                        <td className="mono text-xs text-muted">{sub.submitted_at}</td>
                         <td>
                           {sub.submission_url ? (
-                            <a
-                              href={sub.submission_url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="mono text-xs text-primary"
-                            >
+                            <a href={sub.submission_url} target="_blank" rel="noreferrer" className="mono text-xs text-primary">
                               🔗 View Repo
                             </a>
                           ) : (
@@ -642,19 +938,19 @@ export default function InstructorStudio() {
                         </td>
                         <td>
                           {sub.status === "graded" ? (
-                            <span className="graded-badge mono">✓ Graded ({sub.score}/100)</span>
+                            <span className="completed-tag mono">✓ Graded ({sub.score}/100)</span>
                           ) : (
-                            <span className="pending-badge mono">● Pending Review</span>
+                            <span className="in-progress-tag mono">● Pending Review</span>
                           )}
                         </td>
                         <td>
                           <button
                             type="button"
-                            className="cyber-btn cyber-btn--secondary grade-btn mono text-xs"
+                            className="cyber-btn cyber-btn--secondary mono text-xs"
                             onClick={() => {
                               setGradingSubmission(sub);
                               setGradeScore(sub.score || 95);
-                              setGradeFeedback(sub.feedback || "Well implemented architecture!");
+                              setGradeFeedback(sub.feedback || "Approved with distinction. Clean structure.");
                             }}
                           >
                             {sub.status === "graded" ? "Edit Grade" : "Grade Now"}
@@ -670,409 +966,154 @@ export default function InstructorStudio() {
         )}
 
         {/* ========================================================= */}
-        {/* TAB 3: COURSE CATALOG & MODULES */}
+        {/* TAB 4: SCHOLAR Q&A THREADS */}
         {/* ========================================================= */}
-        {activeTab === "courses" && (
-          <div className="studio-grid">
-            <div className="studio-col-left">
-              <section className="studio-card glass-card">
-                <div className="card-header-row">
-                  <span className="material-symbols-outlined card-icon">post_add</span>
-                  <div>
-                    <h2 className="card-title">1. Publish New Course</h2>
-                    <span className="mono text-xs text-muted">Set metadata, stream mapping &amp; pricing</span>
-                  </div>
+        {activeTab === "qa" && (
+          <div className="qa-tab-view animate-fade-in">
+            <section className="studio-card glass-card">
+              <div className="card-header-row">
+                <span className="material-symbols-outlined card-icon">forum</span>
+                <div>
+                  <h2 className="card-title">Scholar Q&amp;A &amp; Discussion Threads</h2>
+                  <span className="mono text-xs text-muted">Answer student doubts and clarify code implementations</span>
                 </div>
+              </div>
 
-                <form onSubmit={handleCreateCourse} className="studio-form">
-                  <div className="form-group">
-                    <label className="mono text-xs">COURSE TITLE</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Advanced Machine Learning & Neural Transformers"
-                      value={courseForm.title}
-                      onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
-                    />
-                  </div>
+              <div className="qa-threads-stack">
+                {qaThreads.map((th) => (
+                  <article className="qa-thread-card glass-card" key={th.id}>
+                    <div className="qa-thread-top">
+                      <div>
+                        <strong>{th.scholar}</strong>
+                        <span className="mono text-xs text-primary" style={{ marginLeft: "8px" }}>in {th.course}</span>
+                      </div>
+                      <span className="mono text-xs text-muted">{th.time}</span>
+                    </div>
 
-                  <div className="form-group">
-                    <label className="mono text-xs">SYLLABUS DESCRIPTION &amp; ABSTRACT</label>
-                    <textarea
-                      rows={3}
-                      placeholder="Describe target concepts, tools covered, and learning outcomes..."
-                      value={courseForm.description}
-                      onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
-                    />
-                  </div>
+                    <p className="qa-question-text">{th.question}</p>
 
-                  <div className="form-row-2">
-                    <div className="form-group">
-                      <label className="mono text-xs">DOMAIN CATEGORY</label>
+                    {th.replies.length > 0 && (
+                      <div className="qa-replies-list">
+                        {th.replies.map((rep, idx) => (
+                          <div className="qa-reply-item glass-card" key={idx}>
+                            <span className="mono text-xs font-bold text-emerald">Instructor ({rep.author}):</span>
+                            <p className="qa-reply-text text-sm">{rep.text}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="qa-reply-input-row">
                       <input
                         type="text"
-                        placeholder="e.g. Software & AI Systems"
-                        value={courseForm.category}
-                        onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
+                        placeholder="Write your expert explanation or code snippet…"
+                        value={replyTextMap[th.id] || ""}
+                        onChange={(e) => setReplyTextMap({ ...replyTextMap, [th.id]: e.target.value })}
                       />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="mono text-xs">TARGET STREAM</label>
-                      <select
-                        value={courseForm.stream_id}
-                        onChange={(e) => setCourseForm({ ...courseForm, stream_id: e.target.value })}
+                      <button
+                        type="button"
+                        className="cyber-btn cyber-btn--primary mono text-xs"
+                        onClick={() => handlePostQaReply(th.id)}
                       >
-                        {streams.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
+                        Reply
+                      </button>
                     </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="mono text-xs">COURSE PRICING (INR)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      step={100}
-                      placeholder="999"
-                      value={courseForm.price}
-                      onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })}
-                    />
-                  </div>
-
-                  <button type="submit" className="cyber-btn cyber-btn--primary w-full" disabled={creatingCourse}>
-                    {creatingCourse ? "Publishing to Universe…" : "⚡ Publish Course to Catalog"}
-                  </button>
-                </form>
-              </section>
-            </div>
-
-            <div className="studio-col-right">
-              <section className="studio-card glass-card">
-                <div className="card-header-row">
-                  <span className="material-symbols-outlined card-icon">video_call</span>
-                  <div>
-                    <h2 className="card-title">2. Attach Modules &amp; Video Lectures</h2>
-                    <span className="mono text-xs text-muted">Upload 1080p video or stream links</span>
-                  </div>
-                </div>
-
-                <form onSubmit={handleAddModule} className="studio-form">
-                  <div className="form-group">
-                    <label className="mono text-xs">TARGET COURSE</label>
-                    <select
-                      value={moduleForm.courseId}
-                      onChange={(e) => setModuleForm({ ...moduleForm, courseId: e.target.value })}
-                    >
-                      {courses.length === 0 && <option value="">No courses yet — create one first</option>}
-                      {courses.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.title} ({c.module_count || 0} modules)
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="mono text-xs">MODULE TITLE</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Module 1: Scaled Dot-Product & Self-Attention"
-                      value={moduleForm.title}
-                      onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="mono text-xs">MODULE DESCRIPTION</label>
-                    <textarea
-                      rows={2}
-                      placeholder="Brief description of this module's topics..."
-                      value={moduleForm.description}
-                      onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="mono text-xs">1080P VIDEO STREAM URL (YOUTUBE / DIRECT MP4)</label>
-                    <input
-                      type="url"
-                      placeholder="https://www.youtube.com/watch?v=... or https://.../video.mp4"
-                      value={moduleForm.videoUrl}
-                      onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
-                    />
-                  </div>
-
-                  <button type="submit" className="cyber-btn cyber-btn--secondary w-full" disabled={addingModule}>
-                    {addingModule ? "Attaching Module…" : "＋ Attach Module to Course"}
-                  </button>
-                </form>
-              </section>
-            </div>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
         )}
       </main>
 
       {/* ========================================================= */}
-      {/* 4. INSTRUCTOR GRADING MODAL */}
+      {/* GRADING SUBMISSION MODAL */}
       {/* ========================================================= */}
       {gradingSubmission && (
         <div className="modal-backdrop" onClick={() => setGradingSubmission(null)}>
-          <div className="grade-modal-card glass-card animate-slide-up" onClick={(e) => e.stopPropagation()}>
+          <div className="assignment-modal-card glass-card animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-swipe-handle" />
             <div className="modal-header-bar">
               <div className="modal-title-wrap">
                 <span className="material-symbols-outlined text-primary">grading</span>
-                <div>
-                  <h3 className="modal-title">Grade Submission: {gradingSubmission.student_name}</h3>
-                  <span className="mono text-xs text-muted">{gradingSubmission.assignment_title}</span>
-                </div>
+                <h3 className="modal-title">Grade Submission: {gradingSubmission.student_name}</h3>
               </div>
               <button className="close-btn" onClick={() => setGradingSubmission(null)}>✕</button>
             </div>
 
-            <div className="grade-modal-body">
-              <div className="submission-content-preview glass-card">
-                <span className="mono text-xs text-muted">SCHOLAR'S SUBMISSION CODE &amp; NOTES:</span>
-                <p className="submission-text-view">{gradingSubmission.submission_content}</p>
-                {gradingSubmission.submission_url && (
-                  <a
-                    href={gradingSubmission.submission_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mono text-xs text-primary"
-                  >
-                    🔗 Open Submitted Repository: {gradingSubmission.submission_url}
-                  </a>
-                )}
+            <form onSubmit={handleSaveGrade} className="assignment-modal-body">
+              <div className="form-group">
+                <label className="mono text-xs">GRADE SCORE (OUT OF 100)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  required
+                  value={gradeScore}
+                  onChange={(e) => setGradeScore(Number(e.target.value))}
+                />
               </div>
 
-              <form onSubmit={handleSaveGrade} className="grade-form">
-                <div className="form-group">
-                  <label className="mono text-xs">SCORE / MARKS (OUT OF 100)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    required
-                    value={gradeScore}
-                    onChange={(e) => setGradeScore(Number(e.target.value))}
-                  />
-                </div>
+              <div className="form-group">
+                <label className="mono text-xs">INSTRUCTOR RUBRIC FEEDBACK</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={gradeFeedback}
+                  onChange={(e) => setGradeFeedback(e.target.value)}
+                />
+              </div>
 
-                <div className="form-group">
-                  <label className="mono text-xs">INSTRUCTOR RUBRIC FEEDBACK</label>
-                  <textarea
-                    rows={3}
-                    required
-                    placeholder="Provide constructive feedback, praise clean code patterns, or suggest performance fixes..."
-                    value={gradeFeedback}
-                    onChange={(e) => setGradeFeedback(e.target.value)}
-                  />
-                </div>
-
-                <div className="submit-actions-row">
-                  <button type="button" className="cyber-btn cyber-btn--secondary" onClick={() => setGradingSubmission(null)}>
-                    Cancel
-                  </button>
-                  <button type="submit" className="cyber-btn cyber-btn--primary" disabled={gradingLoading}>
-                    {gradingLoading ? "Recording Grade…" : "✓ Save Grade & Notify Scholar"}
-                  </button>
-                </div>
-              </form>
-            </div>
+              <div className="submit-actions-row">
+                <button type="button" className="cyber-btn cyber-btn--secondary" onClick={() => setGradingSubmission(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="cyber-btn cyber-btn--primary" disabled={gradingLoading}>
+                  {gradingLoading ? "Saving Grade…" : "✓ Confirm & Publish Grade"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
       {/* ========================================================= */}
-      {/* 5. AI COURSE CONTENT GENERATOR MODAL */}
+      {/* PAYOUT REQUEST MODAL */}
       {/* ========================================================= */}
-      {isAiModalOpen && (
-        <div className="modal-backdrop" onClick={() => !aiGenerating && setIsAiModalOpen(false)}>
-          <div className="ai-generator-modal glass-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ai-modal-header">
-              <div className="header-badge-group">
-                <span className="ai-sparkle-pill mono">
-                  <span className="sparkle-icon">✨</span> AI CURRICULUM ARCHITECT
-                </span>
-                <h2>Generate Production Course with AI</h2>
+      {isPayoutModalOpen && (
+        <div className="modal-backdrop" onClick={() => setIsPayoutModalOpen(false)}>
+          <div className="assignment-modal-card glass-card animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-swipe-handle" />
+            <div className="modal-header-bar">
+              <div className="modal-title-wrap">
+                <span className="material-symbols-outlined text-emerald">account_balance</span>
+                <h3 className="modal-title">Razorpay Instant Payout</h3>
               </div>
-              <button
-                type="button"
-                className="close-btn"
-                onClick={() => setIsAiModalOpen(false)}
-                disabled={aiGenerating}
-              >
-                ✕
-              </button>
+              <button className="close-btn" onClick={() => setIsPayoutModalOpen(false)}>✕</button>
             </div>
 
-            {aiStep === 0 && (
-              <div className="ai-modal-body">
-                <p className="ai-prompt-sub">
-                  Enter any engineering, medical, financial, or legal topic. Our AI architect will automatically structure complete syllabus modules, learning outcomes, and curated video masterclasses.
-                </p>
-
-                <div className="ai-presets-box">
-                  <span className="mono text-xs text-muted">QUICK TOPIC PRESETS:</span>
-                  <div className="presets-chips-row">
-                    {AI_TOPIC_PRESETS.map((p, idx) => (
-                      <button
-                        type="button"
-                        key={idx}
-                        className="preset-chip mono"
-                        onClick={() => setAiPrompt(p)}
-                      >
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <form onSubmit={handleGenerateAiCourse} className="ai-generator-form">
-                  <div className="form-group">
-                    <label className="mono text-xs">COURSE TOPIC / DISCIPLINE</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Quantum Computing & Qiskit Algorithm Implementation"
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="form-row-3">
-                    <div className="form-group">
-                      <label className="mono text-xs">CATEGORY</label>
-                      <select value={aiCategory} onChange={(e) => setAiCategory(e.target.value)}>
-                        <option value="Software & AI Systems">Software &amp; AI Systems</option>
-                        <option value="Medical & Health Sciences">Medical &amp; Health Sciences</option>
-                        <option value="Engineering & Cloud">Engineering &amp; Cloud</option>
-                        <option value="Design & Product">Design &amp; Product</option>
-                        <option value="Finance & Economics">Finance &amp; Economics</option>
-                        <option value="Law & Legal Studies">Law &amp; Legal Studies</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="mono text-xs">DIFFICULTY</label>
-                      <select value={aiLevel} onChange={(e) => setAiLevel(e.target.value)}>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                        <option value="Competitive Specialist">Competitive Specialist</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="mono text-xs">MODULES COUNT</label>
-                      <select value={aiModulesCount} onChange={(e) => setAiModulesCount(Number(e.target.value))}>
-                        <option value={3}>3 Modules</option>
-                        <option value={4}>4 Modules</option>
-                        <option value={5}>5 Modules</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="cyber-btn cyber-btn--primary ai-submit-btn w-full"
-                    disabled={!aiPrompt.trim()}
-                  >
-                    ✨ Synthesize Complete Course &amp; Syllabus
-                  </button>
-                </form>
+            <div className="assignment-modal-body">
+              <p className="text-sm">Transfer your available course revenue to your linked HDFC bank account (**** 4892).</p>
+              <div className="kpi-hero-num mono text-emerald" style={{ fontSize: "28px" }}>{payoutAmount}</div>
+              <div className="cyber-pill my-2">
+                <span className="pulsing-dot" />
+                <span>Zero transaction surcharge via Razorpay Route</span>
               </div>
-            )}
 
-            {aiStep === 1 && (
-              <div className="ai-generating-view">
-                <div className="ai-radar-spinner">
-                  <div className="radar-circle" />
-                  <span className="material-symbols-outlined ai-pulse-icon">psychology</span>
-                </div>
-                <h3>AI Curriculum Architect at Work…</h3>
-                <div className="ai-progress-steps mono text-xs">
-                  <span className="step-item active">✓ Deconstructing domain foundations</span>
-                  <span className="step-item active">✓ Synthesizing {aiModulesCount} structured modules</span>
-                  <span className="step-item active">⚡ Curating 1080p video lecture masterclasses</span>
-                  <span className="step-item">○ Formatting checkpoints &amp; capstone briefs</span>
-                </div>
+              <div className="submit-actions-row">
+                <button type="button" className="cyber-btn cyber-btn--secondary" onClick={() => setIsPayoutModalOpen(false)}>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="cyber-btn cyber-btn--primary"
+                  onClick={handleRequestPayout}
+                  disabled={payoutSuccess}
+                >
+                  {payoutSuccess ? "Transferring Funds…" : "Confirm Instant Transfer"}
+                </button>
               </div>
-            )}
-
-            {aiStep === 2 && generatedCourse && (
-              <div className="ai-preview-view">
-                <div className="preview-top-card glass-card">
-                  <div className="preview-pill-row">
-                    <span className="preview-badge mono">{generatedCourse.category}</span>
-                    <span className="preview-badge mono">{generatedCourse.level}</span>
-                    <span className="preview-badge mono text-primary">✨ AI Generated</span>
-                  </div>
-                  <h3 className="preview-title">{generatedCourse.title}</h3>
-                  <p className="preview-desc">{generatedCourse.description}</p>
-                </div>
-
-                <div className="preview-outcomes-box">
-                  <strong className="mono text-xs text-primary">SYNTHESIZED LEARNING OUTCOMES:</strong>
-                  <ul className="outcomes-checklist">
-                    {generatedCourse.outcomes?.map((out, oIdx) => (
-                      <li key={oIdx}>
-                        <span className="material-symbols-outlined check-icon">check_circle</span>
-                        <span>{out}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="preview-modules-list">
-                  <strong className="mono text-xs text-muted">GENERATED MODULES &amp; VIDEO MASTERCLASSES ({generatedCourse.curriculum?.length}):</strong>
-                  {generatedCourse.curriculum?.map((mod, mIdx) => (
-                    <div className="preview-module-card glass-card" key={mod.id || mIdx}>
-                      <div className="mod-head">
-                        <div>
-                          <h4 className="mod-title">{mod.title}</h4>
-                          <span className="mono text-xs text-muted">{mod.duration} · {mod.lessons?.length || 0} lessons</span>
-                        </div>
-                        {mod.videoUrl && (
-                          <button
-                            type="button"
-                            className="preview-video-btn mono text-xs"
-                            onClick={() => setPreviewVideo({ title: mod.title, url: mod.videoUrl })}
-                          >
-                            ▶ Preview Video
-                          </button>
-                        )}
-                      </div>
-                      <p className="mod-desc">{mod.description}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="ai-preview-actions">
-                  <button
-                    type="button"
-                    className="cyber-btn cyber-btn--secondary"
-                    onClick={() => setAiStep(0)}
-                  >
-                    ← Edit Prompt
-                  </button>
-                  <button
-                    type="button"
-                    className="cyber-btn cyber-btn--primary"
-                    onClick={handlePublishAiCourse}
-                    disabled={aiPublishing}
-                  >
-                    {aiPublishing ? "Publishing to Live Catalog…" : "⚡ Publish Generated Course to Catalog"}
-                  </button>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       )}

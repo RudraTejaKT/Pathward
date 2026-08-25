@@ -5,17 +5,17 @@ import "./AIHelpCentre.css";
 const INITIAL_MESSAGES = [
   {
     sender: "bot",
-    text: "🐙 Hey there! I'm **Octi**, your 8-armed companion across the Pathward Universe!\n\nWhether you need help navigating streams (PCM vs PCB), tackling high-difficulty MCQs, understanding video lectures, taking smart notes, or unlocking course certificates, I've got a tentacle on it! How can I help you today?",
+    text: "Hello! I am your **Pathward AI Academic Advisor**.\n\nI can assist you with selecting engineering & medical branches, explaining complex lecture concepts (such as Transformer Attention or ECG clinical pathology), solving high-difficulty MCQs, taking smart notes, and course certifications. How can I assist your studies today?",
     time: "Just now",
   },
 ];
 
 const DEFAULT_PROMPT_PILLS = [
-  "🧭 Help me choose a stream after 12th",
-  "⚡ Explain Transformer Self-Attention",
-  "🩺 Explain 12-Lead ECG STEMI",
-  "💳 How to unlock courses with Razorpay?",
-  "🔒 How does DRM & IP Protection work?",
+  "Guide me on stream selection after 12th",
+  "Explain Transformer Self-Attention mechanism",
+  "Explain 12-Lead ECG clinical diagnosis",
+  "How to unlock courses & certification via Razorpay",
+  "Explain DRM & Intellectual Property Protection",
 ];
 
 export default function AIHelpCentre() {

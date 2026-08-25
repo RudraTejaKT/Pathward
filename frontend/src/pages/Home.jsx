@@ -41,7 +41,7 @@ export default function Home() {
           <div className="home-hero__cta-row">
             <Link to="/quiz" className="cyber-btn cyber-btn--primary">
               <span className="material-symbols-outlined btn-icon">psychology</span>
-              <span>Take 3-Min Career Quiz 🎯</span>
+              <span>Take Career Assessment</span>
             </Link>
             <Link to="/engineering" className="cyber-btn cyber-btn--secondary">
               <span className="material-symbols-outlined btn-icon">terminal</span>
@@ -49,7 +49,7 @@ export default function Home() {
             </Link>
             <Link to="/medical" className="cyber-btn cyber-btn--medical">
               <span className="material-symbols-outlined btn-icon">health_and_safety</span>
-              <span>Medical Universe 🩺</span>
+              <span>Medical Sciences Universe</span>
             </Link>
           </div>
 

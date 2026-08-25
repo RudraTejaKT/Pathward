@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import { FALLBACK_BRANCHES } from "../lib/branchDataFallback";
 import "./Branches.css";
 
 const DEMAND_CONFIG = {
@@ -10,8 +11,10 @@ const DEMAND_CONFIG = {
 };
 
 export default function Branches() {
-  const [branches, setBranches] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [branches, setBranches] = useState(() =>
+    FALLBACK_BRANCHES.filter((b) => !b.streamId || b.streamId === "engineering")
+  );
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
@@ -20,11 +23,14 @@ export default function Branches() {
     api
       .getBranches()
       .then((all) => {
-        const engBranches = all.filter((b) => !b.streamId || b.streamId === "engineering");
-        setBranches(engBranches);
+        if (all && all.length > 0) {
+          const engBranches = all.filter((b) => !b.streamId || b.streamId === "engineering");
+          setBranches(engBranches);
+        }
       })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        // Safe fallback already mounted
+      });
   }, []);
 
   const filteredBranches = useMemo(() => {

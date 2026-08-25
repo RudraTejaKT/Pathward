@@ -77,9 +77,13 @@ export function AuthProvider({ children }) {
     return newUser;
   }, []);
 
-  const signup = useCallback(async (name, email, password, role = "trainee") => {
+  const signup = useCallback(async (payloadOrName, email, password, role = "trainee") => {
+    const payload = typeof payloadOrName === "object"
+      ? payloadOrName
+      : { name: payloadOrName, email, password, role };
+
     // 1. Register with backend API
-    const { token: newToken, user: newUser } = await api.signup(name, email, password, role);
+    const { token: newToken, user: newUser } = await api.signup(payload);
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
     setUser(newUser);
@@ -87,10 +91,17 @@ export function AuthProvider({ children }) {
     // 2. Concurrently create Supabase Auth user
     try {
       const { data } = await supabase.auth.signUp({
-        email,
-        password,
+        email: payload.email,
+        password: payload.password,
         options: {
-          data: { name, role },
+          data: {
+            name: payload.name,
+            role: payload.role || "trainee",
+            phone: payload.phone,
+            gender: payload.gender,
+            education: payload.education,
+            institution: payload.institution,
+          },
         },
       });
       if (data?.user) {

@@ -17,7 +17,15 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'trainee',   -- 'trainee' | 'admin'
+    role TEXT NOT NULL DEFAULT 'trainee',   -- 'trainee' | 'admin' | 'instructor'
+    phone TEXT,
+    gender TEXT,
+    education TEXT,
+    institution TEXT,
+    interests TEXT,
+    experience TEXT,
+    expertise TEXT,
+    bio TEXT,
     is_premium INTEGER NOT NULL DEFAULT 0,  -- unlocked by a successful payment
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
@@ -124,5 +132,12 @@ db.exec(`
     graded_at TEXT DEFAULT NULL
   );
 `);
+
+// Safe runtime column migrations
+["phone", "gender", "education", "institution", "interests", "experience", "expertise", "bio"].forEach((col) => {
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT;`);
+  } catch {}
+});
 
 module.exports = db;

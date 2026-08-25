@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import { FALLBACK_BRANCHES } from "../lib/branchDataFallback";
 import "./MedicalBranches.css";
 
 const DEMAND_CONFIG = {
@@ -10,8 +11,10 @@ const DEMAND_CONFIG = {
 };
 
 export default function MedicalBranches() {
-  const [branches, setBranches] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [branches, setBranches] = useState(() =>
+    FALLBACK_BRANCHES.filter((b) => b.streamId === "medical")
+  );
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
 
@@ -19,11 +22,14 @@ export default function MedicalBranches() {
     api
       .getBranches()
       .then((all) => {
-        const medicalBranches = all.filter((b) => b.streamId === "medical");
-        setBranches(medicalBranches);
+        if (all && all.length > 0) {
+          const medicalBranches = all.filter((b) => b.streamId === "medical");
+          setBranches(medicalBranches);
+        }
       })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        // Safe fallback already mounted
+      });
   }, []);
 
   const filteredBranches = branches.filter((b) => {

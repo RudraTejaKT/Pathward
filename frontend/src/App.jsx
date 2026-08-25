@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import StressMeter from "./components/StressMeter.jsx";
 import AIHelpCentre from "./components/AIHelpCentre.jsx";
+import SwipeUpDrawer from "./components/SwipeUpDrawer.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home from "./pages/Home.jsx";
 import Branches from "./pages/Branches.jsx";
@@ -23,6 +24,7 @@ export default function App() {
       <Navbar />
       <StressMeter />
       <AIHelpCentre />
+      <SwipeUpDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/discover" element={<Discover />} />

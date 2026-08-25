@@ -4,6 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
 import PathTrail from "../components/PathTrail.jsx";
 import VideoPlayer from "../components/VideoPlayer.jsx";
+import { getFallbackBranchDetail } from "../lib/branchDataFallback";
 import "./BranchDetail.css";
 
 const LEVEL_COLOR = {
@@ -15,8 +16,8 @@ const LEVEL_COLOR = {
 export default function BranchDetail() {
   const { branchId } = useParams();
   const { user } = useAuth();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(() => getFallbackBranchDetail(branchId));
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [progress, setProgress] = useState({}); // "roadmap_stage:Name" -> bool
@@ -29,13 +30,16 @@ export default function BranchDetail() {
   const [aiVideoModal, setAiVideoModal] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
+    setData(getFallbackBranchDetail(branchId));
     setError(null);
     api
       .getBranchDetails(branchId)
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      .then((res) => {
+        if (res && res.branch) setData(res);
+      })
+      .catch(() => {
+        // Fallback is already loaded cleanly
+      });
   }, [branchId]);
 
   useEffect(() => {

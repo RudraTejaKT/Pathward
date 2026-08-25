@@ -14,6 +14,14 @@ function publicUser(row) {
     name: row.name,
     email: row.email,
     role: row.role,
+    phone: row.phone || "",
+    gender: row.gender || "",
+    education: row.education || "",
+    institution: row.institution || "",
+    interests: row.interests ? (typeof row.interests === "string" ? row.interests.split(",") : row.interests) : [],
+    experience: row.experience || "",
+    expertise: row.expertise || "",
+    bio: row.bio || "",
     isPremium: !!row.is_premium,
     createdAt: row.created_at,
   };
@@ -28,11 +36,18 @@ async function syncUserToSupabase(user) {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
+      gender: user.gender,
+      education: user.education,
+      institution: user.institution,
+      interests: user.interests,
+      experience: user.experience,
+      expertise: user.expertise,
+      bio: user.bio,
       is_premium: !!user.is_premium,
       updated_at: new Date().toISOString(),
     });
     if (error) {
-      // Table might not be created yet in cloud or schema pending
       console.log("ℹ️ Supabase cloud sync notice:", error.message);
     } else {
       console.log("⚡ User synced to Supabase Cloud:", user.email);
@@ -43,9 +58,22 @@ async function syncUserToSupabase(user) {
 }
 
 // --- POST /api/auth/signup ---
-// Body: { name, email, password, role: 'trainee' | 'instructor' }
+// Body: { name, email, password, role, phone, gender, education, institution, interests, experience, expertise, bio }
 router.post("/signup", async (req, res) => {
-  const { name, email, password, role } = req.body || {};
+  const {
+    name,
+    email,
+    password,
+    role,
+    phone,
+    gender,
+    education,
+    institution,
+    interests,
+    experience,
+    expertise,
+    bio,
+  } = req.body || {};
 
   if (!name || !name.trim()) {
     return res.status(400).json({ success: false, message: "Name is required" });
@@ -64,10 +92,30 @@ router.post("/signup", async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const userRole = role === "instructor" ? "instructor" : "trainee";
+  const interestsStr = Array.isArray(interests) ? interests.join(",") : (interests || "");
 
   const info = db
-    .prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)")
-    .run(name.trim(), email.toLowerCase(), passwordHash, userRole);
+    .prepare(`
+      INSERT INTO users (
+        name, email, password_hash, role,
+        phone, gender, education, institution,
+        interests, experience, expertise, bio
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+    .run(
+      name.trim(),
+      email.toLowerCase(),
+      passwordHash,
+      userRole,
+      phone || "",
+      gender || "",
+      education || "",
+      institution || "",
+      interestsStr,
+      experience || "",
+      expertise || "",
+      bio || ""
+    );
 
   const user = db.prepare("SELECT * FROM users WHERE id = ?").get(info.lastInsertRowid);
   const token = signToken(user);

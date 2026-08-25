@@ -1,0 +1,308 @@
+/* ========================================================= */
+/* UNIVERSAL SWIPE-UP ACTION DRAWER & BOTTOM SHEET STYLES */
+/* ========================================================= */
+
+.swipe-drawer-root {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.swipe-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 91;
+  pointer-events: auto;
+  animation: fadeIn 0.2s ease;
+}
+
+.swipe-drawer-sheet {
+  pointer-events: auto;
+  position: relative;
+  z-index: 92;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 24px 24px 0 0;
+  background: rgba(15, 19, 28, 0.96);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-bottom: none;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), max-height 0.3s ease;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+[data-theme="light"] .swipe-drawer-sheet {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: #cbd5e1;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Handle Trigger */
+.swipe-handle-trigger {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 10px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  outline: none;
+}
+
+.swipe-handle-bar {
+  width: 48px;
+  height: 5px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] .swipe-handle-bar {
+  background: #94a3b8;
+}
+
+.swipe-handle-trigger:hover .swipe-handle-bar {
+  background: #818cf8;
+  width: 56px;
+}
+
+.swipe-peek-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--on-surface-variant);
+  transition: color 0.2s ease;
+}
+
+.swipe-handle-trigger:hover .swipe-peek-row {
+  color: var(--on-surface);
+}
+
+.peek-arrow-icon {
+  font-size: 18px;
+  color: #818cf8;
+}
+
+.peek-text {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Body Content */
+.swipe-drawer-body {
+  padding: 8px 24px 28px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Active Course Tile inside Drawer */
+.drawer-active-course-card {
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dac-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.dac-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.dac-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dac-progress-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.dac-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #10b981);
+  border-radius: 9999px;
+}
+
+.drawer-courses-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.course-chip {
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--on-surface-variant);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.course-chip:hover {
+  color: #ffffff;
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.course-chip.active {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: #818cf8;
+  color: #ffffff;
+}
+
+/* Quick Actions Grid */
+.drawer-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .drawer-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.drawer-action-tile {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drawer-action-tile:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+.tile-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #ffffff;
+}
+
+.bg-indigo { background: rgba(99, 102, 241, 0.25); color: #818cf8; }
+.bg-cyan { background: rgba(56, 189, 248, 0.25); color: #38bdf8; }
+.bg-emerald { background: rgba(34, 197, 94, 0.25); color: #4ade80; }
+.bg-purple { background: rgba(168, 85, 247, 0.25); color: #c084fc; }
+.bg-amber { background: rgba(245, 158, 11, 0.25); color: #fcd34d; }
+.bg-rose { background: rgba(244, 63, 94, 0.25); color: #fb7185; }
+.bg-teal { background: rgba(20, 184, 166, 0.25); color: #2dd4bf; }
+.bg-blue { background: rgba(59, 130, 246, 0.25); color: #60a5fa; }
+
+.tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tile-text strong {
+  font-size: 13px;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile-text span {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bottom Utils */
+.drawer-bottom-utils {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.theme-switch-drawer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-switch-drawer-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ========================================================= */
+/* UNIVERSAL MODAL SWIPE HANDLE STYLES */
+/* ========================================================= */
+.modal-swipe-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.25);
+  margin: 8px auto 4px;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .modal-swipe-handle {
+    display: block;
+  }
+}

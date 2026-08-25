@@ -56,8 +56,11 @@ export const api = {
   getBranchDetails: (id) => request(`/branch-details/${id}`),
 
   // --- Auth ---
-  signup: (name, email, password, role = "trainee") =>
-    request("/auth/signup", { method: "POST", body: { name, email, password, role } }),
+  signup: (payload) =>
+    request("/auth/signup", {
+      method: "POST",
+      body: typeof payload === "object" ? payload : { name: arguments[0], email: arguments[1], password: arguments[2], role: arguments[3] },
+    }),
   login: (email, password) => request("/auth/login", { method: "POST", body: { email, password } }),
   me: () => request("/auth/me", { auth: true }),
 

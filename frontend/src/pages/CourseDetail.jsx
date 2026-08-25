@@ -4,270 +4,20 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { api } from "../api";
 import { openRazorpayCheckout } from "../lib/razorpay";
 import VideoPlayer from "../components/VideoPlayer.jsx";
+import {
+  COURSE_CATALOG,
+  enrollCourse,
+  setActiveCourse,
+  toggleLessonCompletion,
+} from "../lib/coursesData.js";
 import "./CourseDetail.css";
-
-const COURSE_DATABASE = {
-  "feat-1": {
-    id: "feat-1",
-    title: "Advanced Machine Learning & Neural Transformers",
-    category: "Software & AI",
-    streamId: "science",
-    branchId: "cse",
-    level: "Advanced",
-    instructor: "Dr. Eleanor Vance (Ex-DeepMind)",
-    rating: 4.9,
-    reviewsCount: "1,420",
-    studentsCount: "9.2k",
-    price: 1499,
-    originalPrice: 2999,
-    videoDuration: "3:40 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
-    trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
-    description: "Master modern deep learning, transformer architectures, reinforcement learning, and production MLOps pipelines.",
-    outcomes: [
-      "Implement transformer architectures & attention mechanisms from scratch in PyTorch.",
-      "Deploy scalable inference endpoints on AWS/GCP with Docker and FastAPI.",
-      "Fine-tune Large Language Models (LLMs) using LoRA and QLoRA quantization."
-    ],
-    curriculumSummary: "3 modules • 14h 20m",
-    curriculum: [
-      {
-        id: "mod-1",
-        title: "Module 1: Foundations of Deep Learning & PyTorch",
-        isFreePreview: true,
-        lessonsCount: "3 lessons",
-        duration: "1h 40m",
-        videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
-        lessons: [
-          { id: "l-1", title: "Backpropagation & Computational Graphs", duration: "25:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" },
-          { id: "l-2", title: "Custom Loss Functions & Optimizers (AdamW)", duration: "30:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" },
-          { id: "l-3", title: "PyTorch Tensor Operations & GPU Acceleration", duration: "45:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" }
-        ]
-      },
-      {
-        id: "mod-2",
-        title: "Module 2: Transformer Architectures & Self-Attention",
-        isFreePreview: false,
-        lessonsCount: "3 lessons",
-        duration: "2h 30m",
-        videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w",
-        lessons: [
-          { id: "l-4", title: "Scaled Dot-Product & Multi-Head Attention", duration: "35:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w" },
-          { id: "l-5", title: "Positional Encodings & BERT vs GPT Decoders", duration: "40:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w" },
-          { id: "l-6", title: "Building a Mini-Transformer from Scratch", duration: "75:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w" }
-        ]
-      },
-      {
-        id: "mod-3",
-        title: "Module 3: MLOps, Containerization & API Deployment",
-        isFreePreview: false,
-        lessonsCount: "2 lessons",
-        duration: "2h 10m",
-        videoUrl: "https://www.youtube.com/embed/bXb9dJ2bOls",
-        lessons: [
-          { id: "l-7", title: "Model Export to ONNX & TensorRT", duration: "30:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/bXb9dJ2bOls" },
-          { id: "l-8", title: "FastAPI Async Serving with Docker & Kubernetes", duration: "60:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/bXb9dJ2bOls" }
-        ]
-      }
-    ]
-  },
-  "feat-2": {
-    id: "feat-2",
-    title: "UX/UI Foundations & Scalable Design Systems",
-    category: "Design & Product",
-    streamId: "arts",
-    branchId: "it",
-    level: "Intermediate",
-    instructor: "Marcus Thorne (Lead UX Architect)",
-    rating: 4.8,
-    reviewsCount: "1,204",
-    studentsCount: "8.5k",
-    price: 999,
-    originalPrice: 1999,
-    videoDuration: "2:14 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
-    trailerImage: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=1200&q=80",
-    description: "Design systems, typography grids, accessibility, and high-fidelity interactive prototyping for modern scale.",
-    outcomes: [
-      "Conduct effective user interviews and usability tests without observer bias.",
-      "Analyze qualitative data using affinity mapping, thematic analysis, and user journeys.",
-      "Translate research findings into actionable design tokens and component systems."
-    ],
-    curriculumSummary: "3 modules • 6h 30m",
-    curriculum: [
-      {
-        id: "mod-1",
-        title: "Module 1: Introduction to UX Design Tokens",
-        isFreePreview: true,
-        lessonsCount: "3 lessons",
-        duration: "45m",
-        videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
-        lessons: [
-          { id: "l-1", title: "Design Tokens & Micro-Interactions", duration: "15:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
-          { id: "l-2", title: "Information Architecture & Card Sorting", duration: "15:30", isPreview: true, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
-          { id: "l-3", title: "Accessibility (WCAG AAA Standards)", duration: "14:30", isPreview: true, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" }
-        ]
-      },
-      {
-        id: "mod-2",
-        title: "Module 2: Advanced Design System Scaling",
-        isFreePreview: false,
-        lessonsCount: "2 lessons",
-        duration: "1h 30m",
-        videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
-        lessons: [
-          { id: "l-4", title: "Component Variants & Auto-Layout 4.0", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
-          { id: "l-5", title: "Design System Documentation & Storybook Sync", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" }
-        ]
-      }
-    ]
-  },
-  "feat-3": {
-    id: "feat-3",
-    title: "Clinical Medicine & Diagnostic Reasoning",
-    category: "Medical & Health",
-    streamId: "medical",
-    branchId: "mbbs",
-    level: "Intermediate / PG Prep",
-    instructor: "Dr. Arvind Swaminathan (MD, DNB Cardiology)",
-    rating: 4.95,
-    reviewsCount: "2,350",
-    studentsCount: "11.4k",
-    price: 1299,
-    originalPrice: 2499,
-    videoDuration: "4:10 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk",
-    trailerImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80",
-    description: "Master bedside clinical examination, 12-lead ECG interpretation, emergency casualty triage, and case study audits.",
-    outcomes: [
-      "Systematic 12-lead ECG analysis and cardiac rhythm diagnosis.",
-      "Emergency ABCDE triage protocols in acute casualty scenarios.",
-      "Differential diagnosis formulation using the Bayes clinical theorem approach."
-    ],
-    curriculumSummary: "3 modules • 11h 45m",
-    curriculum: [
-      {
-        id: "mod-1",
-        title: "Module 1: Bedside Cardiovascular & Chest Examination",
-        isFreePreview: true,
-        lessonsCount: "2 lessons",
-        duration: "1h 00m",
-        videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk",
-        lessons: [
-          { id: "l-1", title: "Cardiovascular Bedside Auscultation & Heart Murmurs", duration: "25:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" },
-          { id: "l-2", title: "Cranial Nerve Neurological Reflex Testing", duration: "35:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" }
-        ]
-      },
-      {
-        id: "mod-2",
-        title: "Module 2: 12-Lead ECG Advanced Diagnostic Masterclass",
-        isFreePreview: false,
-        lessonsCount: "2 lessons",
-        duration: "1h 30m",
-        videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk",
-        lessons: [
-          { id: "l-3", title: "ST-Elevation STEMI Localisation & Mimics", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" },
-          { id: "l-4", title: "Arrhythmias, Heart Blocks & Electrolyte Imbalances", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" }
-        ]
-      }
-    ]
-  },
-  "feat-4": {
-    id: "feat-4",
-    title: "Distributed Systems & Cloud Architecture",
-    category: "Engineering & Cloud",
-    streamId: "science",
-    branchId: "cse",
-    level: "Advanced",
-    instructor: "Vikram Malhotra (Principal Cloud Architect)",
-    rating: 4.9,
-    reviewsCount: "1,890",
-    studentsCount: "14.2k",
-    price: 1799,
-    originalPrice: 3499,
-    videoDuration: "3:15 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
-    trailerImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-    description: "Scale applications across Kubernetes, microservices, Kafka event streaming, and multi-region cloud systems.",
-    outcomes: [
-      "Design fault-tolerant distributed consensus with Raft/Paxos.",
-      "Build high-throughput Kafka streaming topologies.",
-      "Architect zero-downtime multi-region Kubernetes clusters."
-    ],
-    curriculumSummary: "3 modules • 18h 00m",
-    curriculum: [
-      {
-        id: "mod-1",
-        title: "Module 1: Consensus & Distributed Replication",
-        isFreePreview: true,
-        lessonsCount: "2 lessons",
-        duration: "1h 15m",
-        videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
-        lessons: [
-          { id: "l-1", title: "CAP Theorem vs PACELC Theorem in Practice", duration: "30:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" },
-          { id: "l-2", title: "Vector Clocks & Two-Phase Commit Protocols", duration: "45:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" }
-        ]
-      },
-      {
-        id: "mod-2",
-        title: "Module 2: High-Throughput Event-Driven Systems (Kafka)",
-        isFreePreview: false,
-        lessonsCount: "2 lessons",
-        duration: "1h 45m",
-        videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
-        lessons: [
-          { id: "l-3", title: "Kafka Partitions, Consumer Groups & Offsets", duration: "50:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" },
-          { id: "l-4", title: "Exactly-Once Semantics & Distributed Caching", duration: "55:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" }
-        ]
-      }
-    ]
-  },
-  default: {
-    id: "default",
-    title: "Advanced Machine Learning & Cloud Systems",
-    category: "Software & AI",
-    streamId: "science",
-    branchId: "cse",
-    level: "Intermediate",
-    instructor: "Dr. Eleanor Vance",
-    rating: 4.8,
-    reviewsCount: "1,204",
-    studentsCount: "8.5k",
-    price: 999,
-    originalPrice: 1999,
-    videoDuration: "2:14 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
-    trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
-    description: "Master foundational and advanced engineering principles to design high-throughput scalable applications.",
-    outcomes: [
-      "Understand end-to-end system architecture from database to UI.",
-      "Analyze data models and optimize distributed consensus.",
-      "Deploy production-grade code with automated CI/CD."
-    ],
-    curriculumSummary: "2 modules • 4h 30m",
-    curriculum: [
-      {
-        id: "mod-1",
-        title: "Module 1: Architecture Foundations",
-        isFreePreview: true,
-        lessonsCount: "2 lessons",
-        duration: "45m",
-        videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
-        lessons: [
-          { id: "l-1", title: "Core System Principles", duration: "15:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" },
-          { id: "l-2", title: "High-Throughput Design Patterns", duration: "30:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" }
-        ]
-      }
-    ]
-  }
-};
 
 export default function CourseDetail() {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
 
-  const course = COURSE_DATABASE[courseId] || COURSE_DATABASE["default"];
+  const course = COURSE_CATALOG[courseId] || COURSE_CATALOG["feat-1"];
 
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(course.trailerVideoUrl);
@@ -293,6 +43,11 @@ export default function CourseDetail() {
       setIsCheckoutOpen(true);
       return;
     }
+
+    if (lesson && lesson.id) {
+      toggleLessonCompletion(course.id, lesson.id, true);
+    }
+    setActiveCourse(course.id);
 
     const targetUrl = lesson?.videoUrl || module?.videoUrl || course.trailerVideoUrl;
     setCurrentVideoUrl(targetUrl);
@@ -340,6 +95,7 @@ export default function CourseDetail() {
       });
 
       // 4. Mark enrolled
+      enrollCourse(course.id);
       const enrolledMap = JSON.parse(localStorage.getItem("pathward_enrolled_courses") || "{}");
       enrolledMap[course.id] = true;
       localStorage.setItem("pathward_enrolled_courses", JSON.stringify(enrolledMap));
@@ -612,6 +368,7 @@ export default function CourseDetail() {
       {isCheckoutOpen && (
         <div className="modal-backdrop" onClick={() => setIsCheckoutOpen(false)}>
           <div className="checkout-drawer glass-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-swipe-handle" />
             <div className="drawer-header">
               <h2>Confirm Enrollment</h2>
               <button className="close-btn" onClick={() => setIsCheckoutOpen(false)}>✕</button>
@@ -644,6 +401,7 @@ export default function CourseDetail() {
       {showSuccessModal && (
         <div className="modal-backdrop">
           <div className="celebration-modal glass-card">
+            <div className="modal-swipe-handle" />
             <div className="success-icon-wrap">
               <span className="material-symbols-outlined">check_circle</span>
             </div>

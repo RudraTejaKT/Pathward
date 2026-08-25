@@ -4,12 +4,55 @@ import { api } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./AssessmentQuiz.css";
 
+const DEFAULT_QUIZ_QUESTIONS = [
+  {
+    id: 1,
+    category: "Interest & Activity",
+    question: "When you have a free weekend to explore a self-driven project, which activity excites you most?",
+    icon: "💡",
+    options: [
+      { id: "a", label: "Building an app, coding a script, or setting up a smart gadget / game" },
+      { id: "b", label: "Reading about human health, medical breakthroughs, or biology & neurosciences" },
+      { id: "c", label: "Analyzing stocks, startup business models, or planning an e-commerce venture" },
+      { id: "d", label: "Designing 3D models, digital artwork, UI layouts, or sketching architectural plans" },
+      { id: "e", label: "Writing essays, debating current affairs, studying legal cases or sociology" },
+      { id: "f", label: "Tinkering with physical machines, DIY electronics, engines, or practical tools" },
+    ],
+  },
+  {
+    id: 2,
+    category: "Problem Solving Style",
+    question: "How do you prefer to tackle and solve complex challenges?",
+    icon: "🧩",
+    options: [
+      { id: "a", label: "Breaking down problems into logical steps, algorithms, and math formulas" },
+      { id: "b", label: "Observing symptoms/evidence, formulating scientific hypotheses, and clinical research" },
+      { id: "c", label: "Evaluating financial risks, profit-loss trade-offs, and negotiating team strategy" },
+      { id: "d", label: "Brainstorming creative visual metaphors, aesthetics, and user-centric prototypes" },
+      { id: "e", label: "Analyzing ethical implications, historical precedents, and arguing legal perspectives" },
+    ],
+  },
+  {
+    id: 3,
+    category: "Work Environment",
+    question: "In what type of professional environment do you see yourself flourishing?",
+    icon: "🏢",
+    options: [
+      { id: "a", label: "Tech hubs, software engineering campuses, or high-performance remote teams" },
+      { id: "b", label: "Hospitals, medical research labs, emergency triage, or clinical centers" },
+      { id: "c", label: "Investment banks, corporate boardrooms, equity trading floors, or FinTech startups" },
+      { id: "d", label: "Creative design studios, architectural firms, or media production houses" },
+      { id: "e", label: "Courts of law, public policy think-tanks, international diplomatic missions" },
+    ],
+  },
+];
+
 export default function AssessmentQuiz() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState(DEFAULT_QUIZ_QUESTIONS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -22,10 +65,13 @@ export default function AssessmentQuiz() {
     api
       .getAssessmentQuestions()
       .then((res) => {
-        setQuestions(res.questions || []);
+        if (res && res.questions && res.questions.length > 0) {
+          setQuestions(res.questions);
+        }
       })
-      .catch((err) => setError(err.message || "Failed to load assessment questions"))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        // Default questions are already mounted
+      });
   }, []);
 
   const currentQ = questions[currentIndex];
@@ -129,7 +175,7 @@ export default function AssessmentQuiz() {
 
             <div className="quiz-header-meta-group">
               <p className="quiz-step-indicator">
-                🎯 CAREER ASSESSMENT COMPLETE
+                CAREER ASSESSMENT COMPLETE
               </p>
               <h1 className="quiz-title-text">Your Career Match Report</h1>
             </div>
@@ -418,7 +464,7 @@ export default function AssessmentQuiz() {
                 ? "Evaluating..."
                 : currentIndex < totalQ - 1
                 ? "Next Question →"
-                : "Calculate Match 🎯"}
+                : "Calculate Career Match →"}
             </button>
           </div>
         </div>

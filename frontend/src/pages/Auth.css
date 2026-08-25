@@ -137,10 +137,115 @@
   text-align: left !important;
 }
 
+.login-card-container--wide {
+  max-width: 680px;
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.form-section-title {
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  margin-bottom: -4px;
+}
+
+.interests-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.interest-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.interest-chip:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #ffffff;
+}
+
+.interest-chip.selected {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: #818cf8;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.interest-chip .check-icon {
+  font-size: 16px;
+  color: #38bdf8;
+}
+
+.form-field select,
+.login-form select {
+  width: 100% !important;
+  height: 48px !important;
+  padding: 0 14px !important;
+  background: #0b0e14 !important;
+  border: 1px solid rgba(71, 69, 82, 0.5) !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
+
+.form-field select:focus,
+.login-form select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 16px rgba(197, 192, 255, 0.25) !important;
+}
+
+.form-field textarea,
+.login-form textarea {
+  width: 100% !important;
+  padding: 12px 14px !important;
+  background: #0b0e14 !important;
+  border: 1px solid rgba(71, 69, 82, 0.5) !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  outline: none !important;
+  resize: vertical !important;
+}
+
+.form-field textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 16px rgba(197, 192, 255, 0.25) !important;
+}
+
 .form-field input,
 .login-form input[type="text"],
 .login-form input[type="email"],
-.login-form input[type="password"] {
+.login-form input[type="password"],
+.login-form input[type="tel"] {
   width: 100% !important;
   height: 48px !important;
   padding: 0 16px !important;

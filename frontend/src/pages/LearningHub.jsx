@@ -13,14 +13,22 @@ const DEFAULT_STREAM_VIDEOS = {
   vocational: "https://www.youtube.com/embed/bXb9dJ2bOls",
 };
 
+const DEFAULT_STREAMS = [
+  { id: "science", name: "Engineering & Technology (PCM)", groups: ["MPC", "PCMB"], courses: ["B.Tech CSE", "AI & Data Science", "ECE", "Robotics"] },
+  { id: "medical", name: "Medical & Health Sciences (PCB)", groups: ["BiPC", "PCMB"], courses: ["MBBS", "BDS", "AYUSH", "Pharm.D", "B.Sc Nursing"] },
+  { id: "commerce", name: "Commerce & FinTech (MEC / CEC)", groups: ["MEC", "CEC"], courses: ["CA", "CS", "CMA", "B.Com FinTech", "BBA Finance"] },
+  { id: "arts", name: "Humanities, Law & Media (HEC)", groups: ["HEC", "Arts"], courses: ["BA LLB (5-Yr)", "Psychology", "Journalism", "Economics"] },
+  { id: "vocational", name: "Vocational & Applied Tech", groups: ["Applied"], courses: ["Polytechnic Diploma", "B.Voc", "Industrial Automation"] },
+];
+
 export default function LearningHub() {
   const { user } = useAuth();
-  const [streams, setStreams] = useState([]);
+  const [streams, setStreams] = useState(DEFAULT_STREAMS);
   const [exams, setExams] = useState([]);
   const [talks, setTalks] = useState([]);
   const [selected, setSelected] = useState("science");
   const [pathway, setPathway] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [expandedModule, setExpandedModule] = useState(null);
   const [completedCheckpoints, setCompletedCheckpoints] = useState({});
 
@@ -30,15 +38,17 @@ export default function LearningHub() {
   useEffect(() => {
     Promise.all([api.getLearningStreams(), api.getExams(), api.getTedTalks()])
       .then(([s, e, t]) => {
-        setStreams(s || []);
+        if (s && s.length > 0) setStreams(s);
         setExams(e || []);
         setTalks(t || []);
         return api.getPathway("science");
       })
       .then((pw) => {
-        setPathway(pw);
-        if (pw?.modules?.length) {
-          setExpandedModule(pw.modules[0].id);
+        if (pw) {
+          setPathway(pw);
+          if (pw?.modules?.length) {
+            setExpandedModule(pw.modules[0].id);
+          }
         }
       })
       .catch((err) => console.error(err))
