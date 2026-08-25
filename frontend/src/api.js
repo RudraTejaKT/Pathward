@@ -86,12 +86,15 @@ export const api = {
   getTedTalks: () => request("/learning/ted-talks"),
   getCourses: () => request("/learning/courses"),
   getCourse: (id) => request(`/learning/courses/${id}`),
-  getMcqs: (stream, exam, count=20) => request(`/learning/mcq?stream=${encodeURIComponent(stream)}&exam=${encodeURIComponent(exam||"")}&count=${count}`),
+  getMcqs: (stream, exam, count = 20) =>
+    request(`/learning/mcq?stream=${encodeURIComponent(stream)}&exam=${encodeURIComponent(exam || "")}&count=${count}`),
   getPathway: (streamId) => request(`/learning/pathways/${encodeURIComponent(streamId)}`),
-  instructorSignup: (name,email,password) => request("/auth/instructor-signup", {method:"POST",body:{name,email,password}}),
-  getInstructorCourses: () => request("/learning/instructor/courses", {auth:true}),
-  createCourse: (payload) => request("/learning/instructor/courses", {method:"POST",auth:true,body:payload}),
-  addModule: (courseId,payload) => request(`/learning/instructor/courses/${courseId}/modules`, {method:"POST",auth:true,body:payload}),
+  instructorSignup: (name, email, password) =>
+    request("/auth/instructor-signup", { method: "POST", body: { name, email, password } }),
+  getInstructorCourses: () => request("/learning/instructor/courses", { auth: true }),
+  createCourse: (payload) => request("/learning/instructor/courses", { method: "POST", auth: true, body: payload }),
+  addModule: (courseId, payload) =>
+    request(`/learning/instructor/courses/${courseId}/modules`, { method: "POST", auth: true, body: payload }),
   uploadModule: async (courseId, formData) => {
     if (!authToken) throw new Error("Not logged in");
     let res;
@@ -117,9 +120,16 @@ export const api = {
     return json.data;
   },
 
-  // --- AI Course Generation ---
+  // --- AI Summarizer & Help Assistant ---
   generateAiCourse: (payload) => request("/ai/generate-course", { method: "POST", body: payload }),
   publishAiCourse: (course) => request("/ai/publish-generated-course", { method: "POST", auth: true, body: { course } }),
+  summarizeContent: (payload) => request("/ai/summarize-content", { method: "POST", body: payload }),
+  askHelpAssistant: (payload) => request("/ai/help-assistant", { method: "POST", body: payload }),
+
+  // --- Study Notes Pad ---
+  getStudyNotes: () => request("/trainee/notes", { auth: true }),
+  saveStudyNote: (note) => request("/trainee/notes", { method: "POST", auth: true, body: note }),
+  deleteStudyNote: (id) => request(`/trainee/notes/${id}`, { method: "DELETE", auth: true }),
 
   // --- Career Aptitude & Assessment ---
   getAssessmentQuestions: () => request("/assessment/questions"),

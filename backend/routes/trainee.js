@@ -74,4 +74,37 @@ router.put("/progress/:branchId", (req, res) => {
   res.json({ success: true, data: branchProgressSummary(req.user.id, branchId) });
 });
 
+// --- GET /api/trainee/notes ---
+router.get("/notes", (req, res) => {
+  const rows = db
+    .prepare("SELECT * FROM study_notes WHERE user_id = ? ORDER BY updated_at DESC")
+    .all(req.user.id);
+  res.json({ success: true, data: rows });
+});
+
+// --- POST /api/trainee/notes ---
+// Body: { topic, courseId, noteContent, tags }
+router.post("/notes", (req, res) => {
+  const { topic, courseId, noteContent, tags } = req.body || {};
+  if (!topic || !noteContent) {
+    return res.status(400).json({ success: false, message: "Topic and note content are required." });
+  }
+
+  const info = db
+    .prepare(
+      `INSERT INTO study_notes (user_id, topic, course_id, note_content, tags, updated_at)
+       VALUES (?, ?, ?, ?, ?, datetime('now'))`
+    )
+    .run(req.user.id, topic.trim(), courseId || "", noteContent.trim(), tags || "");
+
+  const note = db.prepare("SELECT * FROM study_notes WHERE id = ?").get(info.lastInsertRowid);
+  res.status(201).json({ success: true, data: note });
+});
+
+// --- DELETE /api/trainee/notes/:id ---
+router.delete("/notes/:id", (req, res) => {
+  db.prepare("DELETE FROM study_notes WHERE id = ? AND user_id = ?").run(req.params.id, req.user.id);
+  res.json({ success: true, data: { message: "Note removed" } });
+});
+
 module.exports = router;

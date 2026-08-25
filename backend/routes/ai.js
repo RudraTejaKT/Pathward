@@ -243,4 +243,152 @@ router.post("/publish-generated-course", requireAuth, async (req, res) => {
   }
 });
 
+// POST /api/ai/summarize-content
+// Generates contextual lecture summaries, formulas, and flashcard takeaways based on the video/topic
+router.post("/summarize-content", async (req, res) => {
+  const { topic = "", title = "Lecture Video", moduleName = "" } = req.body || {};
+  const query = `${title} ${topic} ${moduleName}`.toLowerCase();
+
+  let summaryData = {
+    title: title || "Lecture Key Takeaways",
+    executiveSummary: `This lecture provides a comprehensive deep dive into ${title}. It establishes foundational mathematical principles, explores concrete architectural trade-offs, and details practical deployment and diagnostic workflows.`,
+    keyTakeaways: [
+      `Mastered core mechanisms and formal formulations underlying ${title}.`,
+      `Identified standard production failure modes, concurrency bottlenecks, and optimization patterns.`,
+      `Synthesized hands-on testing workflows and verification checklists for real-world projects.`,
+    ],
+    formulasAndRules: [
+      `Axiom 1: Always minimize state mutation and isolate non-deterministic dependencies.`,
+      `Formula: Expected Latency $E[T] = T_{\\text{proc}} + \\frac{\\rho}{1 - \\rho} \\cdot T_{\\text{service}}$ under Poisson arrival queues.`,
+      `Safety Protocol: Verify cryptographic signature / clinical baseline before proceeding with state transition.`,
+    ],
+    examFlashcards: [
+      {
+        question: `What is the primary architectural advantage of ${title}?`,
+        answer: `Enables decoupled asynchronous throughput and deterministic fault isolation without centralized bottlenecking.`,
+      },
+      {
+        question: `How should edge-case failures be handled during execution?`,
+        answer: `Implement exponential backoff retry policies, fallback degraded modes, and structured telemetry logging.`,
+      },
+    ],
+  };
+
+  if (query.includes("cardio") || query.includes("ecg") || query.includes("med") || query.includes("triage")) {
+    summaryData = {
+      title: title || "Clinical Medicine & ECG Takeaways",
+      executiveSummary: `Mastered systematic 12-lead ECG interpretation, localization of ST-elevation myocardial infarctions (STEMI), and acute emergency resuscitation protocols.`,
+      keyTakeaways: [
+        `Systematic ECG audit sequence: Rate → Rhythm (P-wave morphology) → Axis → Intervals (PR, QRS, QTc) → ST-T segments.`,
+        `Inferior STEMI (Leads II, III, aVF; RCA occlusion) requires avoiding nitrates if RV infarction is suspected.`,
+        `Immediate ABCDE emergency casualty triage takes precedence before confirmatory biomarker assays.`,
+      ],
+      formulasAndRules: [
+        `Bazett's Formula for Corrected QT: $QTc = \\frac{QT}{\\sqrt{RR}}$ (Normal: < 450ms in males, < 460ms in females).`,
+        `Winter's Formula for Metabolic Acidosis: $Expected\\ pCO_2 = 1.5 \\times [HCO_3^-] + 8 \\pm 2$.`,
+        `Anion Gap $= [Na^+] - ([Cl^-] + [HCO_3^-])$ (Normal: 8 - 12 mEq/L).`,
+      ],
+      examFlashcards: [
+        {
+          question: `In acute STEMI, what is the door-to-balloon time benchmark for primary PCI?`,
+          answer: `Under 90 minutes from presentation to cardiac catheterization lab inflation.`,
+        },
+        {
+          question: `What is the classic ECG finding in acute pericarditis vs STEMI?`,
+          answer: `Diffuse concave upward ST elevation with PR segment depression across multiple non-contiguous leads.`,
+        },
+      ],
+    };
+  } else if (query.includes("transformer") || query.includes("attention") || query.includes("neural") || query.includes("ai")) {
+    summaryData = {
+      title: title || "Transformer & Neural Architecture Takeaways",
+      executiveSummary: `Deconstructs self-attention mechanisms, multi-head projections, positional embeddings, and residual normalization layers in transformer architectures.`,
+      keyTakeaways: [
+        `Scaled Dot-Product Attention: $Attention(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V$ solves vanishing gradient issues with large projection dimensions.`,
+        `Multi-Head Attention allows the model to jointly attend to information at different representation subspaces.`,
+        `Rotary Positional Embeddings (RoPE) and LayerNorm pre-layernorm placements significantly stabilize deep model training.`,
+      ],
+      formulasAndRules: [
+        `Computational Complexity: $O(N^2 \\cdot d)$ memory and FLOPs where $N$ is context sequence length and $d$ is embedding dimension.`,
+        `AdamW Weight Decay: $\\theta_{t+1} = \\theta_t - \\eta_t \\left( \\frac{\\hat{m}_t}{\\sqrt{\\hat{v}_t} + \\epsilon} + \\lambda \\theta_t \\right)$.`,
+      ],
+      examFlashcards: [
+        {
+          question: `Why is scaling factor $\\sqrt{d_k}$ used in dot-product attention?`,
+          answer: `For large $d_k$, the dot products grow large in magnitude, pushing the softmax function into regions with extremely small gradients.`,
+        },
+        {
+          question: `What is the key difference between FlashAttention and standard self-attention?`,
+          answer: `FlashAttention utilizes GPU SRAM tiling and kernel fusion to compute exact softmax without materializing the $N \\times N$ intermediate attention matrix in High Bandwidth Memory (HBM).`,
+        },
+      ],
+    };
+  }
+
+  res.json({ success: true, data: summaryData });
+});
+
+// POST /api/ai/help-assistant
+// Universal AI Campus Assistant & 24/7 Help Centre
+router.post("/help-assistant", async (req, res) => {
+  const { query = "", history = [] } = req.body || {};
+  const q = query.toLowerCase();
+
+  let reply = "";
+  let suggestedPills = [];
+
+  if (q.includes("branch") || q.includes("stream") || q.includes("pcm") || q.includes("pcb") || q.includes("12th")) {
+    reply = `🎓 **Stream & Branch Guidance**:
+- **Engineering (PCM)**: Computer Science (CSE), AI & Data Engineering, Electronics (ECE), and Aerospace are high-demand pathways. Start in the **Engineering Pathways** tab to view semester roadmaps and salary benchmarks.
+- **Medical (PCB)**: Explore **MBBS, BDS, and Allied Health Sciences** in our **Medical Universe** section with clinical case audits and PG entrance prep.
+- **Aptitude Quiz**: You can take our **15-question AI Career Aptitude Assessment** to receive personalized scientific stream recommendations!`;
+    suggestedPills = ["Take Career Aptitude Test", "Explore Engineering Branches", "View Medical Universe"];
+  } else if (q.includes("drm") || q.includes("screen") || q.includes("record") || q.includes("protect") || q.includes("patent")) {
+    reply = `🔒 **DRM & Intellectual Property Shield**:
+Pathward employs an active DRM Shield that protects video masterclasses and proprietary course notes:
+1. **Dynamic Scholar Watermarking**: Overlays your verified ID to deter camcorder recording.
+2. **Keyboard Shortcut Blocking**: Disables \`PrintScreen\`, \`Ctrl+P\` (Print), \`Ctrl+S\` (Save), and DevTools inspection.
+3. **Anti-Capture Enforcement**: Complies with copyright and educational patent protections.`;
+    suggestedPills = ["How to enroll in courses?", "Open Study Notes", "Take Stress Test"];
+  } else if (q.includes("stress") || q.includes("meter") || q.includes("breath") || q.includes("relax")) {
+    reply = `⚡ **Cognitive Stress & Focus Meter**:
+The Cognitive Stress Meter in the bottom-left monitor tracks your session interaction density and study duration:
+- **Radial Gauge**: Visualizes stress levels ($0\\% - 100\\%$) with color-coded safety tiers.
+- **60s Box Breathing Tool**: Click **"Recharge Mind"** to activate guided Inhale $\\rightarrow$ Hold $\\rightarrow$ Exhale $\\rightarrow$ Rest cycles that actively reduce fatigue.`;
+    suggestedPills = ["Start Box Breathing", "Practice MCQs", "Switch Light/Dark Theme"];
+  } else if (q.includes("note") || q.includes("save") || q.includes("notes")) {
+    reply = `📝 **Smart Study Notes Pad**:
+You can record timestamped lecture notes directly while watching video masterclasses:
+- Click **"📝 Take Notes"** on any course page to open the collapsible drawer.
+- Notes are automatically tagged with the current module and synced to your profile.
+- You can export notes anytime to Markdown or PDF!`;
+    suggestedPills = ["View My Notes", "Open Course Catalog", "Summarize Lecture with AI"];
+  } else if (q.includes("pay") || q.includes("razorpay") || q.includes("pro") || q.includes("price") || q.includes("buy")) {
+    reply = `💳 **Razorpay Secure Checkout & Plans**:
+- **Pathward Lifetime Pro** (₹1,499): Lifetime unrestricted access to all engineering, medical, and competitive prep courses.
+- **Per-Course Enrollment**: Click **"⚡ Enroll with Razorpay"** on any course page. Module 1 is always available as a Free Preview!
+- All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`;
+    suggestedPills = ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"];
+  } else {
+    reply = `🤖 **Pathward AI Assistant**:
+I am here to guide you through career streams, entrance exams (JEE, NEET, GATE, CAT, CLAT), verified video masterclasses, and platform features.
+
+How can I assist your study goals today?`;
+    suggestedPills = [
+      "Recommend best stream for me",
+      "Explain Transformer Self-Attention",
+      "Explain 12-Lead ECG STEMI",
+      "How to publish a course as instructor?",
+    ];
+  }
+
+  res.json({
+    success: true,
+    data: {
+      reply,
+      suggestedPills,
+    },
+  });
+});
+
 module.exports = router;

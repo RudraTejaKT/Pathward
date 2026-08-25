@@ -411,6 +411,7 @@ export default function CourseDetail() {
                 videoUrl={currentVideoUrl}
                 posterImage={course.trailerImage}
                 title={activeLessonTitle}
+                courseId={course.id}
                 onClose={() => setIsPlayingVideo(false)}
               />
             ) : (

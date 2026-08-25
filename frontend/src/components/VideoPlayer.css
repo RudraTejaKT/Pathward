@@ -7,6 +7,7 @@
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .video-player-hud {
@@ -34,7 +35,7 @@
 .hud-video-title {
   color: #ffffff;
   font-size: 14px;
-  max-width: 500px;
+  max-width: 420px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -53,7 +54,7 @@
   gap: 6px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .hud-quick-streams {
     display: none;
   }
@@ -63,6 +64,7 @@
   background: var(--surface-container);
   border: 1px solid rgba(71, 69, 82, 0.4);
   color: var(--on-surface-variant);
+  font-size: 11px;
   padding: 4px 8px;
   border-radius: 6px;
   cursor: pointer;
@@ -72,6 +74,26 @@
 .stream-pill:hover {
   background: var(--surface-container-high);
   color: var(--primary);
+  border-color: var(--primary);
+}
+
+.hud-tool-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(197, 192, 255, 0.1);
+  border: 1px solid rgba(197, 192, 255, 0.35);
+  color: var(--primary);
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hud-tool-pill:hover,
+.hud-tool-pill.active {
+  background: var(--primary);
+  color: #140067;
   border-color: var(--primary);
 }
 
@@ -149,4 +171,154 @@
   background: rgba(71, 214, 255, 0.1);
   border-top: 1px solid rgba(71, 214, 255, 0.25);
   color: var(--secondary);
+}
+
+/* ========================================================= */
+/* ✨ AI LECTURE SUMMARY DRAWER STYLES */
+/* ========================================================= */
+.ai-summary-drawer {
+  background: #11141c;
+  border-top: 1px solid rgba(197, 192, 255, 0.35);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.summary-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(71, 69, 82, 0.3);
+  padding-bottom: 10px;
+}
+
+.summary-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.summary-badge {
+  font-size: 10px;
+  background: rgba(197, 192, 255, 0.15);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.summary-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--on-surface-variant);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.summary-close-btn:hover {
+  color: #ffffff;
+}
+
+.summary-loading-view {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--primary);
+}
+
+.summary-content-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-exec-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.summary-bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-bullet-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  line-height: 1.45;
+}
+
+.check-bullet {
+  color: #22c55e;
+  font-size: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.formulas-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formula-card {
+  background: var(--surface-container-lowest);
+  border: 1px solid rgba(71, 214, 255, 0.25);
+  border-left: 3px solid var(--secondary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--secondary);
+}
+
+.flashcards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.flashcard-item {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface-container-low);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  border-radius: 8px;
+}
+
+.flashcard-q strong {
+  font-size: 12.5px;
+  color: #ffffff;
+}
+
+.flashcard-a {
+  font-size: 12px;
+  line-height: 1.4;
 }
