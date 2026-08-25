@@ -5,7 +5,7 @@ import "./AIHelpCentre.css";
 const INITIAL_MESSAGES = [
   {
     sender: "bot",
-    text: "Hello! I am **Backlox AI**, your intelligent academic advisor and career companion 🎓.\n\nI can help you navigate engineering & medical pathways, deconstruct complex concepts (such as Transformer Self-Attention or 12-Lead ECG STEMI localization), solve competitive aptitude MCQs, and track your study milestones. How can I assist your goals today?",
+    text: "Hello! I am **Octi**, your intelligent academic advisor and career companion 🎓.\n\nI can help you navigate engineering & medical pathways, deconstruct complex concepts (such as Transformer Self-Attention or 12-Lead ECG STEMI localization), solve competitive aptitude MCQs, and track your study milestones. How can I assist your goals today?",
     time: "Just now",
   },
 ];
@@ -58,7 +58,7 @@ The Cognitive Stress Meter in your workspace tracks your interaction density and
     };
   }
   return {
-    reply: `🎓 **Backlox AI (Your Academic Companion)**:
+    reply: `🎓 **Octi (Your Academic Companion)**:
 I'm here to help with your academic journey across the Backlox Platform! You can practice **Aptitude MCQs** in the Practice Gym, watch interactive video masterclasses, submit coursework assignments, or explore full 4-year career roadmaps.
 
 Let me know what topic you'd like to dive into!`,
@@ -151,17 +151,17 @@ export default function AIHelpCentre() {
 
   return (
     <div className="ai-help-centre-root">
-      {/* Floating Backlox AI Trigger Button */}
+      {/* Floating Octi Trigger Button */}
       {!isOpen && (
         <button
           type="button"
           className="ai-help-floating-btn glass-card animate-pulse-glow"
           onClick={() => setIsOpen(true)}
-          title="Backlox AI: Your Academic Companion"
+          title="Octi: Your Academic Companion"
         >
           <span className="backlox-ai-avatar-icon">🎓</span>
           <div className="help-btn-text-group">
-            <span className="help-btn-label mono">Backlox AI</span>
+            <span className="help-btn-label mono">Octi</span>
             <span className="help-btn-sub mono">Advisor</span>
           </div>
         </button>
@@ -177,8 +177,8 @@ export default function AIHelpCentre() {
                 <span className="online-indicator" />
               </div>
               <div>
-                <h3 className="bot-name">Backlox AI</h3>
-                <span className="mono text-xs text-primary">ACADEMIC &amp; CAREER COMPANION</span>
+                <h3 className="bot-name">Octi</h3>
+                <span className="mono text-xs text-primary">ACADEMIC &amp; CAREER ADVISOR</span>
               </div>
             </div>
 
@@ -186,7 +186,7 @@ export default function AIHelpCentre() {
               type="button"
               className="ai-help-close-btn"
               onClick={() => setIsOpen(false)}
-              title="Close Backlox AI"
+              title="Close Octi"
             >
               ✕
             </button>
@@ -245,7 +245,7 @@ export default function AIHelpCentre() {
           >
             <input
               type="text"
-              placeholder="Ask Backlox AI anything about careers, exams, courses, notes..."
+              placeholder="Ask Octi anything about careers, exams, courses, notes..."
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               disabled={loading}

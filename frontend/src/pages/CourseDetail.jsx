@@ -79,7 +79,7 @@ export default function CourseDetail() {
 
       // 2. Open Razorpay Checkout Dialog
       const paymentResult = await openRazorpayCheckout(order, user, {
-        name: "Pathward Universe",
+        name: "Backlox",
         description: `Enrollment: ${course.title}`,
         notes: {
           courseId: course.id,

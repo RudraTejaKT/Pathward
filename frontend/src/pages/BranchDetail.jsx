@@ -413,6 +413,88 @@ export default function BranchDetail() {
           )}
         </div>
       </section>
+
+      {/* AI Lecture Video Modal */}
+      {aiVideoModal && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setAiVideoModal(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.85)",
+            backdropFilter: "blur(12px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+        >
+          <div
+            className="glass-card animate-scale-up"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: "800px",
+              background: "#0d1018",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+              borderRadius: "16px",
+              overflow: "hidden",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.8)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "14px 20px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+                background: "rgba(255, 255, 255, 0.03)",
+              }}
+            >
+              <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#ffffff", margin: 0 }}>
+                {aiVideoModal.title}
+              </h3>
+              <button
+                type="button"
+                className="close-btn"
+                onClick={() => setAiVideoModal(null)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#cbd5e1",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ padding: "16px" }}>
+              <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", borderRadius: "10px", overflow: "hidden" }}>
+                <iframe
+                  src={aiVideoModal.url}
+                  title={aiVideoModal.title}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    border: 0,
+                  }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

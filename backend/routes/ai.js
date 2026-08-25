@@ -370,8 +370,8 @@ You can record timestamped lecture notes directly while watching video mastercla
 - All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`;
     suggestedPills = ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"];
   } else {
-    reply = `🎓 **Backlox AI (Your Academic Companion)**:
-Hey there, Scholar! I'm Backlox AI, your dedicated companion across the Backlox Universe. I can illuminate career pathways, break down salary benchmarks, summarize complex video lectures, solve competitive exam MCQs (JEE, NEET, GATE, CAT, CLAT), and keep your study journey on track!
+    reply = `🎓 **Octi (Your Academic Companion)**:
+Hey there, Scholar! I'm Octi, your dedicated academic companion across the Backlox Universe. I can illuminate career pathways, break down salary benchmarks, summarize complex video lectures, solve competitive exam MCQs (JEE, NEET, GATE, CAT, CLAT), and keep your study journey on track!
 
 What can I help you explore today?`;
     suggestedPills = [
