@@ -3,14 +3,14 @@
 .stress-floating-trigger {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  left: 24px; /* Placed bottom-left so it never overlaps with bottom-right AI Help Centre */
   z-index: 90;
 }
 
 @media (max-width: 768px) {
   .stress-floating-trigger {
-    bottom: 74px; /* Above mobile bottom bar */
-    right: 16px;
+    bottom: 84px;
+    left: 16px;
   }
 }
 
@@ -19,99 +19,107 @@
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: rgba(16, 19, 26, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(71, 69, 82, 0.4);
+  background: rgba(16, 19, 26, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(71, 69, 82, 0.45);
   border-radius: 9999px;
   color: var(--on-surface);
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
 }
 
 .stress-trigger-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
 }
 
-.stress-glow--emerald {
-  border-color: rgba(34, 197, 94, 0.5);
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
-}
-
-.stress-glow--cyan {
-  border-color: rgba(71, 214, 255, 0.5);
-  box-shadow: 0 0 16px rgba(71, 214, 255, 0.25);
-}
-
-.stress-glow--amber {
-  border-color: rgba(253, 224, 71, 0.5);
-  box-shadow: 0 0 16px rgba(253, 224, 71, 0.25);
-}
-
-.stress-glow--red {
-  border-color: rgba(255, 82, 82, 0.6);
-  box-shadow: 0 0 20px rgba(255, 82, 82, 0.35);
-  animation: pulseAlarm 2s infinite;
-}
-
-@keyframes pulseAlarm {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+.trigger-pulse-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1px dashed var(--primary);
+  opacity: 0.4;
+  animation: rotateSparkle 12s linear infinite;
+  pointer-events: none;
 }
 
 .trigger-icon {
-  font-size: 22px;
+  font-size: 20px;
   color: var(--primary);
+  animation: pulseAlarm 2s infinite;
 }
 
 .trigger-text-group {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .trigger-num {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   color: #ffffff;
 }
 
 .trigger-label {
-  font-size: 9.5px;
+  font-size: 11px;
   color: var(--on-surface-variant);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
-/* Modal Backdrop & Card */
+.stress-glow--emerald {
+  border-color: rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.3);
+}
+
+.stress-glow--cyan {
+  border-color: rgba(71, 214, 255, 0.6);
+  box-shadow: 0 0 18px rgba(71, 214, 255, 0.3);
+}
+
+.stress-glow--amber {
+  border-color: rgba(253, 224, 71, 0.6);
+  box-shadow: 0 0 18px rgba(253, 224, 71, 0.3);
+}
+
+.stress-glow--red {
+  border-color: rgba(255, 82, 82, 0.7);
+  box-shadow: 0 0 24px rgba(255, 82, 82, 0.45);
+  animation: pulseAlarm 1.8s infinite;
+}
+
+@keyframes pulseAlarm {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Modal Backdrop & Expanded Card */
 .stress-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 120;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
 }
 
 .stress-modal-card {
   width: 100%;
-  max-width: 460px;
-  padding: 28px 24px;
+  max-width: 440px;
+  background: #11141c;
+  border: 1px solid rgba(197, 192, 255, 0.35);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  border-radius: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  background: #11141c;
-  border: 1px solid rgba(71, 69, 82, 0.4);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
+  gap: 18px;
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -119,6 +127,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid rgba(71, 69, 82, 0.35);
+  padding-bottom: 12px;
 }
 
 .header-left {
@@ -128,27 +138,29 @@
 }
 
 .header-icon {
-  font-size: 28px;
+  font-size: 26px;
   color: var(--primary);
 }
 
 .header-title {
-  font-size: 17px;
+  font-size: 16px;
   color: #ffffff;
   margin: 0;
 }
 
 .header-sub {
   color: var(--on-surface-variant);
+  font-size: 11px;
 }
 
-/* Radial Gauge Viewport */
+/* Speedometer Gauge Viewport */
 .gauge-viewport {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  margin-top: -6px;
+  justify-content: center;
+  padding: 10px 0;
 }
 
 .gauge-svg {
@@ -161,13 +173,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -24px;
+  margin-top: -16px;
   gap: 4px;
 }
 
 .gauge-score {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .gauge-status-badge {
@@ -176,18 +189,18 @@
   padding: 3px 10px;
   border-radius: 9999px;
   border: 1px solid;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
 }
 
-/* Diagnostic Box */
+/* Diagnostics Box */
 .stress-diagnostics-box {
   background: var(--surface-container-lowest);
   border: 1px solid rgba(71, 69, 82, 0.35);
   border-radius: 12px;
-  padding: 14px 18px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .diag-row {
@@ -196,12 +209,12 @@
   align-items: center;
 }
 
-/* Recommendation Box */
+/* Telemetry Recommendation */
 .recommendation-box {
   background: var(--surface-container-low);
   border: 1px solid rgba(71, 69, 82, 0.35);
   border-radius: 12px;
-  padding: 14px 18px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -211,97 +224,97 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13.5px;
+  font-size: 13px;
   color: #ffffff;
 }
 
 .rec-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--on-surface-variant);
   line-height: 1.45;
   margin: 0;
 }
 
 .rec-action {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--on-surface);
-  margin: 4px 0 0;
-  line-height: 1.4;
+  margin: 0;
 }
 
-/* Actions Row */
-.stress-actions-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.stress-action-btn {
-  justify-content: center;
-  font-size: 13px;
-  padding: 10px 14px;
-}
-
-/* Guided Breathing Tool */
+/* Guided Box Breathing Tool */
 .breathing-tool-box {
-  background: var(--surface-container-lowest);
-  border: 1px solid rgba(197, 192, 255, 0.3);
-  border-radius: 14px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(71, 214, 255, 0.06);
+  border: 1px dashed rgba(71, 214, 255, 0.35);
+  border-radius: 14px;
 }
 
 .breathing-circle {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(197, 192, 255, 0.3), rgba(71, 214, 255, 0.1));
-  border: 2px solid var(--primary);
+  background: rgba(71, 214, 255, 0.15);
+  border: 2px solid var(--secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 24px rgba(197, 192, 255, 0.4);
-  transition: transform 4s ease-in-out;
+  transition: all 1s ease-in-out;
 }
 
 .breathing-circle.inhale {
   transform: scale(1.25);
-  border-color: #47d6ff;
-  box-shadow: 0 0 32px rgba(71, 214, 255, 0.6);
+  background: rgba(34, 197, 94, 0.25);
+  border-color: #22c55e;
 }
 
 .breathing-circle.hold {
   transform: scale(1.25);
-  border-color: var(--primary);
+  background: rgba(253, 224, 71, 0.25);
+  border-color: #fde047;
 }
 
 .breathing-circle.exhale {
   transform: scale(0.9);
-  border-color: #22c55e;
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.3);
+  background: rgba(71, 214, 255, 0.15);
+  border-color: var(--secondary);
 }
 
 .breathing-circle.rest {
-  transform: scale(0.9);
+  transform: scale(1);
+  background: rgba(197, 192, 255, 0.15);
+  border-color: var(--primary);
 }
 
 .phase-text {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: #ffffff;
 }
 
 .count-text {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 900;
   color: var(--primary);
 }
 
 .breathing-hint {
-  text-align: center;
   color: var(--on-surface-variant);
+  text-align: center;
+}
+
+.stress-actions-row {
+  display: flex;
+  gap: 10px;
+}
+
+.stress-action-btn {
+  flex: 1;
+  font-size: 13px;
+  padding: 10px;
+  justify-content: center;
 }

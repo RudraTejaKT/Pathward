@@ -87,16 +87,19 @@ export default function VideoPlayer({
   // Notes Pad State
   const [isNotesOpen, setIsNotesOpen] = useState(false);
 
-  const embedUrl = formatVideoEmbedUrl(currentSrc) || formatVideoEmbedUrl(fallbackUrl) || "https://www.youtube.com/embed/aircAruvnKk?autoplay=1&rel=0";
+  const embedUrl =
+    formatVideoEmbedUrl(currentSrc) ||
+    formatVideoEmbedUrl(fallbackUrl) ||
+    "https://www.youtube.com/embed/aircAruvnKk?autoplay=1&rel=0";
 
   useEffect(() => {
     const effectiveUrl = videoUrl || fallbackUrl;
     setCurrentSrc(effectiveUrl);
     setIsBackupActive(false);
-    // If it's an embed or YouTube or TED, use iframe
+    setSummaryData(null); // Reset summary when lecture changes
     const isEmbed = !!formatVideoEmbedUrl(effectiveUrl);
     setUseIframe(isEmbed);
-  }, [videoUrl, fallbackUrl]);
+  }, [videoUrl, fallbackUrl, title]);
 
   function handleVideoError() {
     console.warn("Direct stream error, automatically switching to YouTube HD backup stream.");
@@ -115,39 +118,37 @@ export default function VideoPlayer({
   async function handleToggleAiSummary() {
     if (!isAiSummaryOpen) {
       setIsAiSummaryOpen(true);
-      if (!summaryData) {
-        setLoadingSummary(true);
-        try {
-          const res = await api.summarizeContent({
-            topic: title,
-            title,
-            courseId,
-          });
-          setSummaryData(res);
-        } catch {
-          // fallback summary
-          setSummaryData({
-            title: title || "Lecture Key Takeaways",
-            executiveSummary: `This lecture provides a comprehensive deep dive into ${title}. Mastered core theoretical foundations, implementation patterns, and diagnostic workflows.`,
-            keyTakeaways: [
-              `Deconstructed foundational principles and mathematical frameworks.`,
-              `Identified production failure modes, concurrency bottlenecks, and optimization patterns.`,
-              `Synthesized practical verification checklists for live exam and industry deployment.`,
-            ],
-            formulasAndRules: [
-              `Axiom 1: Always minimize state mutation and isolate non-deterministic dependencies.`,
-              `Rule: Verify baseline telemetry before state transition.`,
-            ],
-            examFlashcards: [
-              {
-                question: `What is the core architectural goal of ${title}?`,
-                answer: `Enables decoupled asynchronous execution and fault isolation without centralized bottlenecking.`,
-              },
-            ],
-          });
-        } finally {
-          setLoadingSummary(false);
-        }
+      setLoadingSummary(true);
+      try {
+        const res = await api.summarizeContent({
+          topic: title,
+          title,
+          courseId,
+        });
+        setSummaryData(res);
+      } catch (err) {
+        console.warn("AI summarize API notice, using structured fallback summary:", err.message);
+        setSummaryData({
+          title: title || "Lecture Key Takeaways",
+          executiveSummary: `This lecture provides a comprehensive deep dive into ${title}. Mastered core theoretical foundations, implementation patterns, and diagnostic workflows.`,
+          keyTakeaways: [
+            `Deconstructed foundational mechanisms and formal principles for ${title}.`,
+            `Identified production failure modes, concurrency bottlenecks, and optimization patterns.`,
+            `Synthesized practical verification checklists for live exam and industry deployment.`,
+          ],
+          formulasAndRules: [
+            `Axiom 1: Minimize mutable shared state and isolate non-deterministic dependencies.`,
+            `Rule: Verify baseline telemetry before state transition.`,
+          ],
+          examFlashcards: [
+            {
+              question: `What is the core architectural goal of ${title}?`,
+              answer: `Enables decoupled asynchronous execution and fault isolation without centralized bottlenecking.`,
+            },
+          ],
+        });
+      } finally {
+        setLoadingSummary(false);
       }
     } else {
       setIsAiSummaryOpen(false);

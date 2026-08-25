@@ -1,15 +1,23 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import "./StressMeter.css";
 
 export default function StressMeter() {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [interactionCount, setInteractionCount] = useState(0);
-  const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
   const [isBreathingMode, setIsBreathingMode] = useState(false);
   const [breathPhase, setBreathPhase] = useState("Inhale"); // Inhale (4s), Hold (4s), Exhale (4s), Hold (4s)
   const [breathCountdown, setBreathCountdown] = useState(4);
   const [stressReduction, setStressReduction] = useState(0);
+
+  // Listen for open events from Navbar or external buttons
+  useEffect(() => {
+    function handleOpenEvent() {
+      setIsOpen(true);
+    }
+    window.addEventListener("pathward:open-stress-meter", handleOpenEvent);
+    return () => window.removeEventListener("pathward:open-stress-meter", handleOpenEvent);
+  }, []);
 
   // Track session timer
   useEffect(() => {
@@ -23,7 +31,6 @@ export default function StressMeter() {
   useEffect(() => {
     function handleActivity() {
       setInteractionCount((prev) => prev + 1);
-      setLastInteractionTime(Date.now());
     }
 
     window.addEventListener("click", handleActivity, { passive: true });
@@ -38,12 +45,11 @@ export default function StressMeter() {
   }, []);
 
   // Calculate dynamic stress index (0 to 100)
-  // Continuous session minutes + interaction intensity minus break reductions
   const sessionMinutes = sessionSeconds / 60;
   const rawStress = Math.min(
     100,
     Math.max(
-      5,
+      8,
       Math.round(
         sessionMinutes * 1.6 +
           Math.min(30, (interactionCount / (sessionMinutes + 1)) * 0.8) -
@@ -65,7 +71,7 @@ export default function StressMeter() {
 
   if (stressScore > 75) {
     levelInfo = {
-      label: "Critical Burnout",
+      label: "Critical Load",
       color: "#ff5252",
       glowClass: "stress-glow--red",
       desc: "Sustained focus threshold exceeded. Cognitive fatigue detected.",
@@ -89,6 +95,15 @@ export default function StressMeter() {
     };
   }
 
+  // Broadcast stress update
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("pathward:stress-update", {
+        detail: { stressScore, label: levelInfo.label, color: levelInfo.color },
+      })
+    );
+  }, [stressScore, levelInfo.label, levelInfo.color]);
+
   // Guided breathing cycle logic
   useEffect(() => {
     if (!isBreathingMode) return;
@@ -100,8 +115,10 @@ export default function StressMeter() {
           if (currPhase === "Inhale") return "Hold";
           if (currPhase === "Hold") return "Exhale";
           if (currPhase === "Exhale") return "Rest";
-          // One full box cycle completed -> reduce stress!
-          setStressReduction((r) => r + 8);
+          if (currPhase === "Rest") {
+            setStressReduction((r) => r + 8); // Reduce stress by 8% per full box cycle
+            return "Inhale";
+          }
           return "Inhale";
         });
         return 4;
@@ -112,11 +129,10 @@ export default function StressMeter() {
   }, [isBreathingMode]);
 
   function handleResetBreak() {
-    setStressReduction((prev) => prev + 35);
-    setIsBreathingMode(false);
+    setStressReduction((prev) => prev + 25);
+    setInteractionCount(0);
   }
 
-  // Format time mm:ss or hh:mm:ss
   const mins = Math.floor(sessionSeconds / 60);
   const secs = sessionSeconds % 60;
   const timeFormatted = `${mins}m ${secs < 10 ? "0" : ""}${secs}s`;
@@ -126,7 +142,7 @@ export default function StressMeter() {
 
   return (
     <>
-      {/* Floating Compact Telemetry Badge (Bottom Right) */}
+      {/* Floating Compact Telemetry Badge (Bottom Left) */}
       <aside aria-label="Cognitive load and stress monitor" className="stress-floating-trigger">
         <button
           type="button"
@@ -143,7 +159,7 @@ export default function StressMeter() {
         </button>
       </aside>
 
-      {/* Expanded Interactive Stress Analysis Modal / Card */}
+      {/* Expanded Interactive Stress Analysis Modal */}
       {isOpen && (
         <div className="stress-modal-backdrop" onClick={() => setIsOpen(false)}>
           <div className="stress-modal-card glass-card" onClick={(e) => e.stopPropagation()}>
@@ -206,7 +222,14 @@ export default function StressMeter() {
                 <span className="gauge-score mono" style={{ color: levelInfo.color }}>
                   {stressScore}%
                 </span>
-                <span className="gauge-status-badge mono" style={{ backgroundColor: `${levelInfo.color}25`, color: levelInfo.color, borderColor: levelInfo.color }}>
+                <span
+                  className="gauge-status-badge mono"
+                  style={{
+                    backgroundColor: `${levelInfo.color}25`,
+                    color: levelInfo.color,
+                    borderColor: levelInfo.color,
+                  }}
+                >
                   {levelInfo.label.toUpperCase()}
                 </span>
               </div>
