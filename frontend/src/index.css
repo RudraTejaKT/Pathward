@@ -1,0 +1,361 @@
+/* ---------- Stellar Cyber-Minimalist Design System Tokens ---------- */
+:root, [data-theme="dark"] {
+  --background: #10131a;
+  --surface: #10131a;
+  --surface-dim: #10131a;
+  --surface-bright: #363940;
+  --surface-container-lowest: #0b0e14;
+  --surface-container-low: #191c22;
+  --surface-container: #1d2026;
+  --surface-container-high: #272a31;
+  --surface-container-highest: #32353c;
+  --surface-variant: #32353c;
+  
+  --primary: #c5c0ff;
+  --primary-container: #a29bfe;
+  --primary-fixed: #e3dfff;
+  --on-primary: #2a1f7e;
+  --on-primary-fixed: #140067;
+  --on-primary-container: #362d8a;
+  
+  --secondary: #a5e7ff;
+  --secondary-container: #00d2ff;
+  --secondary-fixed: #b6ebff;
+  --secondary-fixed-dim: #47d6ff;
+  --on-secondary: #003543;
+  --on-secondary-container: #00566a;
+  
+  --tertiary: #c6bfff;
+  --tertiary-container: #a49aff;
+  --on-tertiary: #2900a0;
+  
+  --on-surface: #e1e2eb;
+  --on-surface-variant: #c8c4d3;
+  --on-background: #e1e2eb;
+  
+  --outline: #928f9d;
+  --outline-variant: #474552;
+  
+  --error: #ffb4ab;
+  --error-container: #93000a;
+  --on-error: #690005;
+
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Legacy mappings for components */
+  --ink: #e1e2eb;
+  --ink-soft: #c8c4d3;
+  --paper: #10131a;
+  --paper-dim: #191c22;
+  --steel: #a5e7ff;
+  --teal: #47d6ff;
+  --amber: #c5c0ff;
+  --rust: #ffb4ab;
+  --line: rgba(71, 69, 82, 0.5);
+  --line-soft: rgba(225, 226, 235, 0.1);
+}
+
+/* ---------- Light Theme System Tokens ---------- */
+[data-theme="light"] {
+  --background: #f4f6fb;
+  --surface: #ffffff;
+  --surface-dim: #ebf0f7;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f8faff;
+  --surface-container: #ffffff;
+  --surface-container-high: #edf2fa;
+  --surface-container-highest: #e2e8f4;
+  --surface-variant: #e2e8f4;
+  
+  --primary: #4f46e5;
+  --primary-container: #e0e7ff;
+  --primary-fixed: #312e81;
+  --on-primary: #ffffff;
+  --on-primary-fixed: #ffffff;
+  --on-primary-container: #3730a3;
+  
+  --secondary: #0284c7;
+  --secondary-container: #e0f2fe;
+  --secondary-fixed: #0369a1;
+  --secondary-fixed-dim: #0284c7;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #075985;
+  
+  --tertiary: #7c3aed;
+  --tertiary-container: #ede9fe;
+  --on-tertiary: #ffffff;
+  
+  --on-surface: #0f172a;
+  --on-surface-variant: #475569;
+  --on-background: #0f172a;
+  
+  --outline: #cbd5e1;
+  --outline-variant: #e2e8f0;
+  
+  --error: #dc2626;
+  --error-container: #fee2e2;
+  --on-error: #ffffff;
+
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --paper: #ffffff;
+  --paper-dim: #f8fafc;
+  --steel: #0284c7;
+  --teal: #0d9488;
+  --amber: #d97706;
+  --rust: #dc2626;
+  --line: #e2e8f0;
+  --line-soft: rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .cosmic-ambient-glows {
+  opacity: 0.18;
+}
+
+[data-theme="light"] .cyber-btn--primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="light"] .cyber-btn--secondary {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0284c7;
+}
+
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(135deg, #0f172a 0%, #4f46e5 60%, #0284c7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  position: relative;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  line-height: 1.65;
+  color: var(--on-surface-variant);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* Radial Cosmic Ambient Glows */
+.cosmic-ambient-glows {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.25;
+}
+
+.glow-top-right {
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, #c5c0ff 0%, rgba(197, 192, 255, 0) 70%);
+  filter: blur(80px);
+}
+
+.glow-bottom-left {
+  position: absolute;
+  bottom: -200px;
+  left: -200px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, #00d2ff 0%, rgba(0, 210, 255, 0) 70%);
+  filter: blur(90px);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #c5c0ff 50%, #a5e7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Cyber Header Pill */
+.cyber-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-container-high);
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pulsing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 8px var(--primary);
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+    box-shadow: 0 0 16px var(--primary);
+  }
+}
+
+/* Command Center Dots */
+.command-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.command-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.command-dot--red { background: rgba(255, 180, 171, 0.6); }
+.command-dot--purple { background: rgba(197, 192, 255, 0.6); }
+.command-dot--cyan { background: rgba(165, 231, 255, 0.6); }
+
+/* Glass Card */
+.glass-card {
+  background: var(--surface-container);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(197, 192, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Module Chip */
+.module-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-container-high);
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  color: var(--secondary);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-container-lowest);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-container-highest);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--outline);
+}
+
+::selection {
+  background: rgba(197, 192, 255, 0.3);
+  color: #ffffff;
+}

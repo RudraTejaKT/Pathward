@@ -1,0 +1,300 @@
+.instructor-root {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--on-surface);
+  position: relative;
+  overflow-x: hidden;
+  padding-bottom: 96px;
+}
+
+.instructor-gate {
+  padding: 96px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.instructor-gate h1 {
+  font-size: clamp(28px, 4.5vw, 42px);
+}
+
+.instructor-gate .subtext {
+  max-width: 600px;
+  color: var(--on-surface-variant);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.gate-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* Header & Telemetry Strip */
+.instructor-header {
+  padding: 48px 0 24px;
+  position: relative;
+  z-index: 10;
+}
+
+.instructor-title {
+  font-size: clamp(32px, 5vw, 48px);
+  margin: 12px 0 8px;
+}
+
+.instructor-sub {
+  color: var(--on-surface-variant);
+  font-size: 16px;
+  max-width: 760px;
+  line-height: 1.55;
+}
+
+.instructor-telemetry-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--surface-container-low);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 22px 18px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.inst-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.inst-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(71, 69, 82, 0.35);
+}
+
+@media (max-width: 768px) {
+  .inst-divider {
+    display: none;
+  }
+}
+
+.text-emerald {
+  color: #22c55e;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+/* Main Studio Layout */
+.instructor-main {
+  position: relative;
+  z-index: 10;
+  padding-top: 16px;
+}
+
+.studio-alert-msg {
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.studio-alert-msg.success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #86efac;
+}
+
+.studio-alert-msg.error {
+  background: rgba(255, 180, 171, 0.12);
+  border: 1px solid var(--error);
+  color: var(--error);
+}
+
+.studio-forms-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 900px) {
+  .studio-forms-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.studio-glass-card {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-tag {
+  font-size: 10.5px;
+  color: var(--secondary);
+}
+
+.studio-card-title {
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.studio-card-sub {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  line-height: 1.45;
+  margin-top: -6px;
+}
+
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 500px) {
+  .form-row-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.file-input {
+  padding: 10px;
+  background: var(--surface-container-low);
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  border-radius: 8px;
+  color: var(--on-surface-variant);
+  font-size: 12px;
+}
+
+.studio-submit-btn {
+  margin-top: 8px;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+}
+
+/* Course Management Section */
+.courses-management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(71, 69, 82, 0.35);
+  padding-bottom: 12px;
+}
+
+.section-heading {
+  font-size: 22px;
+  color: #ffffff;
+}
+
+.courses-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.course-inventory-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inventory-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inst-badge {
+  background: var(--surface-container-high);
+  border: 1px solid rgba(197, 192, 255, 0.3);
+  color: var(--primary);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.inst-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--secondary);
+}
+
+.inventory-title {
+  font-size: 17px;
+  color: #ffffff;
+}
+
+.inventory-desc {
+  font-size: 13.5px;
+  color: var(--on-surface-variant);
+  line-height: 1.45;
+}
+
+.inventory-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(71, 69, 82, 0.3);
+}
+
+.inventory-card-footer {
+  margin-top: 6px;
+}
+
+.inventory-view-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--secondary);
+  text-decoration: none;
+}
+
+.inventory-view-btn:hover {
+  text-decoration: underline;
+}
+
+.empty-courses-box {
+  padding: 32px;
+  text-align: center;
+  color: var(--on-surface-variant);
+}

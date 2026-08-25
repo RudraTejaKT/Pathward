@@ -1,0 +1,6 @@
+node_modules
+.env
+pathward.db
+pathward.db-journal
+pathward.db-wal
+pathward.db-shm

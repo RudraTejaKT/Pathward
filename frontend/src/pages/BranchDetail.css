@@ -1,0 +1,330 @@
+.branch-detail__status {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.branch-detail-hero {
+  background: linear-gradient(135deg, #10131a 0%, #191c22 100%);
+  color: var(--on-surface);
+  padding: 36px 0 40px;
+  border-bottom: 1px solid rgba(71, 69, 82, 0.35);
+  position: relative;
+}
+
+.branch-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--secondary);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  transition: transform 0.2s ease;
+}
+
+.branch-detail__back:hover {
+  transform: translateX(-3px);
+  text-shadow: 0 0 8px rgba(71, 214, 255, 0.5);
+}
+
+.branch-detail-hero .branch-detail__back {
+  margin-bottom: 8px;
+}
+
+.branch-detail__eyebrow {
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--primary);
+}
+
+.branch-detail-hero h1 {
+  margin-top: 8px;
+  font-size: clamp(28px, 4.2vw, 42px);
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #c5c0ff 60%, #a5e7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.branch-detail__tagline {
+  margin-top: 10px;
+  color: var(--on-surface-variant);
+  font-size: 16px;
+  max-width: 650px;
+}
+
+.branch-detail-tabs {
+  border-bottom: 1px solid rgba(71, 69, 82, 0.35);
+  background: rgba(29, 32, 38, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 64px;
+  z-index: 20;
+}
+
+.branch-detail-tabs__row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 16px 12px;
+  margin-right: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--on-surface);
+}
+
+.tab-btn--active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  text-shadow: 0 0 10px rgba(197, 192, 255, 0.4);
+}
+
+.branch-detail-content {
+  padding: 44px 0 100px;
+  background-color: var(--background);
+}
+
+/* Roadmap Stage Cards */
+.roadmap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.roadmap-stage {
+  display: flex;
+  gap: 24px;
+  position: relative;
+  padding-bottom: 44px;
+}
+
+.roadmap-stage:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: 44px;
+  bottom: 0;
+  width: 2px;
+  background: rgba(71, 69, 82, 0.4);
+}
+
+.roadmap-stage__marker {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-container-high);
+  border: 1px solid rgba(197, 192, 255, 0.3);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  z-index: 1;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.roadmap-stage--done .roadmap-stage__marker {
+  background: var(--primary);
+  color: #140067;
+  border-color: var(--primary);
+  box-shadow: 0 0 16px rgba(197, 192, 255, 0.6);
+}
+
+.roadmap-stage__body {
+  flex: 1;
+  background: var(--surface-container);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: all 0.2s ease;
+}
+
+.roadmap-stage--done .roadmap-stage__body {
+  border-color: rgba(197, 192, 255, 0.4);
+  background: rgba(197, 192, 255, 0.04);
+}
+
+.roadmap-stage__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.roadmap-stage__heading h3 {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.progress-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: 4px 10px;
+  background: var(--surface-container-low);
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  border-radius: 6px;
+}
+
+.progress-check input {
+  accent-color: var(--primary);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.roadmap-stage__group {
+  margin-top: 14px;
+}
+
+.roadmap-stage__label {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  margin-bottom: 8px;
+}
+
+.roadmap-stage__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: var(--surface-container-low);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  color: var(--on-surface);
+}
+
+.chip--accent {
+  background: rgba(71, 214, 255, 0.1);
+  border-color: rgba(71, 214, 255, 0.3);
+  color: var(--secondary);
+}
+
+/* Projects Grid */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  background: var(--surface-container);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.project-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.project-card--done {
+  border-color: var(--primary);
+  background: rgba(197, 192, 255, 0.05);
+}
+
+.project-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.project-card__level {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.project-card h3 {
+  font-size: 17px;
+  color: #ffffff;
+}
+
+.project-card__desc {
+  font-size: 13.5px;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+}
+
+/* Jobs */
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.job-card {
+  background: var(--surface-container);
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.job-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.job-card__top h3 {
+  font-size: 17px;
+  color: #ffffff;
+}
+
+.job-card__demand {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--secondary);
+  background: rgba(71, 214, 255, 0.12);
+  border: 1px solid rgba(71, 214, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.progress-hint {
+  color: var(--on-surface-variant);
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+
+.progress-hint a {
+  color: var(--primary);
+  text-decoration: underline;
+}

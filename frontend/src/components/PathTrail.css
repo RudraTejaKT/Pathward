@@ -1,0 +1,83 @@
+.path-trail {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  overflow-x: auto;
+  padding: 4px 2px 16px;
+  gap: 0;
+}
+
+.path-trail__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  min-width: 96px;
+}
+
+.path-trail__node {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--line);
+  background: var(--paper);
+  z-index: 1;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.path-trail__node--done {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.path-trail__node--done .path-trail__index {
+  color: var(--paper);
+}
+
+.path-trail__node--active {
+  background: var(--amber);
+  border-color: var(--amber);
+  transform: scale(1.12);
+}
+.path-trail__node--active .path-trail__index {
+  color: var(--ink);
+}
+
+.path-trail__node--upcoming .path-trail__index {
+  color: var(--ink-soft);
+  opacity: 0.5;
+}
+
+.path-trail__index {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.path-trail__label {
+  margin-top: 10px;
+  font-size: 12.5px;
+  text-align: center;
+  color: var(--ink-soft);
+  max-width: 110px;
+}
+
+.path-trail__label--active {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.path-trail__connector {
+  position: absolute;
+  top: 17px;
+  left: calc(50% + 20px);
+  right: calc(-50% + 20px);
+  height: 2px;
+  background: var(--line);
+}
+
+.path-trail__connector--done {
+  background: var(--teal);
+}

@@ -1,0 +1,517 @@
+/* Discover Page Styles — Dark Cosmic Cyber System */
+
+.discover-root {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--on-surface);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.discover-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  background: rgba(16, 19, 26, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(71, 69, 82, 0.35);
+}
+
+.discover-header__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 64px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.discover-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.discover-logo-icon {
+  font-size: 26px;
+  color: var(--primary);
+}
+
+.discover-brand-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #c5c0ff 60%, #a5e7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.discover-profile-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.discover-avatar-initials {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discover-avatar-icon {
+  font-size: 32px;
+  color: var(--primary);
+}
+
+/* Main Container */
+.discover-main {
+  flex: 1;
+  padding-bottom: 100px;
+}
+
+.discover-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* Toast */
+.discover-toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 100;
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid var(--primary);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search Section */
+.discover-search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.discover-heading {
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 700;
+}
+
+.discover-search-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.discover-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--on-surface-variant);
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.discover-search-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 42px 0 46px;
+  background: var(--surface-container);
+  color: var(--on-surface);
+  font-size: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.discover-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 16px rgba(197, 192, 255, 0.2);
+}
+
+.discover-search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Categories */
+.discover-categories-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+}
+
+.discover-categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.discover-category-pill {
+  white-space: nowrap;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 500;
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  cursor: pointer;
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  transition: all 0.2s ease;
+}
+
+.discover-category-pill:hover {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+.discover-category-pill.active {
+  background: var(--primary);
+  color: #140067;
+  border-color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 2px 12px rgba(197, 192, 255, 0.35);
+}
+
+/* Section Titles */
+.discover-section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.discover-section-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.discover-see-all-btn {
+  background: transparent;
+  border: none;
+  color: var(--secondary);
+  font-size: 13.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.discover-empty-text {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  padding: 16px 0;
+}
+
+/* Featured Horizontal Carousel */
+.discover-featured-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.discover-featured-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.discover-featured-card {
+  flex: 0 0 290px;
+  scroll-snap-align: start;
+  background: var(--surface-container);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.discover-featured-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.discover-card-img-link {
+  text-decoration: none;
+  display: block;
+}
+
+.discover-card-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.discover-card-title-link:hover .discover-card-title {
+  color: var(--primary);
+}
+
+.discover-trending-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.discover-card-img {
+  width: 100%;
+  height: 145px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.discover-card-rating {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(16, 19, 26, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid rgba(197, 192, 255, 0.3);
+}
+
+.star-icon {
+  font-size: 14px;
+  color: #ffb95f;
+  font-variation-settings: 'FILL' 1;
+}
+
+.discover-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.discover-card-tag {
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+}
+
+.discover-card-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 42px;
+}
+
+.discover-card-author {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.discover-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(71, 69, 82, 0.3);
+}
+
+.discover-card-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.discover-add-btn {
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid rgba(71, 69, 82, 0.4);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.discover-add-btn:hover {
+  background: var(--primary);
+  color: #140067;
+  border-color: var(--primary);
+}
+
+.discover-add-btn.added {
+  background: #0f766e;
+  color: #ffffff;
+  border-color: #0f766e;
+}
+
+/* Trending Vertical List */
+.discover-trending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.discover-trending-item {
+  display: flex;
+  gap: 16px;
+  padding: 14px;
+  background: var(--surface-container);
+  border-radius: 14px;
+  border: 1px solid rgba(71, 69, 82, 0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.discover-trending-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.discover-trending-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.discover-trending-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.discover-trending-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.discover-trending-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.discover-trending-badge {
+  background: rgba(197, 192, 255, 0.15);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.discover-trending-author {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-top: 4px;
+}
+
+.discover-trending-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+}
+
+.meta-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.star-fill {
+  font-size: 14px;
+  color: #ffb95f;
+  font-variation-settings: 'FILL' 1;
+}
+
+.meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--outline);
+}
+
+.meta-category {
+  background: var(--surface-container-high);
+  color: var(--secondary);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
