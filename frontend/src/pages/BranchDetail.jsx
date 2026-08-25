@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
 import PathTrail from "../components/PathTrail.jsx";
+import VideoPlayer from "../components/VideoPlayer.jsx";
 import "./BranchDetail.css";
 
 const LEVEL_COLOR = {
@@ -20,6 +21,12 @@ export default function BranchDetail() {
   const [activeTab, setActiveTab] = useState(0);
   const [progress, setProgress] = useState({}); // "roadmap_stage:Name" -> bool
   const [savingKey, setSavingKey] = useState(null);
+
+  // AI Custom Roadmap Synthesizer State
+  const [aiCustomTopic, setAiCustomTopic] = useState("");
+  const [aiCustomRoadmap, setAiCustomRoadmap] = useState(null);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiVideoModal, setAiVideoModal] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -57,6 +64,28 @@ export default function BranchDetail() {
     }
   }
 
+  // Generate Custom Roadmap with AI
+  async function handleGenerateCustomRoadmap(e) {
+    if (e) e.preventDefault();
+    if (!aiCustomTopic.trim()) return;
+
+    setAiGenerating(true);
+    try {
+      const res = await api.generateAiCourse({
+        topic: aiCustomTopic.trim(),
+        category: data?.branch?.name || "Engineering",
+        streamId: data?.branch?.streamId || "science",
+        level: "Advanced",
+        modulesCount: 4,
+      });
+      setAiCustomRoadmap(res);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAiGenerating(false);
+    }
+  }
+
   if (loading) {
     return (
       <main className="container branch-detail__status">
@@ -86,8 +115,8 @@ export default function BranchDetail() {
     : ["12th grade", "Stream", "Branch", "Courses", "Projects", "IT Job"];
 
   const tabs = isMedical
-    ? ["Prof-wise Roadmap", "Clinical Case Studies & Audits", "Healthcare Specialties & Roles"]
-    : ["Roadmap", "Projects", "Job Roles"];
+    ? ["Prof-wise Roadmap", "Clinical Case Studies & Audits", "Healthcare Specialties & Roles", "✨ AI Custom Roadmap"]
+    : ["Roadmap", "Projects", "Job Roles", "✨ AI Custom Roadmap"];
 
   return (
     <main>
@@ -119,6 +148,19 @@ export default function BranchDetail() {
           ))}
         </div>
       </section>
+
+      {/* Video Modal */}
+      {aiVideoModal && (
+        <div className="modal-backdrop" onClick={() => setAiVideoModal(null)}>
+          <div className="video-player-modal-wrap" onClick={(e) => e.stopPropagation()}>
+            <VideoPlayer
+              videoUrl={aiVideoModal.url}
+              title={aiVideoModal.title}
+              onClose={() => setAiVideoModal(null)}
+            />
+          </div>
+        </div>
+      )}
 
       <section className="branch-detail-content">
         <div className="container">
@@ -200,9 +242,9 @@ export default function BranchDetail() {
                     <div className="project-card__top">
                       <span
                         className="project-card__level mono"
-                        style={{ color: LEVEL_COLOR[p.level] || "var(--teal)" }}
+                        style={{ color: LEVEL_COLOR[p.level] || "var(--ink)" }}
                       >
-                        ● {p.level}
+                        {p.level}
                       </span>
                       {user && (
                         <label className="progress-check mono">
@@ -212,15 +254,15 @@ export default function BranchDetail() {
                             disabled={savingKey === key}
                             onChange={() => toggleItem("project", p.title)}
                           />
-                          {done ? (isMedical ? "Completed" : "Built") : (isMedical ? "Mark complete" : "Mark built")}
+                          {done ? "Completed" : "Mark done"}
                         </label>
                       )}
                     </div>
                     <h3>{p.title}</h3>
                     <p className="project-card__desc">{p.description}</p>
-                    <div className="roadmap-stage__chips">
-                      {p.stack.map((s) => (
-                        <span key={s} className="chip mono">
+                    <div className="project-card__tags">
+                      {p.skills.map((s) => (
+                        <span key={s} className="chip chip--sm">
                           {s}
                         </span>
                       ))}
@@ -231,24 +273,138 @@ export default function BranchDetail() {
             </div>
           )}
 
-          {/* TAB 2: JOB ROLES & SPECIALTIES */}
+          {/* TAB 2: JOB ROLES & SALARIES */}
           {activeTab === 2 && (
-            <div className="job-list">
+            <div className="job-grid">
               {jobs.map((j) => (
                 <div className="job-card" key={j.role}>
-                  <div className="job-card__top">
+                  <div className="job-card__header">
                     <h3>{j.role}</h3>
-                    <span className="job-card__demand mono">{j.demand}</span>
+                    <span className="job-card__salary mono">{j.salaryRangeIndia}</span>
                   </div>
-                  <div className="roadmap-stage__chips">
-                    {j.skills.map((s) => (
-                      <span key={s} className="chip">
-                        {s}
-                      </span>
-                    ))}
+                  <div className="job-card__skills">
+                    <p className="mono text-xs text-muted">KEY SKILLS &amp; TOOLS</p>
+                    <div className="roadmap-stage__chips">
+                      {j.skillsRequired.map((s) => (
+                        <span key={s} className="chip">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* TAB 3: ✨ AI CUSTOM ROADMAP SYNTHESIZER */}
+          {activeTab === 3 && (
+            <div className="ai-branch-roadmap-container">
+              <div className="ai-branch-input-card glass-card">
+                <div className="ai-branch-header">
+                  <span className="ai-sparkle-pill mono">
+                    <span>✨</span> AI SYLLABUS ARCHITECT
+                  </span>
+                  <h2>Synthesize Custom {branch.name} Learning Path</h2>
+                  <p>
+                    Targeting a specialized elective, hackathon topic, or clinical sub-specialty? Enter your focus area below to generate a modular curriculum with video masterclasses and checkpoints.
+                  </p>
+                </div>
+
+                <form onSubmit={handleGenerateCustomRoadmap} className="ai-branch-form">
+                  <div className="form-group">
+                    <label className="mono text-xs">CUSTOM SPECIALIZATION / TOPIC</label>
+                    <div className="ai-input-button-row">
+                      <input
+                        type="text"
+                        required
+                        placeholder={`e.g. ${
+                          isMedical
+                            ? "Interventional Cardiology & Catheterization Techniques"
+                            : "Embedded Firmware & Real-Time Operating Systems (FreeRTOS)"
+                        }`}
+                        value={aiCustomTopic}
+                        onChange={(e) => setAiCustomTopic(e.target.value)}
+                      />
+                      <button
+                        type="submit"
+                        className="cyber-btn cyber-btn--primary"
+                        disabled={aiGenerating || !aiCustomTopic.trim()}
+                      >
+                        {aiGenerating ? "Synthesizing…" : "⚡ Synthesize Path"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              {/* Generating Animation */}
+              {aiGenerating && (
+                <div className="ai-branch-generating-box glass-card">
+                  <div className="radar-circle" style={{ width: "60px", height: "60px" }} />
+                  <span className="material-symbols-outlined" style={{ fontSize: "36px", color: "var(--primary)" }}>
+                    psychology
+                  </span>
+                  <p className="mono text-sm">Structuring modular learning roadmap and curating video lectures…</p>
+                </div>
+              )}
+
+              {/* Synthesized Results Stack */}
+              {aiCustomRoadmap && (
+                <div className="ai-synthesized-results-stack">
+                  <div className="ai-results-banner glass-card">
+                    <div>
+                      <span className="ai-sparkle-pill mono">✨ AI GENERATED ROADMAP</span>
+                      <h3 style={{ fontSize: "22px", margin: "8px 0" }}>{aiCustomRoadmap.title}</h3>
+                      <p style={{ color: "var(--on-surface-variant)" }}>{aiCustomRoadmap.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="roadmap-list">
+                    {aiCustomRoadmap.curriculum?.map((mod, mIdx) => (
+                      <div className="roadmap-stage" key={mod.id || mIdx}>
+                        <div className="roadmap-stage__marker">
+                          <span className="mono">{String(mIdx + 1).padStart(2, "0")}</span>
+                        </div>
+                        <div className="roadmap-stage__body">
+                          <div className="roadmap-stage__heading">
+                            <h3>{mod.title}</h3>
+                            {mod.videoUrl && (
+                              <button
+                                type="button"
+                                className="cyber-btn cyber-btn--secondary"
+                                style={{ padding: "4px 12px", fontSize: "12px" }}
+                                onClick={() => setAiVideoModal({ title: mod.title, url: mod.videoUrl })}
+                              >
+                                ▶ Watch Lecture
+                              </button>
+                            )}
+                          </div>
+                          <p style={{ fontSize: "14px", color: "var(--on-surface-variant)", margin: "4px 0 10px" }}>
+                            {mod.description}
+                          </p>
+                          <div className="roadmap-stage__group">
+                            <p className="roadmap-stage__label mono">SUB-LESSONS &amp; PRACTICAL TOPICS</p>
+                            <div className="roadmap-stage__chips">
+                              {mod.lessons?.map((l) => (
+                                <span key={l.title} className="chip">
+                                  {l.title} ({l.duration})
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          {mod.checkpoint && (
+                            <div className="roadmap-stage__group">
+                              <p className="roadmap-stage__label mono">PRACTICAL CHECKPOINT</p>
+                              <span className="chip chip--accent">{mod.checkpoint}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

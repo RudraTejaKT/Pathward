@@ -117,6 +117,10 @@ export const api = {
     return json.data;
   },
 
+  // --- AI Course Generation ---
+  generateAiCourse: (payload) => request("/ai/generate-course", { method: "POST", body: payload }),
+  publishAiCourse: (course) => request("/ai/publish-generated-course", { method: "POST", auth: true, body: { course } }),
+
   // --- Career Aptitude & Assessment ---
   getAssessmentQuestions: () => request("/assessment/questions"),
   evaluateAssessment: (answers) => request("/assessment/evaluate", { method: "POST", body: { answers }, optionalAuth: true }),

@@ -2,7 +2,17 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
+import VideoPlayer from "../components/VideoPlayer.jsx";
 import "./InstructorStudio.css";
+
+const AI_TOPIC_PRESETS = [
+  "Generative AI & LLM Transformer Architecture",
+  "Clinical Cardiology & 12-Lead ECG Mastery",
+  "Autonomous EV & Robotics ROS2 Systems",
+  "Distributed Cloud Architecture & Kubernetes",
+  "Quantitative Finance & Algorithmic Trading",
+  "Constitutional Law & Corporate Mergers (M&A)",
+];
 
 export default function InstructorStudio() {
   const { user } = useAuth();
@@ -33,6 +43,21 @@ export default function InstructorStudio() {
     file: null,
   });
   const [addingModule, setAddingModule] = useState(false);
+
+  // AI Course Generator State
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiCategory, setAiCategory] = useState("Software & AI Systems");
+  const [aiStream, setAiStream] = useState("science");
+  const [aiLevel, setAiLevel] = useState("Advanced");
+  const [aiModulesCount, setAiModulesCount] = useState(4);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiStep, setAiStep] = useState(0); // 0: Input, 1: Generating, 2: Preview
+  const [generatedCourse, setGeneratedCourse] = useState(null);
+  const [aiPublishing, setAiPublishing] = useState(false);
+
+  // Video preview in studio
+  const [previewVideo, setPreviewVideo] = useState(null);
 
   useEffect(() => {
     if (user && ["instructor", "admin"].includes(user.role)) {
@@ -126,7 +151,8 @@ export default function InstructorStudio() {
         resourceUrl: "",
         file: null,
       }));
-      setCourses(await api.getInstructorCourses());
+      const updated = await api.getInstructorCourses();
+      setCourses(updated);
     } catch (err) {
       setMsg(err.message || "Failed to add module.");
       setMsgType("error");
@@ -135,332 +161,514 @@ export default function InstructorStudio() {
     }
   }
 
-  if (!user) {
+  // Handle AI Course Synthesis
+  async function handleGenerateAiCourse(e) {
+    if (e) e.preventDefault();
+    if (!aiPrompt.trim()) return;
+
+    setAiGenerating(true);
+    setAiStep(1);
+
+    try {
+      const res = await api.generateAiCourse({
+        topic: aiPrompt.trim(),
+        category: aiCategory,
+        streamId: aiStream,
+        level: aiLevel,
+        modulesCount: aiModulesCount,
+      });
+
+      setGeneratedCourse(res);
+      setAiStep(2); // Show preview
+    } catch (err) {
+      setMsg(err.message || "AI synthesis failed. Try another prompt.");
+      setMsgType("error");
+      setAiStep(0);
+    } finally {
+      setAiGenerating(false);
+    }
+  }
+
+  // Publish AI Generated Course to Live Database
+  async function handlePublishAiCourse() {
+    if (!generatedCourse) return;
+    setAiPublishing(true);
+
+    try {
+      await api.publishAiCourse(generatedCourse);
+      setMsg(`✨ AI Course "${generatedCourse.title}" published with ${generatedCourse.curriculum?.length} modules!`);
+      setMsgType("success");
+      setIsAiModalOpen(false);
+      setAiStep(0);
+      setGeneratedCourse(null);
+      setAiPrompt("");
+
+      // Refresh instructor courses list
+      const updated = await api.getInstructorCourses();
+      setCourses(updated);
+    } catch (err) {
+      setMsg(err.message || "Failed to publish AI course.");
+      setMsgType("error");
+    } finally {
+      setAiPublishing(false);
+    }
+  }
+
+  if (!user || !["instructor", "admin"].includes(user.role)) {
     return (
-      <div className="instructor-root">
-        <div className="container instructor-gate">
-          <div className="cyber-pill">
-            <span className="pulsing-dot" />
-            <span>ACCESS RESTRICTED</span>
+      <div className="instructor-studio-root">
+        <main className="container studio-denied-view">
+          <div className="denied-card glass-card">
+            <span className="material-symbols-outlined denied-icon">lock</span>
+            <h2>Instructor Studio Access Required</h2>
+            <p>
+              You are signed in as a student. To publish stream-aligned courses, upload video lectures, and monetize via Razorpay, create or switch to an Instructor account.
+            </p>
+            <div className="denied-actions">
+              <Link to="/signup?role=instructor" className="cyber-btn cyber-btn--primary">
+                Create Instructor Profile →
+              </Link>
+              <Link to="/login" className="cyber-btn cyber-btn--secondary">
+                Switch Account
+              </Link>
+            </div>
           </div>
-          <h1 className="gradient-text">Instructor Creator Console</h1>
-          <p className="subtext">
-            Please sign in with an Instructor / Creator account to publish courses and monetize your curriculum via Razorpay.
-          </p>
-          <div className="gate-actions">
-            <Link to="/login" className="cyber-btn cyber-btn--primary">
-              Sign In as Instructor →
-            </Link>
-            <Link to="/signup?role=instructor" className="cyber-btn cyber-btn--secondary">
-              Create Instructor Profile
-            </Link>
-          </div>
-        </div>
+        </main>
       </div>
     );
   }
-
-  if (!["instructor", "admin"].includes(user.role)) {
-    return (
-      <div className="instructor-root">
-        <div className="container instructor-gate">
-          <div className="cyber-pill">
-            <span className="pulsing-dot" />
-            <span>STUDENT ACCOUNT DETECTED</span>
-          </div>
-          <h1 className="gradient-text">Want to teach on Pathward?</h1>
-          <p className="subtext">
-            You are currently logged in as a <strong>Student</strong> ({user.email}). To publish courses and sell modules, create or switch to an <strong>Instructor</strong> account.
-          </p>
-          <div className="gate-actions">
-            <Link to="/signup?role=instructor" className="cyber-btn cyber-btn--primary">
-              Register as Instructor →
-            </Link>
-            <Link to="/dashboard" className="cyber-btn cyber-btn--secondary">
-              Back to Student Dashboard
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Calculate instructor metrics
-  const totalCourses = courses.length;
-  const totalModules = courses.reduce((acc, c) => acc + (c.module_count || 0), 0);
-  const estTotalRevenue = courses.reduce(
-    (acc, c) => acc + (c.price_paise ? (c.price_paise / 100) * 12 : 0),
-    0
-  );
 
   return (
-    <div className="instructor-root">
-      {/* Background Glows */}
+    <div className="instructor-studio-root">
+      {/* Background Cosmic Glows */}
       <div className="cosmic-ambient-glows">
         <div className="glow-top-right" />
         <div className="glow-bottom-left" />
       </div>
 
-      <header className="instructor-header">
-        <div className="container">
+      {/* Header Banner with AI Generator Callout */}
+      <header className="studio-header">
+        <div className="container studio-header-inner">
           <div className="cyber-pill">
             <span className="pulsing-dot" />
-            <span>CREATOR COMMAND STUDIO · INSTRUCTOR CONSOLE</span>
+            <span>INSTRUCTOR &amp; CREATOR CONSOLE</span>
           </div>
-          <h1 className="instructor-title gradient-text">Creator Studio</h1>
-          <p className="instructor-sub">
-            Author high-impact stream curriculum, configure Indian Rupee pricing (₹), embed high-definition video lectures, and distribute directly to scholars.
-          </p>
 
-          {/* Instructor Telemetry Strip */}
-          <div className="instructor-telemetry-strip">
-            <div className="inst-stat">
-              <span className="stat-value mono">{totalCourses}</span>
-              <span className="stat-label">Published Courses</span>
+          <div className="studio-header-title-row">
+            <div>
+              <h1 className="studio-title gradient-text">Creator Studio &amp; Course Publisher</h1>
+              <p className="studio-sub">
+                Publish high-yield curriculum pathways, upload video lectures, and synthesize full courses with our AI Curriculum Architect.
+              </p>
             </div>
-            <div className="inst-divider" />
-            <div className="inst-stat">
-              <span className="stat-value mono">{totalModules}</span>
-              <span className="stat-label">Total Modules &amp; Videos</span>
-            </div>
-            <div className="inst-divider" />
-            <div className="inst-stat">
-              <span className="stat-value mono">₹{estTotalRevenue.toLocaleString("en-IN")}</span>
-              <span className="stat-label">Gross Revenue (INR)</span>
-            </div>
-            <div className="inst-divider" />
-            <div className="inst-stat">
-              <span className="stat-value mono text-emerald">Active</span>
-              <span className="stat-label">Razorpay Merchant Status</span>
-            </div>
+
+            {/* AI Generator CTA Trigger Button */}
+            <button
+              type="button"
+              className="cyber-btn cyber-btn--primary ai-generator-trigger-btn"
+              onClick={() => {
+                setIsAiModalOpen(true);
+                setAiStep(0);
+              }}
+            >
+              <span className="sparkle-icon">✨</span>
+              <span>AI Course Generator</span>
+            </button>
           </div>
         </div>
       </header>
 
-      <main className="instructor-main">
-        <div className="container">
-          {msg && (
-            <div className={`studio-alert-msg ${msgType === "error" ? "error" : "success"}`}>
-              {msgType === "error" ? "⚠️ " : "✅ "}
-              {msg}
+      <main className="container studio-main">
+        {msg && (
+          <div className={`studio-alert ${msgType === "error" ? "studio-alert--error" : "studio-alert--success"}`}>
+            <span>{msgType === "error" ? "⚠️" : "✓"}</span>
+            <span>{msg}</span>
+          </div>
+        )}
+
+        {/* Video Player Modal in Studio */}
+        {previewVideo && (
+          <div className="modal-backdrop" onClick={() => setPreviewVideo(null)}>
+            <div className="video-player-modal-wrap" onClick={(e) => e.stopPropagation()}>
+              <VideoPlayer
+                videoUrl={previewVideo.url}
+                title={previewVideo.title}
+                onClose={() => setPreviewVideo(null)}
+              />
             </div>
-          )}
+          </div>
+        )}
 
-          <div className="studio-forms-grid">
-            {/* Create Course Form */}
-            <form className="studio-glass-card glass-card" onSubmit={handleCreateCourse}>
-              <div className="card-header-bar">
-                <div className="command-dots">
-                  <span className="dot dot--red" />
-                  <span className="dot dot--purple" />
-                  <span className="dot dot--cyan" />
+        {/* Studio Grid: Create Course / Manage Modules */}
+        <div className="studio-grid">
+          {/* Left: Create Course & Telemetry */}
+          <div className="studio-col-left">
+            <section className="studio-card glass-card">
+              <div className="card-header-row">
+                <span className="material-symbols-outlined card-icon">post_add</span>
+                <div>
+                  <h2 className="card-title">1. Publish New Course</h2>
+                  <span className="mono text-xs text-muted">Set metadata, stream mapping &amp; pricing</span>
                 </div>
-                <span className="card-tag mono">NEW COURSE</span>
-              </div>
-              <h2 className="studio-card-title">Publish New Course</h2>
-              <p className="studio-card-sub">
-                Target an engineering branch or 12th stream with pricing in INR.
-              </p>
-
-              <div className="form-field">
-                <label>Course Title</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Modern Full-Stack Cloud Architecture (IIT Spec)"
-                  value={courseForm.title}
-                  onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
-                  required
-                />
               </div>
 
-              <div className="form-field">
-                <label>Course Description</label>
-                <textarea
-                  rows={3}
-                  placeholder="Describe key learning outcomes, prerequisites, and industry projects included..."
-                  value={courseForm.description}
-                  onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="form-row-2col">
-                <div className="form-field">
-                  <label>Category / Specialization</label>
+              <form onSubmit={handleCreateCourse} className="studio-form">
+                <div className="form-group">
+                  <label className="mono text-xs">COURSE TITLE</label>
                   <input
                     type="text"
-                    placeholder="e.g. AI & Data Science"
-                    value={courseForm.category}
-                    onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
                     required
+                    placeholder="e.g. Advanced Machine Learning & Neural Transformers"
+                    value={courseForm.title}
+                    onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
                   />
                 </div>
 
-                <div className="form-field">
-                  <label>Target Stream</label>
+                <div className="form-group">
+                  <label className="mono text-xs">SYLLABUS DESCRIPTION &amp; ABSTRACT</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Describe target concepts, tools covered, and learning outcomes..."
+                    value={courseForm.description}
+                    onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-row-2">
+                  <div className="form-group">
+                    <label className="mono text-xs">DOMAIN CATEGORY</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Software & AI Systems"
+                      value={courseForm.category}
+                      onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="mono text-xs">TARGET STREAM</label>
+                    <select
+                      value={courseForm.stream_id}
+                      onChange={(e) => setCourseForm({ ...courseForm, stream_id: e.target.value })}
+                    >
+                      {streams.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="mono text-xs">COURSE PRICING (INR)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={100}
+                    placeholder="499"
+                    value={courseForm.price}
+                    onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })}
+                  />
+                </div>
+
+                <button type="submit" className="cyber-btn cyber-btn--primary w-full" disabled={creatingCourse}>
+                  {creatingCourse ? "Publishing to Universe…" : "⚡ Publish Course to Catalog"}
+                </button>
+              </form>
+            </section>
+          </div>
+
+          {/* Right: Add Modules & Video Lectures */}
+          <div className="studio-col-right">
+            <section className="studio-card glass-card">
+              <div className="card-header-row">
+                <span className="material-symbols-outlined card-icon">video_call</span>
+                <div>
+                  <h2 className="card-title">2. Attach Modules &amp; Video Lectures</h2>
+                  <span className="mono text-xs text-muted">Upload 1080p video or stream links</span>
+                </div>
+              </div>
+
+              <form onSubmit={handleAddModule} className="studio-form">
+                <div className="form-group">
+                  <label className="mono text-xs">TARGET COURSE</label>
                   <select
-                    value={courseForm.stream_id}
-                    onChange={(e) => setCourseForm({ ...courseForm, stream_id: e.target.value })}
+                    value={moduleForm.courseId}
+                    onChange={(e) => setModuleForm({ ...moduleForm, courseId: e.target.value })}
                   >
-                    <option value="">All Streams</option>
-                    {streams.map((s) => (
-                      <option value={s.id} key={s.id}>
-                        {s.name}
+                    {courses.length === 0 && <option value="">No courses yet — create one first</option>}
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.title} ({c.module_count || 0} modules)
                       </option>
                     ))}
                   </select>
                 </div>
-              </div>
 
-              <div className="form-field">
-                <label>Price in INR (₹)</label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="e.g. 499"
-                  value={courseForm.price}
-                  onChange={(e) => setCourseForm({ ...courseForm, price: e.target.value })}
-                  required
-                />
-              </div>
-
-              <button className="cyber-btn cyber-btn--primary studio-submit-btn" disabled={creatingCourse}>
-                {creatingCourse ? "Deploying Course…" : "🚀 Publish Course to Catalog"}
-              </button>
-            </form>
-
-            {/* Add Module & Video Lecture Form */}
-            <form className="studio-glass-card glass-card" onSubmit={handleAddModule}>
-              <div className="card-header-bar">
-                <div className="command-dots">
-                  <span className="dot dot--red" />
-                  <span className="dot dot--purple" />
-                  <span className="dot dot--cyan" />
-                </div>
-                <span className="card-tag mono">MODULE ATTACHMENT</span>
-              </div>
-              <h2 className="studio-card-title">Add Lecture &amp; Video Module</h2>
-              <p className="studio-card-sub">
-                Upload video lectures, set preview permissions, and attach project blueprints.
-              </p>
-
-              <div className="form-field">
-                <label>Select Course</label>
-                <select
-                  value={moduleForm.courseId}
-                  onChange={(e) => setModuleForm({ ...moduleForm, courseId: e.target.value })}
-                  required
-                >
-                  <option value="">-- Choose Course --</option>
-                  {courses.map((c) => (
-                    <option value={c.id} key={c.id}>
-                      {c.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-field">
-                <label>Module Title</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Module 1: Distributed Microservices & Docker"
-                  value={moduleForm.title}
-                  onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="form-field">
-                <label>Module Description</label>
-                <textarea
-                  rows={2}
-                  placeholder="Lecture notes, core takeaways, and practice exercises..."
-                  value={moduleForm.description}
-                  onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label>HD Video Lecture URL (MP4 / Stream / YouTube Embed)</label>
-                <input
-                  type="url"
-                  placeholder="e.g. https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                  value={moduleForm.videoUrl}
-                  onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
-                />
-              </div>
-
-              <div className="form-row-2col">
-                <div className="form-field">
-                  <label>Position Index (Order)</label>
+                <div className="form-group">
+                  <label className="mono text-xs">MODULE TITLE</label>
                   <input
-                    type="number"
-                    min="1"
-                    value={moduleForm.position}
-                    onChange={(e) => setModuleForm({ ...moduleForm, position: e.target.value })}
+                    type="text"
                     required
+                    placeholder="e.g. Module 1: Scaled Dot-Product & Self-Attention"
+                    value={moduleForm.title}
+                    onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
                   />
                 </div>
 
-                <div className="form-field">
-                  <label>Resource / Slide Deck PDF</label>
+                <div className="form-group">
+                  <label className="mono text-xs">MODULE DESCRIPTION</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Brief description of this module's topics..."
+                    value={moduleForm.description}
+                    onChange={(e) => setModuleForm({ ...moduleForm, description: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="mono text-xs">1080P VIDEO STREAM URL (YOUTUBE / DIRECT MP4)</label>
                   <input
-                    type="file"
-                    className="file-input"
-                    onChange={(e) => setModuleForm({ ...moduleForm, file: e.target.files?.[0] || null })}
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=... or https://.../video.mp4"
+                    value={moduleForm.videoUrl}
+                    onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })}
                   />
                 </div>
-              </div>
 
-              <button className="cyber-btn cyber-btn--secondary studio-submit-btn" disabled={addingModule}>
-                {addingModule ? "Uploading Module…" : "➕ Attach Module & Video"}
-              </button>
-            </form>
+                <button type="submit" className="cyber-btn cyber-btn--secondary w-full" disabled={addingModule}>
+                  {addingModule ? "Attaching Module…" : "＋ Attach Module to Course"}
+                </button>
+              </form>
+            </section>
+          </div>
+        </div>
+
+        {/* Existing Courses Catalog Preview */}
+        <section className="studio-existing-courses">
+          <div className="section-header-row">
+            <h2>Your Published Courses ({courses.length})</h2>
+            <span className="mono text-xs text-muted">Active in Trainee Discover Directory</span>
           </div>
 
-          {/* Active Course Management Section */}
-          <section className="courses-management-section">
-            <div className="section-title-row">
-              <h2 className="section-heading">Your Active Course Catalog</h2>
-              <span className="mono text-muted">{courses.length} courses online</span>
-            </div>
-
-            {loading ? (
-              <p className="mono text-muted">Retrieving instructor courses…</p>
-            ) : courses.length === 0 ? (
-              <div className="empty-courses-box glass-card">
-                <p>No courses published yet. Use the creation console above to publish your first course.</p>
+          <div className="studio-courses-grid">
+            {courses.length === 0 ? (
+              <div className="empty-courses-card glass-card">
+                <span className="material-symbols-outlined empty-icon">school</span>
+                <h3>No courses published yet</h3>
+                <p>Use the form above or click the <strong>✨ AI Course Generator</strong> to create your first course!</p>
               </div>
             ) : (
-              <div className="courses-inventory-grid">
-                {courses.map((course) => (
-                  <article className="course-inventory-card glass-card" key={course.id}>
-                    <div className="inventory-card-top">
-                      <span className="inst-badge mono">{course.stream_id || "All Streams"}</span>
-                      <span className="inst-price mono">₹{(course.price_paise / 100).toFixed(0)}</span>
+              courses.map((c) => (
+                <article className="studio-course-card glass-card" key={c.id}>
+                  <div className="course-card-top">
+                    <span className="course-cat-tag mono">{c.category}</span>
+                    <span className="course-price-tag mono">₹{c.price_paise ? c.price_paise / 100 : 0}</span>
+                  </div>
+                  <h3 className="course-title">{c.title}</h3>
+                  <p className="course-desc">{c.description || "Stream-aligned comprehensive curriculum."}</p>
+                  <div className="course-meta-bar mono text-xs">
+                    <span>{c.module_count || 0} Modules Attached</span>
+                    <span className="status-live">● Live</span>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* ========================================================= */}
+      {/* ✨ AI COURSE CONTENT GENERATOR MODAL */}
+      {/* ========================================================= */}
+      {isAiModalOpen && (
+        <div className="modal-backdrop" onClick={() => !aiGenerating && setIsAiModalOpen(false)}>
+          <div className="ai-generator-modal glass-card" onClick={(e) => e.stopPropagation()}>
+            <div className="ai-modal-header">
+              <div className="header-badge-group">
+                <span className="ai-sparkle-pill mono">
+                  <span className="sparkle-icon">✨</span> AI CURRICULUM ARCHITECT
+                </span>
+                <h2>Generate Production Course with AI</h2>
+              </div>
+              <button
+                type="button"
+                className="close-btn"
+                onClick={() => setIsAiModalOpen(false)}
+                disabled={aiGenerating}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* STEP 0: Configuration & Prompt Input */}
+            {aiStep === 0 && (
+              <div className="ai-modal-body">
+                <p className="ai-prompt-sub">
+                  Enter any engineering, medical, financial, or legal topic. Our AI architect will automatically structure complete syllabus modules, learning outcomes, and curated video masterclasses.
+                </p>
+
+                <div className="ai-presets-box">
+                  <span className="mono text-xs text-muted">QUICK TOPIC PRESETS:</span>
+                  <div className="presets-chips-row">
+                    {AI_TOPIC_PRESETS.map((p, idx) => (
+                      <button
+                        type="button"
+                        key={idx}
+                        className="preset-chip mono"
+                        onClick={() => setAiPrompt(p)}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <form onSubmit={handleGenerateAiCourse} className="ai-generator-form">
+                  <div className="form-group">
+                    <label className="mono text-xs">COURSE TOPIC / DISCIPLINE</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Quantum Computing & Qiskit Algorithm Implementation"
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-row-3">
+                    <div className="form-group">
+                      <label className="mono text-xs">CATEGORY</label>
+                      <select value={aiCategory} onChange={(e) => setAiCategory(e.target.value)}>
+                        <option value="Software & AI Systems">Software &amp; AI Systems</option>
+                        <option value="Medical & Health Sciences">Medical &amp; Health Sciences</option>
+                        <option value="Engineering & Cloud">Engineering &amp; Cloud</option>
+                        <option value="Design & Product">Design &amp; Product</option>
+                        <option value="Finance & Economics">Finance &amp; Economics</option>
+                        <option value="Law & Legal Studies">Law &amp; Legal Studies</option>
+                      </select>
                     </div>
 
-                    <h3 className="inventory-title">{course.title}</h3>
-                    <p className="inventory-desc">{course.description}</p>
-
-                    <div className="inventory-meta-row">
-                      <span className="mono text-xs">📚 {course.module_count} Modules Published</span>
-                      <span className="mono text-xs text-primary">Status: Live</span>
+                    <div className="form-group">
+                      <label className="mono text-xs">DIFFICULTY</label>
+                      <select value={aiLevel} onChange={(e) => setAiLevel(e.target.value)}>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Competitive Specialist">Competitive Specialist</option>
+                      </select>
                     </div>
 
-                    <div className="inventory-card-footer">
-                      <Link to={`/courses/${course.id}`} className="inventory-view-btn">
-                        Preview Course Viewport →
-                      </Link>
+                    <div className="form-group">
+                      <label className="mono text-xs">MODULES COUNT</label>
+                      <select value={aiModulesCount} onChange={(e) => setAiModulesCount(Number(e.target.value))}>
+                        <option value={3}>3 Modules</option>
+                        <option value={4}>4 Modules</option>
+                        <option value={5}>5 Modules</option>
+                      </select>
                     </div>
-                  </article>
-                ))}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="cyber-btn cyber-btn--primary ai-submit-btn w-full"
+                    disabled={!aiPrompt.trim()}
+                  >
+                    ✨ Synthesize Complete Course &amp; Syllabus
+                  </button>
+                </form>
               </div>
             )}
-          </section>
+
+            {/* STEP 1: Generating Loading Animation */}
+            {aiStep === 1 && (
+              <div className="ai-generating-view">
+                <div className="ai-radar-spinner">
+                  <div className="radar-circle" />
+                  <span className="material-symbols-outlined ai-pulse-icon">psychology</span>
+                </div>
+                <h3>AI Curriculum Architect at Work…</h3>
+                <div className="ai-progress-steps mono text-xs">
+                  <span className="step-item active">✓ Deconstructing domain foundations</span>
+                  <span className="step-item active">✓ Synthesizing {aiModulesCount} structured modules</span>
+                  <span className="step-item active">⚡ Curating 1080p video lecture masterclasses</span>
+                  <span className="step-item">○ Formatting checkpoints &amp; capstone briefs</span>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: Generated Course Preview & 1-Click Publish */}
+            {aiStep === 2 && generatedCourse && (
+              <div className="ai-preview-view">
+                <div className="preview-top-card glass-card">
+                  <div className="preview-pill-row">
+                    <span className="preview-badge mono">{generatedCourse.category}</span>
+                    <span className="preview-badge mono">{generatedCourse.level}</span>
+                    <span className="preview-badge mono text-primary">✨ AI Generated</span>
+                  </div>
+                  <h3 className="preview-title">{generatedCourse.title}</h3>
+                  <p className="preview-desc">{generatedCourse.description}</p>
+                </div>
+
+                <div className="preview-outcomes-box">
+                  <strong className="mono text-xs text-primary">SYNTHESIZED LEARNING OUTCOMES:</strong>
+                  <ul className="outcomes-checklist">
+                    {generatedCourse.outcomes?.map((out, oIdx) => (
+                      <li key={oIdx}>
+                        <span className="material-symbols-outlined check-icon">check_circle</span>
+                        <span>{out}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="preview-modules-list">
+                  <strong className="mono text-xs text-muted">GENERATED MODULES &amp; VIDEO MASTERCLASSES ({generatedCourse.curriculum?.length}):</strong>
+                  {generatedCourse.curriculum?.map((mod, mIdx) => (
+                    <div className="preview-module-card glass-card" key={mod.id || mIdx}>
+                      <div className="mod-head">
+                        <div>
+                          <h4 className="mod-title">{mod.title}</h4>
+                          <span className="mono text-xs text-muted">{mod.duration} · {mod.lessons?.length || 0} lessons</span>
+                        </div>
+                        {mod.videoUrl && (
+                          <button
+                            type="button"
+                            className="preview-video-btn mono text-xs"
+                            onClick={() => setPreviewVideo({ title: mod.title, url: mod.videoUrl })}
+                          >
+                            ▶ Preview Video
+                          </button>
+                        )}
+                      </div>
+                      <p className="mod-desc">{mod.description}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="ai-preview-actions">
+                  <button
+                    type="button"
+                    className="cyber-btn cyber-btn--secondary"
+                    onClick={() => setAiStep(0)}
+                  >
+                    ← Edit Prompt
+                  </button>
+                  <button
+                    type="button"
+                    className="cyber-btn cyber-btn--primary"
+                    onClick={handlePublishAiCourse}
+                    disabled={aiPublishing}
+                  >
+                    {aiPublishing ? "Publishing to Live Catalog…" : "⚡ Publish Generated Course to Catalog"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </main>
+      )}
     </div>
   );
 }

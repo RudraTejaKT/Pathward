@@ -7,6 +7,7 @@ const traineeRoutes = require("./routes/trainee");
 const paymentRoutes = require("./routes/payments");
 const learningRoutes = require("./routes/learning");
 const assessmentRoutes = require("./routes/assessment");
+const aiRoutes = require("./routes/ai");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -29,6 +30,9 @@ app.use("/api/learning", learningRoutes.router);
 
 // --- Career Aptitude & Stream Assessment ---
 app.use("/api/assessment", assessmentRoutes);
+
+// --- AI Course & Curriculum Generation ---
+app.use("/api/ai", aiRoutes);
 
 // Small helper so every route returns a consistent shape
 const ok = (res, data) => res.json({ success: true, data });
