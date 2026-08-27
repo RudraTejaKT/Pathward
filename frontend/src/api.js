@@ -3,11 +3,8 @@ const BASE_URL = (() => {
   if (envUrl && !envUrl.includes("localhost") && !envUrl.startsWith("/")) {
     return envUrl.replace(/\/+$/, "");
   }
-  // When running on hosted domains (e.g. backlogx.vercel.app), direct API calls to live Railway backend
-  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-    return "https://hopeful-education-production-cdb9.up.railway.app/api";
-  }
-  return "http://127.0.0.1:4000/api";
+  // Use relative /api endpoint on Vercel for instant same-origin serverless execution
+  return "/api";
 })();
 
 let authToken = null;
