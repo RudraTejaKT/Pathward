@@ -46,3 +46,13 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Security & AWS Secrets
+*.csv
+*accessKeys*
+*credentials*
+*.pem
+*.key
+*.cert
+aws-credentials.json
+

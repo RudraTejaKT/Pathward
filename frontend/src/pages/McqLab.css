@@ -743,3 +743,91 @@
   color: var(--on-surface-variant);
   font-size: 11px;
 }
+
+/* ========================================================= */
+/* MCQ PRO SUBSCRIPTION GATE BANNER */
+/* ========================================================= */
+.mcq-pro-gate-banner {
+  padding: 24px 28px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.15) 100%);
+  border: 1px solid rgba(197, 192, 255, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 24px rgba(99, 102, 241, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.mcq-pro-gate-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.mcq-pro-gate-icon {
+  font-size: 38px;
+  color: #fbbf24;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  flex-shrink: 0;
+}
+
+.mcq-pro-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fbbf24;
+  margin-bottom: 6px;
+}
+
+.mcq-pro-gate-content h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.mcq-pro-gate-content p {
+  font-size: 13.5px;
+  color: var(--on-surface-variant);
+  line-height: 1.45;
+  margin: 0;
+  max-width: 680px;
+}
+
+.mcq-upgrade-btn {
+  padding: 12px 22px;
+  font-size: 13.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Locked Option Button */
+.option-btn--locked {
+  position: relative;
+  border-style: dashed;
+}
+
+.option-btn--locked:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.option-lock-badge {
+  margin-left: auto;
+  font-size: 18px;
+  color: #fbbf24;
+  opacity: 0.8;
+}
+
+@media (max-width: 900px) {
+  .mcq-pro-gate-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+

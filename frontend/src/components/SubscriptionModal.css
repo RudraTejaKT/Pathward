@@ -1,0 +1,348 @@
+/* ========================================================= */
+/* SUBSCRIPTION & PAYWALL MODAL STYLING */
+/* ========================================================= */
+
+.subscription-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 16, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.subscription-modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  background: rgba(16, 20, 30, 0.96);
+  border: 1px solid rgba(197, 192, 255, 0.25);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.2);
+  margin: auto;
+}
+
+[data-theme="light"] .subscription-modal-panel {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.subscription-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--on-surface-variant);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.subscription-modal-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.subscription-modal-header {
+  margin-bottom: 24px;
+}
+
+.pro-sparkle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #d8b4fe;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.subscription-modal-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.subscription-modal-subtitle {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Plans Grid */
+.subscription-plans-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.plan-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-card:hover {
+  border-color: rgba(197, 192, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.plan-card--active {
+  border-color: #818cf8;
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="light"] .plan-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .plan-card--active {
+  background: #eef2ff;
+  border-color: #6366f1;
+}
+
+.plan-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fbbf24;
+  margin-bottom: 8px;
+}
+
+.plan-card__header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.plan-price .currency {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.plan-price .amount {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--on-surface);
+}
+
+.plan-price .term {
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  margin-left: 4px;
+}
+
+.plan-desc {
+  font-size: 12.5px;
+  color: var(--on-surface-variant);
+  line-height: 1.4;
+  flex: 1;
+  margin-bottom: 14px;
+}
+
+.plan-radio-marker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--on-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+}
+
+/* Feature Comparison Box */
+.subscription-comparison-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+[data-theme="light"] .subscription-comparison-box {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.comparison-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comparison-col li {
+  font-size: 12.5px;
+  color: var(--on-surface);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.35;
+}
+
+.comparison-col li.disabled {
+  color: var(--outline);
+  opacity: 0.65;
+}
+
+.col-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.check {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.check-pro {
+  color: #818cf8;
+  font-weight: 700;
+}
+
+.cross {
+  color: #f87171;
+}
+
+/* Alerts */
+.subscription-alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.subscription-alert--error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+.subscription-alert--success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #86efac;
+}
+
+/* Actions Row */
+.subscription-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.subscribe-cta-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  justify-content: center;
+}
+
+.instant-unlock-btn {
+  background: transparent;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.instant-unlock-btn:hover {
+  color: var(--primary);
+}
+
+.guest-prompt-block {
+  text-align: center;
+  width: 100%;
+}
+
+.guest-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.security-badges-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+
+.already-subscribed-box {
+  text-align: center;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.check-icon {
+  font-size: 48px;
+  color: #22c55e;
+}
+
+@media (max-width: 640px) {
+  .subscription-plans-grid,
+  .subscription-comparison-box {
+    grid-template-columns: 1fr;
+  }
+  .subscription-modal-panel {
+    padding: 24px 18px;
+  }
+}

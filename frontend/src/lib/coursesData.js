@@ -11,11 +11,11 @@ export const COURSE_CATALOG = {
     instructor: "Dr. Eleanor Vance (Ex-DeepMind)",
     rating: 4.9,
     reviewsCount: "1,420",
-    studentsCount: "9.2k",
+    studentsCount: 142,
     price: 1499,
     originalPrice: 2999,
     videoDuration: "3:40 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
+    trailerVideoUrl: "https://www.youtube.com/embed/kU_t-wJ-t9c",
     trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
     description: "Master modern deep learning, transformer architectures, reinforcement learning, and production MLOps pipelines.",
     curriculumSummary: "3 modules • 14h 20m",
@@ -49,7 +49,7 @@ export const COURSE_CATALOG = {
         codeSnippet: "PyTorch Attention & Self-Attention\nclass ScaledDotProductAttention(nn.Module):\n    # Causal Multi-Head Matrix",
         isFreePreview: false,
         duration: "2h 30m",
-        videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w",
+        videoUrl: "https://www.youtube.com/embed/wjZofJX0v4M",
         assignment: {
           id: 2,
           title: "PyTorch Attention Matrix & Scaled Softmax",
@@ -59,30 +59,29 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-4", title: "Scaled Dot-Product & Multi-Head Attention", duration: "35:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w" },
-          { id: "l-5", title: "Positional Encodings & BERT vs GPT Decoders", duration: "40:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w" },
-          { id: "l-6", title: "Building a Mini-Transformer from Scratch", duration: "75:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IHZwWFHWa-w" },
+          { id: "l-4", title: "Query, Key, Value Projections & Attention Heads", duration: "30:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/wjZofJX0v4M" },
+          { id: "l-5", title: "Positional Encodings & Layer Normalization", duration: "35:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/wjZofJX0v4M" },
         ],
       },
       {
         id: "mod-3",
         number: 3,
-        title: "MLOps, Containerization & API Deployment",
-        codeSnippet: "FastAPI & Docker Model Deployment\n@app.post('/predict')\nasync def serve_inference(tensor: Tensor):",
+        title: "Large Language Models & Distributed Fine-Tuning",
+        codeSnippet: "Distributed Fine-Tuning\nfrom transformers import AutoModelForCausalLM\nmodel = AutoModelForCausalLM.from_pretrained(\"gpt2\")",
         isFreePreview: false,
-        duration: "2h 10m",
-        videoUrl: "https://www.youtube.com/embed/bXb9dJ2bOls",
+        duration: "3h 15m",
+        videoUrl: "https://www.youtube.com/embed/aircAruvnKk",
         assignment: {
           id: 3,
-          title: "Containerized FastAPI Model Serving with Docker",
-          description: "Build an asynchronous FastAPI microservice that loads the quantized ONNX transformer model and serves sub-20ms inference.",
-          starterCode: "from fastapi import FastAPI\napp = FastAPI()\n\n@app.post('/predict')\nasync def predict(req: dict):\n    return {'status': 'success'}",
-          due: "August 10, 2026",
+          title: "LoRA Low-Rank Adapter Implementation",
+          description: "Implement low-rank matrix decomposition (A and B matrices) to fine-tune a causal language model.",
+          starterCode: "class LoRALayer(nn.Module):\n    pass",
+          due: "August 20, 2026",
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-7", title: "Model Export to ONNX & TensorRT", duration: "30:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/bXb9dJ2bOls" },
-          { id: "l-8", title: "FastAPI Async Serving with Docker & Kubernetes", duration: "60:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/bXb9dJ2bOls" },
+          { id: "l-6", title: "LoRA & QLoRA Parameter-Efficient Fine Tuning", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" },
+          { id: "l-7", title: "vLLM Inference Engine & KV Cache Optimization", duration: "40:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/aircAruvnKk" },
         ],
       },
     ],
@@ -97,11 +96,11 @@ export const COURSE_CATALOG = {
     instructor: "Marcus Thorne (Lead UX Architect)",
     rating: 4.8,
     reviewsCount: "1,204",
-    studentsCount: "8.5k",
+    studentsCount: 98,
     price: 999,
     originalPrice: 1999,
     videoDuration: "2:14 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
+    trailerVideoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk",
     trailerImage: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=1200&q=80",
     description: "Design systems, typography grids, accessibility, and high-fidelity interactive prototyping for modern scale.",
     curriculumSummary: "2 modules • 6h 30m",
@@ -113,7 +112,7 @@ export const COURSE_CATALOG = {
         codeSnippet: ":root {\n  --color-primary: #6366f1;\n  --radius-lg: 16px;\n  --backdrop-blur: 20px;\n}",
         isFreePreview: true,
         duration: "45m",
-        videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
+        videoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk",
         assignment: {
           id: 4,
           title: "Design System Token Architecture",
@@ -123,8 +122,8 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-1", title: "Design Tokens & Micro-Interactions", duration: "15:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
-          { id: "l-2", title: "Information Architecture & Card Sorting", duration: "15:30", isPreview: true, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
+          { id: "l-1", title: "Design Tokens & Micro-Interactions", duration: "15:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk" },
+          { id: "l-2", title: "Information Architecture & Card Sorting", duration: "15:30", isPreview: true, videoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk" },
         ],
       },
       {
@@ -134,7 +133,7 @@ export const COURSE_CATALOG = {
         codeSnippet: "Component Architecture (Storybook Sync)\nexport const PrimaryButton = ({ label, icon }) => (\n  <button className=\"btn-primary\">{icon}{label}</button>\n);",
         isFreePreview: false,
         duration: "1h 30m",
-        videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
+        videoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk",
         assignment: {
           id: 5,
           title: "Storybook Component Documentation",
@@ -144,8 +143,8 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-3", title: "Component Variants & Auto-Layout 4.0", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
-          { id: "l-4", title: "Design System Documentation & Storybook Sync", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU" },
+          { id: "l-3", title: "Component Variants & Auto-Layout 4.0", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk" },
+          { id: "l-4", title: "Design System Documentation & Storybook Sync", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/nu_pCVPKzTk" },
         ],
       },
     ],
@@ -160,11 +159,11 @@ export const COURSE_CATALOG = {
     instructor: "Dr. Arvind Swaminathan (MD Cardiology)",
     rating: 4.95,
     reviewsCount: "2,350",
-    studentsCount: "11.4k",
+    studentsCount: 102,
     price: 1299,
     originalPrice: 2499,
     videoDuration: "4:10 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk",
+    trailerVideoUrl: "https://www.youtube.com/embed/uBGl2BujkPQ",
     trailerImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80",
     description: "Master bedside clinical examination, 12-lead ECG interpretation, emergency casualty triage, and case study audits.",
     curriculumSummary: "2 modules • 11h 45m",
@@ -176,7 +175,7 @@ export const COURSE_CATALOG = {
         codeSnippet: "Clinical Auscultation & S1/S2 Murmurs\n// Mitral Regurgitation: Pan-systolic murmur at apex radiating to axilla",
         isFreePreview: true,
         duration: "1h 00m",
-        videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk",
+        videoUrl: "https://www.youtube.com/embed/kYy36761x-c",
         assignment: {
           id: 6,
           title: "Auscultation & Heart Murmur Case Study",
@@ -186,8 +185,8 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-1", title: "Cardiovascular Bedside Auscultation & Heart Murmurs", duration: "25:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" },
-          { id: "l-2", title: "Cranial Nerve Neurological Reflex Testing", duration: "35:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" },
+          { id: "l-1", title: "Cardiovascular Bedside Auscultation & Heart Murmurs", duration: "25:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/kYy36761x-c" },
+          { id: "l-2", title: "Cranial Nerve Neurological Reflex Testing", duration: "35:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/ob5U8zPbAX4" },
         ],
       },
       {
@@ -197,7 +196,7 @@ export const COURSE_CATALOG = {
         codeSnippet: "12-Lead ECG Interpretation\n// Inferior STEMI: ST elevation in Leads II, III, aVF with reciprocal depression in I, aVL",
         isFreePreview: false,
         duration: "1h 30m",
-        videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk",
+        videoUrl: "https://www.youtube.com/embed/kYy36761x-c",
         assignment: {
           id: 7,
           title: "12-Lead ECG STEMI & Arrhythmia Triage",
@@ -207,8 +206,8 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-3", title: "ST-Elevation STEMI Localisation & Mimics", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" },
-          { id: "l-4", title: "Arrhythmias, Heart Blocks & Electrolyte Imbalances", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/F_KjW0nI8Hk" },
+          { id: "l-3", title: "ST-Elevation STEMI Localisation & Mimics", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/kYy36761x-c" },
+          { id: "l-4", title: "Arrhythmias, Heart Blocks & Electrolyte Imbalances", duration: "45:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/kYy36761x-c" },
         ],
       },
     ],
@@ -223,11 +222,11 @@ export const COURSE_CATALOG = {
     instructor: "Vikram Malhotra (Principal Cloud Architect)",
     rating: 4.9,
     reviewsCount: "1,890",
-    studentsCount: "14.2k",
+    studentsCount: 85,
     price: 1799,
     originalPrice: 3499,
     videoDuration: "3:15 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
+    trailerVideoUrl: "https://www.youtube.com/embed/HXV3zeQKqGY",
     trailerImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
     description: "Scale applications across Kubernetes, microservices, Kafka event streaming, and multi-region cloud systems.",
     curriculumSummary: "2 modules • 18h 00m",
@@ -239,7 +238,7 @@ export const COURSE_CATALOG = {
         codeSnippet: "Raft Consensus State Machine\nclass RaftNode:\n    def request_vote(self, term, candidate_id):\n        # Leader election protocol",
         isFreePreview: true,
         duration: "1h 15m",
-        videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
+        videoUrl: "https://www.youtube.com/embed/HXV3zeQKqGY",
         assignment: {
           id: 8,
           title: "Raft Leader Election State Machine",
@@ -249,8 +248,8 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-1", title: "CAP Theorem vs PACELC Theorem in Practice", duration: "30:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" },
-          { id: "l-2", title: "Vector Clocks & Two-Phase Commit Protocols", duration: "45:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" },
+          { id: "l-1", title: "CAP Theorem vs PACELC Theorem in Practice", duration: "30:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/HXV3zeQKqGY" },
+          { id: "l-2", title: "Vector Clocks & Two-Phase Commit Protocols", duration: "45:00", isPreview: true, videoUrl: "https://www.youtube.com/embed/HXV3zeQKqGY" },
         ],
       },
       {
@@ -260,7 +259,7 @@ export const COURSE_CATALOG = {
         codeSnippet: "Kafka Partition Consumer\nconsumer = KafkaConsumer('telemetry-stream', group_id='analytics-worker', enable_auto_commit=False)",
         isFreePreview: false,
         duration: "1h 45m",
-        videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
+        videoUrl: "https://www.youtube.com/embed/IPvYjXCsTg8",
         assignment: {
           id: 9,
           title: "Kafka Consumer Offset & Exactly-Once Pipeline",
@@ -270,8 +269,8 @@ export const COURSE_CATALOG = {
           maxPoints: 100,
         },
         lessons: [
-          { id: "l-3", title: "Kafka Partitions, Consumer Groups & Offsets", duration: "50:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" },
-          { id: "l-4", title: "Exactly-Once Semantics & Distributed Caching", duration: "55:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/Y6Ev8GIsS3E" },
+          { id: "l-3", title: "Kafka Partitions, Consumer Groups & Offsets", duration: "50:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IPvYjXCsTg8" },
+          { id: "l-4", title: "Exactly-Once Semantics & Distributed Caching", duration: "55:00", isPreview: false, videoUrl: "https://www.youtube.com/embed/IPvYjXCsTg8" },
         ],
       },
     ],
@@ -389,3 +388,64 @@ export function computeCourseProgress(course, completedLessonsMap = {}) {
     modules,
   };
 }
+
+export function saveCustomCourse(course) {
+  try {
+    const raw = localStorage.getItem("pathward_custom_courses");
+    const map = raw ? JSON.parse(raw) : {};
+    map[course.id] = course;
+    localStorage.setItem("pathward_custom_courses", JSON.stringify(map));
+    COURSE_CATALOG[course.id] = course;
+    window.dispatchEvent(new CustomEvent("pathward:courses-updated", { detail: course }));
+  } catch (err) {
+    console.error("Failed to save custom course", err);
+  }
+}
+
+export function loadSavedCustomCourses() {
+  try {
+    const raw = localStorage.getItem("pathward_custom_courses");
+    if (!raw) return {};
+    const map = JSON.parse(raw);
+    Object.assign(COURSE_CATALOG, map);
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+export function formatVideoEmbedUrl(url = "") {
+  if (!url || typeof url !== "string") return "https://www.youtube.com/embed/aircAruvnKk";
+  const trimmed = url.trim();
+
+  // If already embed url
+  if (trimmed.includes("youtube.com/embed/")) {
+    const clean = trimmed.split("?")[0];
+    return `${clean}?autoplay=1&rel=0&enablejsapi=1`;
+  }
+  // If youtube.com/shorts/ format
+  if (trimmed.includes("youtube.com/shorts/")) {
+    const videoId = trimmed.split("youtube.com/shorts/")[1]?.split("?")[0]?.split("/")[0];
+    if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1`;
+  }
+  // If youtube.com/watch?v= format
+  if (trimmed.includes("youtube.com/watch")) {
+    try {
+      const u = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
+      const videoId = u.searchParams.get("v");
+      if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1`;
+    } catch {
+      const videoId = trimmed.split("v=")[1]?.split("&")[0]?.split("?")[0];
+      if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1`;
+    }
+  }
+  // If youtu.be/ format
+  if (trimmed.includes("youtu.be/")) {
+    const videoId = trimmed.split("youtu.be/")[1]?.split("?")[0]?.split("&")[0]?.split("/")[0];
+    if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1`;
+  }
+  return trimmed;
+}
+
+// Auto-hydrate on bundle load
+loadSavedCustomCourses();

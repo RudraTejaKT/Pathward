@@ -8,13 +8,13 @@ const router = express.Router();
 // Curated verified 1080p HD video masterclasses for various domain disciplines
 const CURATED_VIDEO_STREAMS = {
   ai: "https://www.youtube.com/embed/aircAruvnKk",
-  transformers: "https://www.youtube.com/embed/IHZwWFHWa-w",
-  cloud: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
-  devops: "https://www.youtube.com/embed/bXb9dJ2bOls",
-  medical: "https://www.youtube.com/embed/F_KjW0nI8Hk",
-  design: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
-  electronics: "https://www.youtube.com/embed/eIho2S0ZahI",
-  general: "https://www.youtube.com/embed/_X0mgOOSpLU",
+  transformers: "https://www.youtube.com/embed/wjZofJX0v4M",
+  cloud: "https://www.youtube.com/embed/IPvYjXCsTg8",
+  devops: "https://www.youtube.com/embed/HXV3zeQKqGY",
+  medical: "https://www.youtube.com/embed/uBGl2BujkPQ",
+  design: "https://www.youtube.com/embed/nu_pCVPKzTk",
+  electronics: "https://www.youtube.com/embed/3nB1Ntku06w",
+  general: "https://www.youtube.com/embed/O5nskjZ_GoI",
 };
 
 function selectVideoForTopic(topic = "") {

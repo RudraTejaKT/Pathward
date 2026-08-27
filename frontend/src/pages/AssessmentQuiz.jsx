@@ -162,39 +162,25 @@ export default function AssessmentQuiz() {
     const { topStream, topBranch, streamMatches, branchMatches, studentTraits, recommendedExams, recommendedDegrees } = result;
 
     return (
-      <div className="quiz-theme-root">
-        <header className="quiz-theme-header">
-          <div className="quiz-header-content-box">
-            <div className="quiz-header-brand-row">
-              <div className="quiz-brand-badge">
-                <div className="quiz-brand-dot" />
-                <span className="quiz-brand-name">Pathward</span>
-              </div>
-              <span className="quiz-header-tag">REPORT</span>
-            </div>
+      <div className="quiz-page-root">
+        {/* Cosmic Background Glows */}
+        <div className="cosmic-ambient-glows">
+          <div className="glow-top-right" />
+          <div className="glow-bottom-left" />
+        </div>
 
-            <div className="quiz-header-meta-group">
-              <p className="quiz-step-indicator">
-                CAREER ASSESSMENT COMPLETE
-              </p>
-              <h1 className="quiz-title-text">Your Career Match Report</h1>
+        <div className="container quiz-report-container">
+          {/* Top Match Banner */}
+          <div className="quiz-top-match-card glass-card animate-fade-in">
+            <div className="quiz-top-match-header">
+              <span className="top-match-pill mono">
+                🏆 TOP MATCH: {topStream.matchPercentage}% ALIGNMENT
+              </span>
+              <h1 className="top-match-name gradient-text">
+                {topStream.icon} {topStream.name}
+              </h1>
+              <p className="top-match-desc">{topStream.description}</p>
             </div>
-          </div>
-        </header>
-
-        <main className="quiz-theme-main">
-          <div className="quiz-report-container">
-            {/* Top Match Banner */}
-            <div className="quiz-top-match-card">
-              <div className="quiz-top-match-header">
-                <span className="top-match-pill">
-                  TOP MATCH: {topStream.matchPercentage}% ALIGNMENT
-                </span>
-                <h2 className="top-match-name">
-                  {topStream.icon} {topStream.name}
-                </h2>
-                <p className="top-match-desc">{topStream.description}</p>
-              </div>
 
               {topBranch && (
                 <div className="top-branch-box">
@@ -338,107 +324,95 @@ export default function AssessmentQuiz() {
               </button>
             </div>
           </div>
-        </main>
-      </div>
-    );
-  }
+        </div>
+      );
+    }
 
   // --- QUESTION SCREEN ---
   return (
-    <div className="quiz-theme-root">
-      {/* Header Section */}
-      <header className="quiz-theme-header">
-        <div className="quiz-header-content-box">
-          <div className="quiz-header-brand-row">
-            <div className="quiz-brand-badge">
-              <div className="quiz-brand-dot" />
-              <span className="quiz-brand-name">Pathward</span>
+    <div className="quiz-page-root">
+      {/* Cosmic Background Glows */}
+      <div className="cosmic-ambient-glows">
+        <div className="glow-top-right" />
+        <div className="glow-bottom-left" />
+      </div>
+
+      <div className="container quiz-main-container">
+        {/* Main Quiz Card */}
+        <div className="quiz-card glass-card animate-fade-in">
+          {/* Card Top Meta Bar */}
+          <div className="quiz-card-header">
+            <div className="quiz-badge-row">
+              <span className="cyber-pill mono">
+                <span>{currentQ.icon || "💡"}</span>
+                <span>{currentQ.category?.toUpperCase() || "CAREER APTITUDE"}</span>
+              </span>
+              <span className="quiz-step-counter mono">
+                QUESTION {currentIndex + 1} OF {totalQ}
+              </span>
             </div>
-            <span className="quiz-q-counter-pill">
-              {answeredCount}/{totalQ} Done
-            </span>
-          </div>
 
-          <div className="quiz-header-meta-group">
-            <p className="quiz-step-indicator">
-              Question {currentIndex + 1} of {totalQ} · {currentQ.category}
-            </p>
-            <h1 className="quiz-title-text">Career Aptitude Assessment</h1>
+            <h1 className="quiz-main-headline gradient-text">Career Aptitude Assessment</h1>
 
-            {/* Progress Bar */}
-            <div className="quiz-progress-row">
+            {/* Glowing Progress Track */}
+            <div className="quiz-progress-wrapper">
               <div className="quiz-progress-track">
                 <div
                   className="quiz-progress-fill"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              <span className="quiz-progress-text">
-                {currentIndex + 1}/{totalQ}
-              </span>
+              <div className="quiz-progress-meta mono text-xs">
+                <span>{answeredCount} of {totalQ} Answered</span>
+                <span>{progressPercent}% Complete</span>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="quiz-theme-main">
-        <div className="quiz-card-content">
-          {/* Question Text */}
-          <section className="quiz-q-section">
-            <div className="quiz-q-row">
-              <span className="quiz-lightbulb-icon" role="img" aria-label="lightbulb">
-                {currentQ.icon || "💡"}
-              </span>
-              <h2 className="quiz-question-heading">{currentQ.question}</h2>
-            </div>
-          </section>
+          {/* Question Statement */}
+          <div className="quiz-question-box">
+            <h2 className="quiz-question-text">
+              {currentQ.question}
+            </h2>
+          </div>
 
-          {/* Options List */}
-          <section className="quiz-options-wrapper">
+          {/* Options Grid */}
+          <div className="quiz-options-list">
             {currentQ.options.map((opt, idx) => {
               const isSelected = answers[currentQ.id] === opt.id;
               const optionLetter = String.fromCharCode(65 + idx);
 
               return (
-                <label
+                <div
                   key={opt.id}
-                  className={`quiz-option-card ${isSelected ? "selected" : ""}`}
+                  className={`quiz-option-card ${isSelected ? "quiz-option-card--selected" : ""}`}
                   onClick={() => handleSelectOption(opt.id)}
                 >
-                  <input
-                    type="radio"
-                    name={`q-${currentQ.id}`}
-                    value={opt.id}
-                    checked={isSelected}
-                    onChange={() => handleSelectOption(opt.id)}
-                    className="quiz-radio-hidden"
-                  />
-                  <div className={`option-letter-badge ${isSelected ? "selected" : ""}`}>
+                  <div className={`quiz-option-badge mono ${isSelected ? "quiz-option-badge--selected" : ""}`}>
                     {optionLetter}
                   </div>
-                  <span className="option-text-label">{opt.label}</span>
-                </label>
+                  <span className="quiz-option-label">{opt.label}</span>
+                  <div className={`quiz-radio-indicator ${isSelected ? "quiz-radio-indicator--selected" : ""}`}>
+                    {isSelected && <div className="quiz-radio-dot" />}
+                  </div>
+                </div>
               );
             })}
-          </section>
-        </div>
-      </main>
+          </div>
 
-      {/* Sticky Bottom Action Area */}
-      <footer className="quiz-sticky-footer">
-        <div className="quiz-footer-inner">
-          <div className="quiz-nav-row">
+          {/* Bottom Actions Row */}
+          <div className="quiz-bottom-nav">
             <button
               type="button"
-              className="quiz-prev-btn"
+              className="cyber-btn cyber-btn--secondary quiz-nav-prev"
               onClick={handlePrev}
               disabled={currentIndex === 0 || evaluating}
             >
-              ← Prev
+              ← Previous
             </button>
 
-            <div className="quiz-dots-cluster">
+            {/* Question Dots Strip */}
+            <div className="quiz-dots-nav">
               {questions.map((q, idx) => {
                 const isAns = answers[q.id] !== undefined;
                 const isCurr = idx === currentIndex;
@@ -446,8 +420,8 @@ export default function AssessmentQuiz() {
                   <button
                     key={q.id}
                     type="button"
-                    title={`Question ${idx + 1}`}
-                    className={`quiz-dot-item ${isAns ? "answered" : ""} ${isCurr ? "active" : ""}`}
+                    title={`Question ${idx + 1} ${isAns ? "(Answered)" : ""}`}
+                    className={`quiz-nav-dot ${isAns ? "quiz-nav-dot--answered" : ""} ${isCurr ? "quiz-nav-dot--active" : ""}`}
                     onClick={() => setCurrentIndex(idx)}
                   />
                 );
@@ -456,19 +430,19 @@ export default function AssessmentQuiz() {
 
             <button
               type="button"
-              className="quiz-next-action-btn"
+              className="cyber-btn cyber-btn--primary quiz-nav-next"
               onClick={handleNext}
               disabled={evaluating}
             >
               {evaluating
-                ? "Evaluating..."
+                ? "Evaluating Match..."
                 : currentIndex < totalQ - 1
                 ? "Next Question →"
-                : "Calculate Career Match →"}
+                : "✨ Calculate Career Match →"}
             </button>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

@@ -6,11 +6,11 @@ import VideoPlayer from "../components/VideoPlayer.jsx";
 import "./LearningHub.css";
 
 const DEFAULT_STREAM_VIDEOS = {
-  science: "https://www.youtube.com/embed/aircAruvnKk",
-  medical: "https://www.youtube.com/embed/F_KjW0nI8Hk",
-  commerce: "https://www.youtube.com/embed/Y6Ev8GIsS3E",
-  arts: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
-  vocational: "https://www.youtube.com/embed/bXb9dJ2bOls",
+  science: "https://www.youtube.com/embed/kU_t-wJ-t9c",
+  medical: "https://www.youtube.com/embed/uBGl2BujkPQ",
+  commerce: "https://www.youtube.com/embed/HXV3zeQKqGY",
+  arts: "https://www.youtube.com/embed/nu_pCVPKzTk",
+  vocational: "https://www.youtube.com/embed/IPvYjXCsTg8",
 };
 
 const DEFAULT_STREAMS = [

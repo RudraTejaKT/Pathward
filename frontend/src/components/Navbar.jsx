@@ -417,6 +417,19 @@ export default function Navbar() {
               )}
             </button>
 
+            {/* Upgrade to Pro Button for Non-Subscribed Scholars */}
+            {(!user || (!user.isPremium && user.role !== "instructor" && user.role !== "admin")) && (
+              <button
+                type="button"
+                className="navbar-upgrade-pro-btn mono"
+                onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+                title="Upgrade to Pathward Pro"
+              >
+                <span>⭐</span>
+                <span>Upgrade to Pro</span>
+              </button>
+            )}
+
             {/* Authenticated User Menu OR Guest Buttons */}
             {user ? (
               <div className="nav-dropdown-wrapper">
@@ -432,6 +445,9 @@ export default function Navbar() {
                   <span className="user-pill-name mono">
                     {user.name ? user.name.split(" ")[0] : "Scholar"}
                   </span>
+                  {user.isPremium ? (
+                    <span className="navbar-pro-gem-badge" title="Active Pathward Pro Scholar">💎</span>
+                  ) : null}
                   <span className="material-symbols-outlined nav-caret">
                     {activeMenu === "user" ? "expand_less" : "expand_more"}
                   </span>
@@ -442,11 +458,24 @@ export default function Navbar() {
                     <div className="user-dropdown-header">
                       <strong>{user.name}</strong>
                       <span className="mono text-xs text-muted">{user.email}</span>
-                      <div className="mt-1">
-                        <span className={`status-pill mono ${user.role === "instructor" ? "status-pill--graded" : "status-pill--pending"}`}>
-                          {user.role === "instructor" ? "Instructor / Faculty" : "Verified Scholar"}
+                      <div className="mt-1 flex-gap-xs">
+                        <span className={`status-pill mono ${user.role === "instructor" ? "status-pill--graded" : user.isPremium ? "status-pill--graded" : "status-pill--pending"}`}>
+                          {user.role === "instructor" ? "Instructor / Faculty" : user.isPremium ? "💎 Pro Scholar" : "Free Scholar"}
                         </span>
                       </div>
+                      {!user.isPremium && user.role !== "instructor" && user.role !== "admin" && (
+                        <button
+                          type="button"
+                          className="cyber-btn cyber-btn--primary w-full text-xs mt-2"
+                          style={{ padding: "6px 10px", fontSize: "11.5px" }}
+                          onClick={() => {
+                            setActiveMenu(null);
+                            window.dispatchEvent(new CustomEvent("pathward:open-subscription"));
+                          }}
+                        >
+                          ⭐ Unlock Pro (₹499)
+                        </button>
+                      )}
                     </div>
 
                     <div className="user-dropdown-links">
@@ -458,18 +487,18 @@ export default function Navbar() {
                       ) : (
                         <Link to="/dashboard" className="user-drop-link">
                           <span className="material-symbols-outlined">dashboard</span>
-                          <span>Student Dashboard</span>
+                          <span>Student Dashboard {user.isPremium ? "" : "(Pro)"}</span>
                         </Link>
                       )}
 
                       <Link to="/mcq" className="user-drop-link">
                         <span className="material-symbols-outlined">sports_esports</span>
-                        <span>Practice Gym</span>
+                        <span>Practice Gym {user.isPremium ? "" : "(Pro)"}</span>
                       </Link>
 
                       <Link to="/discover" className="user-drop-link">
                         <span className="material-symbols-outlined">explore</span>
-                        <span>Explore Catalog</span>
+                        <span>Explore Catalog {user.isPremium ? "" : "(Pro)"}</span>
                       </Link>
 
                       <button type="button" onClick={handleLogout} className="user-drop-link text-error">
@@ -482,10 +511,10 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="navbar__auth-btns">
-                <Link to="/login" className="cyber-btn cyber-btn--secondary mono text-xs">
+                <Link to="/login" className="navbar__auth-btn navbar__auth-btn--secondary mono">
                   Sign In
                 </Link>
-                <Link to="/signup" className="cyber-btn cyber-btn--primary mono text-xs">
+                <Link to="/signup" className="navbar__auth-btn navbar__auth-btn--primary mono">
                   Get Started →
                 </Link>
               </div>
@@ -612,11 +641,11 @@ export default function Navbar() {
                     Logout (@{user.name})
                   </button>
                 ) : (
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <Link to="/login" className="cyber-btn cyber-btn--secondary" style={{ flex: 1 }}>
+                  <div className="mobile-auth-btns">
+                    <Link to="/login" className="navbar__auth-btn navbar__auth-btn--secondary mono" style={{ flex: 1 }}>
                       Sign In
                     </Link>
-                    <Link to="/signup" className="cyber-btn cyber-btn--primary" style={{ flex: 1 }}>
+                    <Link to="/signup" className="navbar__auth-btn navbar__auth-btn--primary mono" style={{ flex: 1 }}>
                       Get Started →
                     </Link>
                   </div>

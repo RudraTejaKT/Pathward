@@ -9,6 +9,9 @@ import {
   enrollCourse,
   setActiveCourse,
   toggleLessonCompletion,
+  saveCustomCourse,
+  loadSavedCustomCourses,
+  formatVideoEmbedUrl,
 } from "../lib/coursesData.js";
 import "./CourseDetail.css";
 
@@ -17,11 +20,17 @@ export default function CourseDetail() {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
 
-  const course = COURSE_CATALOG[courseId] || COURSE_CATALOG["feat-1"];
+  const [course, setCourse] = useState(() => {
+    loadSavedCustomCourses();
+    const match = COURSE_CATALOG[courseId] || Object.values(COURSE_CATALOG).find(c => String(c.id) === String(courseId));
+    return match || COURSE_CATALOG["feat-1"];
+  });
 
-  const [isPlayingVideo, setIsPlayingVideo] = useState(false);
-  const [currentVideoUrl, setCurrentVideoUrl] = useState(course.trailerVideoUrl);
-  const [activeLessonTitle, setActiveLessonTitle] = useState("Course Trailer & Architecture Overview");
+  const [isPlayingVideo, setIsPlayingVideo] = useState(true);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(() => {
+    return formatVideoEmbedUrl(course.trailerVideoUrl || course.curriculum?.[0]?.videoUrl);
+  });
+  const [activeLessonTitle, setActiveLessonTitle] = useState("Course Trailer & Video Lecture");
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -30,15 +39,114 @@ export default function CourseDetail() {
   const [receiptData, setReceiptData] = useState(null);
 
   useEffect(() => {
-    // Check if user already enrolled
+    loadSavedCustomCourses();
+    const localMatch = COURSE_CATALOG[courseId] || Object.values(COURSE_CATALOG).find(c => String(c.id) === String(courseId));
+    if (localMatch) {
+      setCourse(localMatch);
+      const vid = formatVideoEmbedUrl(localMatch.trailerVideoUrl || localMatch.curriculum?.[0]?.videoUrl);
+      setCurrentVideoUrl(vid);
+    }
+
+    // Also sync from backend API to load modules and DB courses
+    api.getCourse(courseId)
+      .then((res) => {
+        if (res && res.course) {
+          const c = res.course;
+          const mods = res.modules || [];
+          const primaryVid = formatVideoEmbedUrl(c.trailer_video_url || mods[0]?.video_url || "https://www.youtube.com/embed/aircAruvnKk");
+          
+          const unifiedCourse = {
+            id: String(c.id),
+            title: c.title,
+            category: c.category || "Software & AI",
+            streamId: c.stream_id || "science",
+            branchId: "cse",
+            level: "Advanced",
+            instructor: c.instructor_name || "Course Instructor",
+            rating: 5.0,
+            reviewsCount: "1",
+            studentsCount: "12",
+            price: Math.round((c.price_paise || 99900) / 100),
+            originalPrice: Math.round((c.price_paise || 99900) / 100) * 2,
+            videoDuration: "1h 30m Total",
+            trailerVideoUrl: primaryVid,
+            trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
+            description: c.description || "",
+            curriculumSummary: `${mods.length || 1} modules • 1h 30m`,
+            curriculum: mods.length > 0
+              ? mods.map((m, idx) => ({
+                  id: String(m.id || idx + 1),
+                  number: m.position || idx + 1,
+                  title: m.title,
+                  codeSnippet: `// Module: ${m.title}\nconsole.log("Module initialized");`,
+                  isFreePreview: idx === 0,
+                  duration: "45:00",
+                  videoUrl: formatVideoEmbedUrl(m.video_url || primaryVid),
+                  assignment: {
+                    id: m.id || idx + 1,
+                    title: `${m.title} Practical Task`,
+                    description: m.description || "Complete module objectives.",
+                    starterCode: "// Solution code",
+                    due: "Next Week",
+                    maxPoints: 100,
+                  },
+                  lessons: [
+                    {
+                      id: `l-${m.id || idx + 1}`,
+                      title: m.title,
+                      duration: "45:00",
+                      isPreview: idx === 0,
+                      videoUrl: formatVideoEmbedUrl(m.video_url || primaryVid)
+                    }
+                  ]
+                }))
+              : [
+                  {
+                    id: "mod-1",
+                    number: 1,
+                    title: `Foundations of ${c.title}`,
+                    codeSnippet: `// ${c.title} Module 1\nconsole.log("Started");`,
+                    isFreePreview: true,
+                    duration: "1h 30m",
+                    videoUrl: primaryVid,
+                    assignment: {
+                      id: 1,
+                      title: `${c.title} Capstone`,
+                      description: c.description || "Course capstone project.",
+                      starterCode: "// Solution code",
+                      due: "Next Week",
+                      maxPoints: 100,
+                    },
+                    lessons: [
+                      {
+                        id: "l-1",
+                        title: "Full Video Masterclass Lecture",
+                        duration: "45:00",
+                        isPreview: true,
+                        videoUrl: primaryVid
+                      }
+                    ]
+                  }
+                ]
+          };
+          setCourse(unifiedCourse);
+          saveCustomCourse(unifiedCourse);
+          setCurrentVideoUrl(primaryVid);
+        }
+      })
+      .catch(() => {});
+  }, [courseId]);
+
+  useEffect(() => {
+    // Check if user already enrolled or is Pro/instructor
     const enrolledMap = JSON.parse(localStorage.getItem("pathward_enrolled_courses") || "{}");
-    if (enrolledMap[course.id] || (user && user.isPremium)) {
+    if (enrolledMap[course.id] || (user && (user.isPremium || user.role === "instructor" || user.role === "admin"))) {
       setIsEnrolled(true);
     }
   }, [course.id, user]);
 
   function handlePlayLesson(module, lesson) {
-    const isUnlocked = module.isFreePreview || isEnrolled || (user && user.isPremium);
+    const isUnlocked = module.isFreePreview || isEnrolled || (user && (user.isPremium || user.role === "instructor" || user.role === "admin"));
     if (!isUnlocked) {
       setIsCheckoutOpen(true);
       return;
@@ -49,15 +157,15 @@ export default function CourseDetail() {
     }
     setActiveCourse(course.id);
 
-    const targetUrl = lesson?.videoUrl || module?.videoUrl || course.trailerVideoUrl;
+    const targetUrl = formatVideoEmbedUrl(lesson?.videoUrl || module?.videoUrl || course.trailerVideoUrl);
     setCurrentVideoUrl(targetUrl);
     setActiveLessonTitle(`${module.title} — ${lesson.title}`);
     setIsPlayingVideo(true);
   }
 
   function handlePlayTrailer() {
-    setCurrentVideoUrl(course.trailerVideoUrl);
-    setActiveLessonTitle("Course Trailer & Architecture Overview");
+    setCurrentVideoUrl(formatVideoEmbedUrl(course.trailerVideoUrl));
+    setActiveLessonTitle("Course Trailer & Video Lecture");
     setIsPlayingVideo(true);
   }
 

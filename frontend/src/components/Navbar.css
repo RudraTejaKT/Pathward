@@ -397,6 +397,20 @@
   box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
 }
 
+[data-theme="light"] .octi-nav-trigger-pill {
+  background: rgba(147, 51, 234, 0.1);
+  border: 1.5px solid rgba(147, 51, 234, 0.4);
+  color: #6b21a8;
+  font-weight: 800;
+}
+
+[data-theme="light"] .octi-nav-trigger-pill:hover {
+  background: rgba(147, 51, 234, 0.18);
+  border-color: #7e22ce;
+  color: #581c87;
+  box-shadow: 0 0 14px rgba(147, 51, 234, 0.25);
+}
+
 .octi-emoji {
   font-size: 15px;
   line-height: 1;
@@ -440,6 +454,133 @@
   width: 18px;
   height: 18px;
   display: block;
+}
+
+/* ========================================================= */
+/* NAVBAR AUTH BUTTONS & PRO UPGRADE */
+/* ========================================================= */
+.navbar-upgrade-pro-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.25) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar-upgrade-pro-btn:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.4) 100%);
+  border-color: #f59e0b;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+}
+
+[data-theme="light"] .navbar-upgrade-pro-btn {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+[data-theme="light"] .navbar-upgrade-pro-btn:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #78350f;
+}
+
+.navbar-pro-gem-badge {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.navbar__auth-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.navbar__auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  box-sizing: border-box;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.navbar__auth-btn--secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--on-surface);
+}
+
+.navbar__auth-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.navbar__auth-btn--primary {
+  background: linear-gradient(135deg, #c5c0ff 0%, #a29bfe 100%);
+  border: 1px solid transparent;
+  color: #140067;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(162, 155, 254, 0.3);
+}
+
+.navbar__auth-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(162, 155, 254, 0.5);
+}
+
+/* Light Theme Variants */
+[data-theme="light"] .navbar__auth-btn--secondary {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .navbar__auth-btn--secondary:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #4f46e5;
+}
+
+[data-theme="light"] .navbar__auth-btn--primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  border: 1px solid transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="light"] .navbar__auth-btn--primary:hover {
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.mobile-auth-btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
 }
 
 /* User Profile Pill */

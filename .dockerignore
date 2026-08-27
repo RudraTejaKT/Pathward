@@ -1,0 +1,14 @@
+node_modules
+*/node_modules
+.git
+.github
+*.csv
+*accessKeys*
+*credentials*
+.env
+.env.*
+*.log
+backend/pathward.db*
+*.md
+.vscode
+.idea

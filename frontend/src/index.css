@@ -251,6 +251,62 @@ button {
   -webkit-text-fill-color: transparent;
 }
 
+/* Core Buttons */
+.cyber-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1.2;
+}
+
+.cyber-btn--primary {
+  background: linear-gradient(135deg, #c5c0ff 0%, #a29bfe 100%);
+  color: #140067;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 20px rgba(197, 192, 255, 0.35);
+}
+
+.cyber-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(197, 192, 255, 0.55);
+}
+
+.cyber-btn--secondary {
+  background: var(--surface-container);
+  border: 1px solid rgba(71, 69, 82, 0.5);
+  color: var(--secondary);
+}
+
+.cyber-btn--secondary:hover {
+  background: var(--surface-container-high);
+  border-color: var(--secondary);
+  box-shadow: 0 0 16px rgba(71, 214, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.cyber-btn--medical {
+  background: var(--surface-container);
+  border: 1px solid rgba(71, 69, 82, 0.5);
+  color: #a5e7ff;
+}
+
+.cyber-btn--medical:hover {
+  background: var(--surface-container-high);
+  border-color: #47d6ff;
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.25);
+  transform: translateY(-2px);
+}
+
 /* Cyber Header Pill */
 .cyber-pill {
   display: inline-flex;
@@ -358,4 +414,33 @@ button {
 ::selection {
   background: rgba(197, 192, 255, 0.3);
   color: #ffffff;
+}
+
+/* Sleek Icon-Only Logout Button */
+.navbar__logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar__logout-btn:hover {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.navbar__logout-btn .logout-icon {
+  font-size: 19px;
+  line-height: 1;
 }

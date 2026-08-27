@@ -1,11 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import { APTITUDE_CATEGORIES, MASTER_APTITUDE_BANK } from "../lib/aptitudeDatabase";
 import "./McqLab.css";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 
 export default function McqLab() {
+  const { user } = useAuth();
+  const isSubscribed = user && (user.isPremium || user.role === "instructor" || user.role === "admin");
+
   // Filters & State
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
@@ -26,7 +30,7 @@ export default function McqLab() {
 
   // Stopwatch timer for Speed Challenge
   useEffect(() => {
-    if (timerActive) {
+    if (timerActive && isSubscribed) {
       timerRef.current = setInterval(() => {
         setTimerSeconds((prev) => prev + 1);
       }, 1000);
@@ -34,7 +38,7 @@ export default function McqLab() {
       clearInterval(timerRef.current);
     }
     return () => clearInterval(timerRef.current);
-  }, [timerActive]);
+  }, [timerActive, isSubscribed]);
 
   function handleGenerateQuestions() {
     setAnswers({});
@@ -80,6 +84,15 @@ export default function McqLab() {
   }
 
   function handleSelectOption(qIndex, optIndex) {
+    if (!isSubscribed) {
+      window.dispatchEvent(
+        new CustomEvent("pathward:open-subscription", {
+          detail: { plan: "pathward_pro" },
+        })
+      );
+      return;
+    }
+
     if (answers[qIndex] !== undefined) return;
     const isCorrect = questions[qIndex]?.answer === optIndex;
 
@@ -94,6 +107,15 @@ export default function McqLab() {
   }
 
   function toggleHint(qIndex) {
+    if (!isSubscribed) {
+      window.dispatchEvent(
+        new CustomEvent("pathward:open-subscription", {
+          detail: { plan: "pathward_pro" },
+        })
+      );
+      return;
+    }
+
     setHintsRevealed((prev) => ({
       ...prev,
       [qIndex]: !prev[qIndex],
@@ -225,6 +247,35 @@ export default function McqLab() {
       {/* Main Questions Workspace */}
       <main className="mcq-main">
         <div className="container">
+          {/* Subscription Paywall Gate Banner */}
+          {!isSubscribed && (
+            <div className="mcq-pro-gate-banner glass-card animate-slide-up">
+              <div className="mcq-pro-gate-content">
+                <span className="material-symbols-outlined mcq-pro-gate-icon">lock</span>
+                <div>
+                  <div className="mcq-pro-badge mono">💎 PATHWARD PRO EXCLUSIVE</div>
+                  <h3>MCQ Practice Batteries &amp; Solutions are Gated</h3>
+                  <p>
+                    You are browsing question previews in the Practice Gym. Subscribe to <strong>Pathward Pro (₹499 Lifetime)</strong> to solve interactive MCQs, unlock step-by-step mathematical solutions, formulas, and track placement exam readiness.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="cyber-btn cyber-btn--primary mcq-upgrade-btn"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent("pathward:open-subscription", {
+                      detail: { plan: "pathward_pro" },
+                    })
+                  )
+                }
+              >
+                ⭐ Unlock All 500+ MCQs (₹499) →
+              </button>
+            </div>
+          )}
+
           <div className="mcq-questions-stack">
             {questions.length === 0 ? (
               <div className="question-card glass-card text-center" style={{ padding: "40px 20px" }}>
@@ -263,9 +314,11 @@ export default function McqLab() {
                             type="button"
                             className="formula-hint-btn mono text-xs"
                             onClick={() => toggleHint(i)}
-                            title="Peek formula / derivation hint"
+                            title={!isSubscribed ? "Subscribe to Pro to view formula hint" : "Peek formula / derivation hint"}
                           >
-                            <span className="material-symbols-outlined" style={{ fontSize: "15px" }}>lightbulb</span>
+                            <span className="material-symbols-outlined" style={{ fontSize: "15px" }}>
+                              {isSubscribed ? "lightbulb" : "lock"}
+                            </span>
                             <span>{isHintOpen ? "Hide Hint" : "Formula Hint"}</span>
                           </button>
                         )}
@@ -298,6 +351,9 @@ export default function McqLab() {
                             btnClass += " dimmed";
                           }
                         }
+                        if (!isSubscribed) {
+                          btnClass += " option-btn--locked";
+                        }
 
                         return (
                           <button
@@ -306,9 +362,13 @@ export default function McqLab() {
                             className={btnClass}
                             onClick={() => handleSelectOption(i, j)}
                             disabled={isAnswered}
+                            title={!isSubscribed ? "Subscribe to Pathward Pro to solve MCQs" : ""}
                           >
                             <span className="option-letter mono">{OPTION_LETTERS[j]}</span>
                             <span className="option-text">{opt}</span>
+                            {!isSubscribed && (
+                              <span className="material-symbols-outlined option-lock-badge">lock</span>
+                            )}
                           </button>
                         );
                       })}

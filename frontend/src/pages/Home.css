@@ -512,3 +512,219 @@
   text-align: center;
   color: var(--on-surface-variant);
 }
+
+/* ========================================================= */
+/* FRONT PAGE FREE BRANCH VIDEO THEATER */
+/* ========================================================= */
+.home-free-videos-section {
+  padding: 40px 0 60px;
+}
+
+.home-free-theater-wrapper {
+  padding: 36px 32px;
+  border-radius: 24px;
+  border: 1px solid rgba(197, 192, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: rgba(18, 22, 32, 0.95);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.12);
+}
+
+[data-theme="light"] .home-free-theater-wrapper {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+}
+
+.theater-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.free-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.theater-main-title {
+  font-size: clamp(24px, 3.2vw, 34px);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.theater-main-subtitle {
+  font-size: 14.5px;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+  max-width: 680px;
+}
+
+.subscribe-pill-cta {
+  padding: 12px 22px;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+/* Branch Selector Pills */
+.branch-selector-pills-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.branch-select-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--on-surface-variant);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.branch-select-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--on-surface);
+  border-color: rgba(197, 192, 255, 0.3);
+}
+
+.branch-select-pill--active {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: #818cf8;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="light"] .branch-select-pill {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+[data-theme="light"] .branch-select-pill--active {
+  background: #eef2ff;
+  border-color: #4f46e5;
+  color: #312e81;
+}
+
+.branch-dot-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+/* Home Theater Display Grid */
+.home-theater-display-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 24px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(10, 13, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+}
+
+[data-theme="light"] .home-theater-display-grid {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.theater-screen-frame {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+}
+
+.theater-screen-frame iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.theater-screen-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px;
+}
+
+.sidebar-now-playing {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.now-playing-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+}
+
+.now-playing-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.now-playing-instructor {
+  font-size: 12px;
+}
+
+.now-playing-desc {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  line-height: 1.45;
+}
+
+.now-playing-topics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+}
+
+.topics-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 900px) {
+  .home-theater-display-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

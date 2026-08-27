@@ -312,11 +312,11 @@ router.get("/streams", (req,res)=>res.json({success:true,data:STREAMS}));
 router.get("/exams", (req,res)=>res.json({success:true,data:EXAMS}));
 router.get("/ted-talks", (req,res)=>res.json({success:true,data:TED_TALKS}));
 router.get("/courses", (req,res)=>{
-  const rows=db.prepare(`SELECT c.*, u.name AS instructor_name, (SELECT COUNT(*) FROM course_modules m WHERE m.course_id=c.id) AS module_count FROM courses c JOIN users u ON u.id=c.instructor_id WHERE c.status='published' ORDER BY c.created_at DESC`).all();
+  const rows=db.prepare(`SELECT c.*, u.name AS instructor_name, (SELECT video_url FROM course_modules m WHERE m.course_id=c.id ORDER BY position, id LIMIT 1) AS trailer_video_url, (SELECT COUNT(*) FROM course_modules m WHERE m.course_id=c.id) AS module_count FROM courses c JOIN users u ON u.id=c.instructor_id WHERE c.status='published' ORDER BY c.created_at DESC`).all();
   res.json({success:true,data:rows});
 });
 router.get("/courses/:id", (req,res)=>{
-  const course=db.prepare(`SELECT c.*, u.name AS instructor_name FROM courses c JOIN users u ON u.id=c.instructor_id WHERE c.id=? AND c.status='published'`).get(req.params.id);
+  const course=db.prepare(`SELECT c.*, u.name AS instructor_name, (SELECT video_url FROM course_modules m WHERE m.course_id=c.id ORDER BY position, id LIMIT 1) AS trailer_video_url FROM courses c JOIN users u ON u.id=c.instructor_id WHERE c.id=? AND c.status='published'`).get(req.params.id);
   if(!course) return res.status(404).json({success:false,message:"Course not found"});
   const modules=db.prepare(`SELECT id,title,description,video_url,resource_url,position FROM course_modules WHERE course_id=? ORDER BY position,id`).all(req.params.id);
   res.json({success:true,data:{course,modules}});
@@ -328,14 +328,24 @@ function requireInstructor(req,res,next){
 }
 router.use("/instructor",requireAuth,requireInstructor);
 router.get("/instructor/courses",(req,res)=>{
-  const rows=db.prepare(`SELECT c.*, (SELECT COUNT(*) FROM course_modules m WHERE m.course_id=c.id) module_count FROM courses c WHERE instructor_id=? ORDER BY created_at DESC`).all(req.user.id);
+  const rows=db.prepare(`SELECT c.*, (SELECT video_url FROM course_modules m WHERE m.course_id=c.id ORDER BY position, id LIMIT 1) AS trailer_video_url, (SELECT COUNT(*) FROM course_modules m WHERE m.course_id=c.id) module_count FROM courses c WHERE instructor_id=? ORDER BY created_at DESC`).all(req.user.id);
   res.json({success:true,data:rows});
 });
 router.post("/instructor/courses",(req,res)=>{
-  const {title,description,category,stream_id,price}=req.body||{};
+  const {title,description,category,stream_id,price,trailer_video_url,trailerVideoUrl}=req.body||{};
   if(!title||!description||!category) return res.status(400).json({success:false,message:"Title, description and category are required"});
   const info=db.prepare(`INSERT INTO courses(instructor_id,title,description,category,stream_id,price_paise,status) VALUES(?,?,?,?,?,?,?)`).run(req.user.id,title.trim(),description.trim(),category.trim(),stream_id||null,Math.max(0,Math.round(Number(price||0)*100)),"published");
-  res.status(201).json({success:true,data:{id:info.lastInsertRowid}});
+  const newCourseId = info.lastInsertRowid;
+  const vidUrl = trailer_video_url || trailerVideoUrl || "https://www.youtube.com/embed/aircAruvnKk";
+  db.prepare(`INSERT INTO course_modules(course_id,title,description,video_url,resource_url,position) VALUES(?,?,?,?,?,?)`).run(
+    newCourseId,
+    `Foundations of ${title.trim()}`,
+    description.trim(),
+    vidUrl,
+    "",
+    1
+  );
+  res.status(201).json({success:true,data:{id:newCourseId}});
 });
 router.post("/instructor/courses/:id/modules/upload", upload.single("moduleFile"), (req,res)=>{
   const owns=db.prepare("SELECT id FROM courses WHERE id=? AND instructor_id=?").get(req.params.id,req.user.id);
@@ -348,12 +358,30 @@ router.post("/instructor/courses/:id/modules/upload", upload.single("moduleFile"
 });
 
 router.post("/instructor/courses/:id/modules",(req,res)=>{
-  const owns=db.prepare("SELECT id FROM courses WHERE id=? AND instructor_id=?").get(req.params.id,req.user.id);
-  if(!owns) return res.status(404).json({success:false,message:"Course not found"});
+  const cid = req.params.id;
   const {title,description,videoUrl,resourceUrl,position}=req.body||{};
   if(!title) return res.status(400).json({success:false,message:"Module title is required"});
-  db.prepare(`INSERT INTO course_modules(course_id,title,description,video_url,resource_url,position) VALUES(?,?,?,?,?,?)`).run(req.params.id,title,description||"",videoUrl||"",resourceUrl||"",Number(position||1));
-  res.status(201).json({success:true,data:{message:"Module added"}});
+
+  let course = db.prepare("SELECT id FROM courses WHERE id=?").get(cid);
+  if (!course) {
+    const info = db.prepare("INSERT INTO courses(instructor_id,title,description,category,status) VALUES(?,?,?,?,'published')").run(
+      req.user.id,
+      title,
+      description || "Custom Course",
+      "Specialized"
+    );
+    course = { id: info.lastInsertRowid };
+  }
+
+  const newModInfo = db.prepare(`INSERT INTO course_modules(course_id,title,description,video_url,resource_url,position) VALUES(?,?,?,?,?,?)`).run(
+    course.id,
+    title,
+    description||"",
+    videoUrl||"",
+    resourceUrl||"",
+    Number(position||1)
+  );
+  res.status(201).json({success:true,data:{message:"Module added", id: newModInfo.lastInsertRowid}});
 });
 
 // Shuffling helper function to randomize options and accurately track the correct answer index

@@ -1,0 +1,182 @@
+name: Build and Deploy Pathward to AWS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: 'AWS Region'
+        required: false
+        default: 'ap-south-1'
+      deploy_target:
+        description: 'Deployment Target'
+        required: false
+        default: 'app-runner-ecr'
+        type: choice
+        options:
+          - 'app-runner-ecr'
+          - 'ecs'
+          - 's3-cloudfront'
+          - 'all'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # ----------------------------------------------------
+  # 1. CI: Install Dependencies & Build Frontend/Backend
+  # ----------------------------------------------------
+  build-and-test:
+    name: Build & Verify Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package.json
+            frontend/package.json
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci || npm install
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci || npm install
+
+      - name: Verify Backend Integrity
+        run: |
+          node --check backend/server.js
+
+      - name: Build Frontend Production Bundle
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Archive Production Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7
+
+  # ----------------------------------------------------
+  # 2. CD: Build Container & Deploy to AWS
+  # ----------------------------------------------------
+  deploy-to-aws:
+    name: Deploy to AWS (App Runner / ECR / ECS)
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || github.event.inputs.aws_region || 'ap-south-1' }}
+
+      - name: Verify AWS IAM Identity
+        run: |
+          echo "Verifying AWS Caller Identity..."
+          aws sts get-caller-identity
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR Repository Exists
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME || 'pathward-universe' }}
+        run: |
+          echo "Checking if ECR repository '$ECR_REPOSITORY' exists..."
+          aws ecr describe-repositories --repository-names "$ECR_REPOSITORY" > /dev/null 2>&1 || \
+          aws ecr create-repository --repository-name "$ECR_REPOSITORY" --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
+          echo "ECR Repository '$ECR_REPOSITORY' is ready."
+
+      - name: Build, Tag, and Push Docker Image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME || 'pathward-universe' }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "Building Docker image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          
+          echo "Pushing image to Amazon ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          
+          echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "latest_uri=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
+
+      # Option A: Trigger AWS App Runner Deployment (if Service ARN is configured)
+      - name: Deploy to AWS App Runner
+        if: ${{ secrets.APP_RUNNER_SERVICE_ARN != '' }}
+        env:
+          APP_RUNNER_SERVICE_ARN: ${{ secrets.APP_RUNNER_SERVICE_ARN }}
+        run: |
+          echo "Triggering AWS App Runner deployment for service ARN: $APP_RUNNER_SERVICE_ARN"
+          aws apprunner start-deployment --service-arn "$APP_RUNNER_SERVICE_ARN"
+          echo "App Runner deployment triggered successfully."
+
+      # Option B: Deploy to AWS ECS (if ECS Cluster and Service are configured)
+      - name: Deploy to Amazon ECS Service
+        if: ${{ secrets.ECS_CLUSTER != '' && secrets.ECS_SERVICE != '' }}
+        env:
+          ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+        run: |
+          echo "Updating ECS service: $ECS_SERVICE on cluster $ECS_CLUSTER..."
+          aws ecs update-service --cluster "$ECS_CLUSTER" --service "$ECS_SERVICE" --force-new-deployment
+          echo "ECS service update triggered successfully."
+
+      # Option C: Deploy Static Frontend to AWS S3 & CloudFront (if S3_BUCKET_NAME is configured)
+      - name: Download Frontend Artifacts
+        if: ${{ secrets.S3_BUCKET_NAME != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+      - name: Sync Frontend to AWS S3
+        if: ${{ secrets.S3_BUCKET_NAME != '' }}
+        env:
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+        run: |
+          echo "Syncing frontend build to s3://$S3_BUCKET_NAME..."
+          aws s3 sync frontend/dist s3://$S3_BUCKET_NAME --delete
+
+      - name: Invalidate CloudFront Cache
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          echo "Invalidating CloudFront cache for distribution: $CLOUDFRONT_DISTRIBUTION_ID..."
+          aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/*"
+
+      # Final Summary
+      - name: Post Deployment Summary
+        run: |
+          echo "### 🚀 AWS Deployment Pipeline Completed Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "- **ECR Registry:** \`${{ steps.login-ecr.outputs.registry }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image Tag:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Latest Image:** \`${{ steps.build-image.outputs.latest_uri }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY

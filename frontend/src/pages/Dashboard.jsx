@@ -429,9 +429,14 @@ export default function Dashboard() {
             <div className="dash-user-group">
               <div className="navbar__avatar">{user?.name ? user.name.charAt(0).toUpperCase() : "S"}</div>
               <span className="dash-username mono">{user?.name ? user.name.split(" ")[0] : "Scholar"}</span>
-              <button type="button" onClick={handleLogout} className="navbar__logout-btn mono" title="Log out">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="navbar__logout-btn"
+                title="Log out"
+                aria-label="Log out"
+              >
                 <span className="material-symbols-outlined logout-icon">logout</span>
-                <span>Logout</span>
               </button>
             </div>
           </div>

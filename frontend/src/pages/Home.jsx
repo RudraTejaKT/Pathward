@@ -1,11 +1,32 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import { getBranchFreeVideos } from "../lib/branchVideos";
 import "./Home.css";
+
+const FEATURED_BRANCH_TABS = [
+  { id: "cse", name: "Computer Science (CSE)", stream: "engineering" },
+  { id: "aids", name: "AI & Data Science", stream: "engineering" },
+  { id: "ece", name: "Electronics & VLSI", stream: "engineering" },
+  { id: "mech", name: "Mechanical & Robotics", stream: "engineering" },
+  { id: "mbbs", name: "MBBS & Clinical Medicine", stream: "medical" },
+  { id: "pharm", name: "Pharmacy & Drug Science", stream: "medical" },
+  { id: "bds", name: "BDS Dental Surgery", stream: "medical" },
+];
 
 export default function Home() {
   const [streams, setStreams] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Front page Free Branch Video Theater State
+  const [activeBranchId, setActiveBranchId] = useState("cse");
+  const currentBranchVideos = getBranchFreeVideos(activeBranchId);
+  const [selectedHomeVideo, setSelectedHomeVideo] = useState(currentBranchVideos[0] || null);
+
+  useEffect(() => {
+    const vids = getBranchFreeVideos(activeBranchId);
+    setSelectedHomeVideo(vids[0] || null);
+  }, [activeBranchId]);
 
   useEffect(() => {
     api
@@ -74,6 +95,93 @@ export default function Home() {
               <span className="stat-number gradient-text">₹499</span>
               <span className="stat-label mono">LIFETIME PRO UNLOCK VIA RAZORPAY</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* FREE BRANCH ORIENTATION VIDEO THEATER ON FRONT PAGE */}
+      {/* ========================================================= */}
+      <section className="home-free-videos-section">
+        <div className="container">
+          <div className="home-free-theater-wrapper glass-card">
+            <div className="theater-header-row">
+              <div>
+                <div className="free-badge-pill mono">
+                  <span className="material-symbols-outlined">play_circle</span>
+                  <span>100% FREE FOR ALL VISITORS · NO SUBSCRIPTION NEEDED</span>
+                </div>
+                <h2 className="theater-main-title gradient-text">
+                  Choose a Branch to Watch Free Foundation Videos
+                </h2>
+                <p className="theater-main-subtitle">
+                  Preview high-yield introductory lectures, core syllabi, and industry career projections for any branch before subscribing to Pathward Pro.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="cyber-btn cyber-btn--primary subscribe-pill-cta"
+                onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+              >
+                ⭐ Unlock All Universes (₹499)
+              </button>
+            </div>
+
+            {/* Branch Selector Chips */}
+            <div className="branch-selector-pills-row">
+              {FEATURED_BRANCH_TABS.map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  className={`branch-select-pill mono ${activeBranchId === b.id ? "branch-select-pill--active" : ""}`}
+                  onClick={() => setActiveBranchId(b.id)}
+                >
+                  <span className="branch-dot-indicator" />
+                  <span>{b.name}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Video Player Display */}
+            {selectedHomeVideo && (
+              <div className="home-theater-display-grid">
+                <div className="theater-screen-frame">
+                  <iframe
+                    src={selectedHomeVideo.videoUrl}
+                    title={selectedHomeVideo.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+
+                <div className="theater-screen-sidebar">
+                  <div className="sidebar-now-playing">
+                    <div className="now-playing-badge mono">NOW STREAMING FREE</div>
+                    <h3 className="now-playing-title">{selectedHomeVideo.title}</h3>
+                    <p className="now-playing-instructor mono text-xs text-primary">🎓 {selectedHomeVideo.instructor}</p>
+                    <p className="now-playing-desc">{selectedHomeVideo.description}</p>
+                    <div className="now-playing-topics">
+                      <span className="mono text-xs text-muted">KEY TAKEAWAYS:</span>
+                      <div className="topics-list">
+                        {selectedHomeVideo.topics?.map((top) => (
+                          <span key={top} className="chip chip--accent">{top}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sidebar-branch-links">
+                    <Link
+                      to={`/${FEATURED_BRANCH_TABS.find((b) => b.id === activeBranchId)?.stream || "engineering"}/${activeBranchId}`}
+                      className="cyber-btn cyber-btn--secondary w-full text-center"
+                    >
+                      Explore Full {FEATURED_BRANCH_TABS.find((b) => b.id === activeBranchId)?.name.split(" ")[0]} Roadmap →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

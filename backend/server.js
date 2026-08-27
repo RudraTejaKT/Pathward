@@ -135,7 +135,27 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString(), supabase: isConfigured ? "ready" : "disabled" });
 });
 
-// --- 404 JSON fallback for unmatched routes ---
+// --- Static Frontend Serving in Production ---
+const path = require("path");
+const frontendDistPath = path.join(__dirname, "../frontend/dist");
+const fs = require("fs");
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, "index.html"));
+  });
+}
+
+// --- 404 JSON fallback for unmatched API routes ---
+app.use("/api/*", (req, res) => {
+  res.status(404).json({ success: false, message: `API endpoint not found: ${req.method} ${req.originalUrl}` });
+});
+
+// General 404 fallback if static files aren't available
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Endpoint not found: ${req.method} ${req.originalUrl}` });
 });

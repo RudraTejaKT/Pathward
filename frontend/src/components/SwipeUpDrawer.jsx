@@ -40,6 +40,8 @@ export default function SwipeUpDrawer() {
   }, [location.pathname]);
 
   // Active course telemetry
+  const isInstructorMode = user?.role === "instructor" || location.pathname.startsWith("/instructor");
+  const instructorBalance = parseInt(localStorage.getItem("pathward_instructor_balance") || "38200", 10);
   const activeCourseId = storedProgress?.activeCourseId || "feat-1";
   const activeCourse = COURSE_CATALOG[activeCourseId] || COURSE_CATALOG["feat-1"] || Object.values(COURSE_CATALOG)[0];
   const completedLessonsMap = (storedProgress?.completedLessons && activeCourse?.id && storedProgress.completedLessons[activeCourse.id]) || {};
@@ -86,6 +88,14 @@ export default function SwipeUpDrawer() {
     setStoredProgress(getStoredProgress());
   }
 
+  function handleSwitchInstructorTab(tab) {
+    setIsOpen(false);
+    navigate("/instructor");
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("pathward:switch-instructor-tab", { detail: tab }));
+    }, 50);
+  }
+
   return (
     <div
       className={`swipe-drawer-root ${isOpen ? "open" : "collapsed"}`}
@@ -119,7 +129,11 @@ export default function SwipeUpDrawer() {
               {isOpen ? "keyboard_arrow_down" : "keyboard_arrow_up"}
             </span>
             <span className="mono text-xs peek-text">
-              {isOpen ? "Swipe down to close" : "Swipe up for Quick Actions & Shortcuts"}
+              {isOpen
+                ? "Swipe down to close"
+                : isInstructorMode
+                ? "Swipe up for Instructor Studio & Quick Controls"
+                : "Swipe up for Quick Actions & Shortcuts"}
             </span>
             <span className="pulsing-dot" />
           </div>
@@ -128,165 +142,353 @@ export default function SwipeUpDrawer() {
         {/* Expanded Drawer Content */}
         {isOpen && (
           <div className="swipe-drawer-body animate-fade-in">
-            {/* 1. Active Learning Progress & Course Switcher */}
-            <div className="drawer-active-course-card glass-card">
-              <div className="dac-top">
-                <div>
-                  <span className="mono text-xs text-secondary">ACTIVE COURSE ENROLLMENT</span>
-                  <h3 className="dac-title">{activeCourse.title}</h3>
-                </div>
-                <button
-                  type="button"
-                  className="cyber-btn cyber-btn--primary mono text-xs dac-btn"
-                  onClick={() => handleNavigate(`/courses/${activeCourse.id}`)}
-                >
-                  Continue →
-                </button>
-              </div>
+            {/* ========================================================= */}
+            {/* INSTRUCTOR DRAWER VIEW (When on /instructor or Instructor Role) */}
+            {/* ========================================================= */}
+            {isInstructorMode ? (
+              <>
+                {/* 1. Instructor Creator Suite Card */}
+                <div className="drawer-active-course-card glass-card">
+                  <div className="dac-top">
+                    <div>
+                      <span className="mono text-xs text-primary">INSTRUCTOR CREATOR SUITE</span>
+                      <h3 className="dac-title">Creator Studio &amp; Payout Command</h3>
+                    </div>
+                    <button
+                      type="button"
+                      className="cyber-btn cyber-btn--primary mono text-xs dac-btn"
+                      onClick={() => handleNavigate("/instructor")}
+                    >
+                      Open Studio →
+                    </button>
+                  </div>
 
-              <div className="dac-progress-row">
-                <div className="dac-progress-track">
-                  <div className="dac-progress-fill" style={{ width: `${progressData.percent}%` }} />
-                </div>
-                <span className="mono text-xs font-bold text-emerald">{progressData.percent}% Completed</span>
-              </div>
+                  <div className="dac-progress-row">
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span className="material-symbols-outlined text-emerald" style={{ fontSize: "17px" }}>account_balance</span>
+                      <span className="mono text-xs text-muted">Available Wallet:</span>
+                      <strong className="mono text-emerald" style={{ fontSize: "14px" }}>₹{instructorBalance.toLocaleString("en-IN")}</strong>
+                    </div>
+                  </div>
 
-              {/* Course Switcher Chips */}
-              <div className="drawer-courses-chips">
-                <span className="mono text-xs text-muted">Switch Track:</span>
-                {Object.values(COURSE_CATALOG).map((c) => (
+                  {/* Studio Tab Switcher */}
+                  <div className="drawer-courses-chips">
+                    <span className="mono text-xs text-muted">Studio Tabs:</span>
+                    <button
+                      type="button"
+                      className="course-chip mono"
+                      onClick={() => handleSwitchInstructorTab("monetization")}
+                    >
+                      💰 Revenue &amp; Payouts
+                    </button>
+                    <button
+                      type="button"
+                      className="course-chip mono"
+                      onClick={() => handleSwitchInstructorTab("courses")}
+                    >
+                      📹 Upload Courses
+                    </button>
+                    <button
+                      type="button"
+                      className="course-chip mono"
+                      onClick={() => handleSwitchInstructorTab("assignments")}
+                    >
+                      📝 Grading Hub
+                    </button>
+                    <button
+                      type="button"
+                      className="course-chip mono"
+                      onClick={() => handleSwitchInstructorTab("qa")}
+                    >
+                      💬 Scholar Q&amp;A
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Instructor Dedicated Quick Action Grid */}
+                <div className="drawer-actions-grid">
                   <button
-                    key={c.id}
                     type="button"
-                    className={`course-chip mono ${c.id === activeCourseId ? "active" : ""}`}
-                    onClick={() => handleSwitchCourse(c.id)}
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleSwitchInstructorTab("monetization")}
                   >
-                    {c.title.split(" ")[0]}…
+                    <div className="tile-icon-wrap bg-emerald">
+                      <span className="material-symbols-outlined">payments</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Revenue &amp; Payouts</strong>
+                      <span>Transfers &amp; Earnings</span>
+                    </div>
                   </button>
-                ))}
-              </div>
-            </div>
 
-            {/* 2. Quick Action Grid (All instances & platform tools) */}
-            <div className="drawer-actions-grid">
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => handleNavigate("/dashboard")}
-              >
-                <div className="tile-icon-wrap bg-indigo">
-                  <span className="material-symbols-outlined">dashboard</span>
-                </div>
-                <div className="tile-text">
-                  <strong>Student Portal</strong>
-                  <span>Overview &amp; Modules</span>
-                </div>
-              </button>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleSwitchInstructorTab("courses")}
+                  >
+                    <div className="tile-icon-wrap bg-indigo">
+                      <span className="material-symbols-outlined">video_library</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Upload Courses</strong>
+                      <span>Catalog &amp; Modules</span>
+                    </div>
+                  </button>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => handleNavigate("/mcq")}
-              >
-                <div className="tile-icon-wrap bg-cyan">
-                  <span className="material-symbols-outlined">sports_esports</span>
-                </div>
-                <div className="tile-text">
-                  <strong>Practice Gym</strong>
-                  <span>Aptitude &amp; Exam Matrix</span>
-                </div>
-              </button>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleSwitchInstructorTab("assignments")}
+                  >
+                    <div className="tile-icon-wrap bg-cyan">
+                      <span className="material-symbols-outlined">assignment_turned_in</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Grading Hub</strong>
+                      <span>Review Submissions</span>
+                    </div>
+                  </button>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => {
-                  setIsOpen(false);
-                  window.dispatchEvent(new CustomEvent("pathward:open-stress-meter"));
-                }}
-              >
-                <div className="tile-icon-wrap bg-emerald">
-                  <span className="material-symbols-outlined">monitor_heart</span>
-                </div>
-                <div className="tile-text">
-                  <strong>Stress Meter</strong>
-                  <span>Telemetry &amp; Box Breathing</span>
-                </div>
-              </button>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleSwitchInstructorTab("qa")}
+                  >
+                    <div className="tile-icon-wrap bg-purple">
+                      <span className="material-symbols-outlined">forum</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Scholar Q&amp;A</strong>
+                      <span>Direct Discussions</span>
+                    </div>
+                  </button>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => {
-                  setIsOpen(false);
-                  window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"));
-                }}
-              >
-                <div className="tile-icon-wrap bg-purple">
-                  <span className="material-symbols-outlined">school</span>
-                </div>
-                <div className="tile-text">
-                  <strong>Backlox AI</strong>
-                  <span>Academic &amp; Doubt Solver</span>
-                </div>
-              </button>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/dashboard")}
+                  >
+                    <div className="tile-icon-wrap bg-amber">
+                      <span className="material-symbols-outlined">dashboard</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Student View</strong>
+                      <span>Portal &amp; Progress</span>
+                    </div>
+                  </button>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => handleNavigate("/quiz")}
-              >
-                <div className="tile-icon-wrap bg-amber">
-                  <span className="material-symbols-outlined">psychology</span>
-                </div>
-                <div className="tile-text">
-                  <strong>Career Quiz</strong>
-                  <span>Stream Assessment</span>
-                </div>
-              </button>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/discover")}
+                  >
+                    <div className="tile-icon-wrap bg-blue">
+                      <span className="material-symbols-outlined">explore</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Explore Catalog</strong>
+                      <span>Video Masterclasses</span>
+                    </div>
+                  </button>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => handleNavigate("/engineering")}
-              >
-                <div className="tile-icon-wrap bg-rose">
-                  <span className="material-symbols-outlined">engineering</span>
-                </div>
-                <div className="tile-text">
-                  <strong>Engineering</strong>
-                  <span>35+ Core &amp; AI Branches</span>
-                </div>
-              </button>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => {
+                      setIsOpen(false);
+                      window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"));
+                    }}
+                  >
+                    <div className="tile-icon-wrap bg-rose">
+                      <span className="material-symbols-outlined">psychology</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>AI Course Assistant</strong>
+                      <span>Curriculum Generator</span>
+                    </div>
+                  </button>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => handleNavigate("/medical")}
-              >
-                <div className="tile-icon-wrap bg-teal">
-                  <span className="material-symbols-outlined">medical_services</span>
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => {
+                      setIsOpen(false);
+                      window.dispatchEvent(new CustomEvent("pathward:open-stress-meter"));
+                    }}
+                  >
+                    <div className="tile-icon-wrap bg-teal">
+                      <span className="material-symbols-outlined">monitor_heart</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Stress Meter</strong>
+                      <span>Box Breathing</span>
+                    </div>
+                  </button>
                 </div>
-                <div className="tile-text">
-                  <strong>Medical Universe</strong>
-                  <span>MBBS &amp; Clinical Roadmaps</span>
-                </div>
-              </button>
+              </>
+            ) : (
+              /* ========================================================= */
+              /* STUDENT DRAWER VIEW (Default for Learners & Scholars) */
+              /* ========================================================= */
+              <>
+                {/* 1. Student Active Learning Progress Card */}
+                <div className="drawer-active-course-card glass-card">
+                  <div className="dac-top">
+                    <div>
+                      <span className="mono text-xs text-secondary">ACTIVE COURSE ENROLLMENT</span>
+                      <h3 className="dac-title">{activeCourse.title}</h3>
+                    </div>
+                    <button
+                      type="button"
+                      className="cyber-btn cyber-btn--primary mono text-xs dac-btn"
+                      onClick={() => handleNavigate(`/courses/${activeCourse.id}`)}
+                    >
+                      Continue →
+                    </button>
+                  </div>
 
-              <button
-                type="button"
-                className="drawer-action-tile glass-card"
-                onClick={() => handleNavigate("/discover")}
-              >
-                <div className="tile-icon-wrap bg-blue">
-                  <span className="material-symbols-outlined">explore</span>
+                  <div className="dac-progress-row">
+                    <div className="dac-progress-track">
+                      <div className="dac-progress-fill" style={{ width: `${progressData.percent}%` }} />
+                    </div>
+                    <span className="mono text-xs font-bold text-emerald">{progressData.percent}% Completed</span>
+                  </div>
+
+                  {/* Course Switcher Chips */}
+                  <div className="drawer-courses-chips">
+                    <span className="mono text-xs text-muted">Switch Track:</span>
+                    {Object.values(COURSE_CATALOG).map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        className={`course-chip mono ${c.id === activeCourseId ? "active" : ""}`}
+                        onClick={() => handleSwitchCourse(c.id)}
+                      >
+                        {c.title.split(" ")[0]}…
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="tile-text">
-                  <strong>Explore Catalog</strong>
-                  <span>All Video Masterclasses</span>
+
+                {/* 2. Student Dedicated Quick Action Grid */}
+                <div className="drawer-actions-grid">
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/dashboard")}
+                  >
+                    <div className="tile-icon-wrap bg-indigo">
+                      <span className="material-symbols-outlined">dashboard</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Student Portal</strong>
+                      <span>Overview &amp; Modules</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/mcq")}
+                  >
+                    <div className="tile-icon-wrap bg-cyan">
+                      <span className="material-symbols-outlined">sports_esports</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Practice Gym</strong>
+                      <span>Aptitude &amp; Exam Matrix</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/learn")}
+                  >
+                    <div className="tile-icon-wrap bg-emerald">
+                      <span className="material-symbols-outlined">menu_book</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Learning Hub</strong>
+                      <span>Academic Syllabi</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => {
+                      setIsOpen(false);
+                      window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"));
+                    }}
+                  >
+                    <div className="tile-icon-wrap bg-purple">
+                      <span className="material-symbols-outlined">school</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Backlox AI</strong>
+                      <span>Academic &amp; Doubt Solver</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/quiz")}
+                  >
+                    <div className="tile-icon-wrap bg-amber">
+                      <span className="material-symbols-outlined">psychology</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Career Quiz</strong>
+                      <span>Stream Assessment</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/engineering")}
+                  >
+                    <div className="tile-icon-wrap bg-rose">
+                      <span className="material-symbols-outlined">engineering</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Engineering</strong>
+                      <span>35+ Core &amp; AI Branches</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/medical")}
+                  >
+                    <div className="tile-icon-wrap bg-teal">
+                      <span className="material-symbols-outlined">medical_services</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Medical Universe</strong>
+                      <span>MBBS &amp; Clinical Roadmaps</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="drawer-action-tile glass-card"
+                    onClick={() => handleNavigate("/discover")}
+                  >
+                    <div className="tile-icon-wrap bg-blue">
+                      <span className="material-symbols-outlined">explore</span>
+                    </div>
+                    <div className="tile-text">
+                      <strong>Explore Catalog</strong>
+                      <span>All Video Masterclasses</span>
+                    </div>
+                  </button>
                 </div>
-              </button>
-            </div>
+              </>
+            )}
 
             {/* 3. Bottom Utility Bar */}
             <div className="drawer-bottom-utils">
@@ -306,23 +508,17 @@ export default function SwipeUpDrawer() {
                   <span className="mono text-xs text-muted">@{user.name ? user.name.split(" ")[0] : "Scholar"}</span>
                   <button
                     type="button"
-                    className="mono text-xs"
-                    style={{
-                      background: "rgba(239, 68, 68, 0.15)",
-                      border: "1px solid rgba(239, 68, 68, 0.35)",
-                      color: "#f87171",
-                      padding: "4px 10px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                    }}
+                    className="navbar__logout-btn"
+                    style={{ width: "30px", height: "30px", borderRadius: "8px" }}
+                    title="Log out"
+                    aria-label="Log out"
                     onClick={() => {
                       setIsOpen(false);
                       logout();
                       navigate("/login");
                     }}
                   >
-                    Logout
+                    <span className="material-symbols-outlined logout-icon" style={{ fontSize: "16px" }}>logout</span>
                   </button>
                 </div>
               ) : (

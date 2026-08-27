@@ -83,6 +83,7 @@ export const api = {
       body: typeof payload === "string" ? { plan: payload } : payload,
     }),
   verifyPayment: (payload) => request("/payments/verify", { method: "POST", auth: true, body: payload }),
+  instantSubscribe: (plan = "pathward_pro") => request("/payments/instant-subscribe", { method: "POST", auth: true, body: { plan } }),
   getPaymentHistory: () => request("/payments/history", { auth: true }),
   getLearningStreams: () => request("/learning/streams"),
   getExams: () => request("/learning/exams"),

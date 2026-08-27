@@ -1,0 +1,164 @@
+/* ========================================================= */
+/* FULL PAGE SUBSCRIPTION PAYWALL */
+/* ========================================================= */
+
+.paywall-container {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.paywall-card {
+  width: 100%;
+  max-width: 680px;
+  text-align: center;
+  padding: 44px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 24px;
+}
+
+.paywall-icon-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.paywall-lock-icon {
+  font-size: 34px;
+  color: #c5c0ff;
+}
+
+.paywall-icon-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px dashed rgba(168, 85, 247, 0.4);
+  animation: rotateGlow 20s linear infinite;
+}
+
+@keyframes rotateGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pro-sparkle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #d8b4fe;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+
+.paywall-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.paywall-desc {
+  font-size: 14.5px;
+  color: var(--on-surface-variant);
+  line-height: 1.55;
+  max-width: 520px;
+  margin-bottom: 28px;
+}
+
+.paywall-perks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.perk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.perk-item strong {
+  display: block;
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+
+.perk-item p {
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.perk-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.paywall-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.paywall-cta-btn {
+  width: 100%;
+  max-width: 440px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.paywall-secondary-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.paywall-home-link {
+  color: var(--on-surface-variant);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.paywall-home-link:hover {
+  color: var(--on-surface);
+}
+
+@media (max-width: 600px) {
+  .paywall-perks-grid {
+    grid-template-columns: 1fr;
+  }
+  .paywall-card {
+    padding: 30px 20px;
+  }
+}
