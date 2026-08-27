@@ -85,8 +85,8 @@ export default function BranchDetail() {
     if (e) e.preventDefault();
     if (!isSubscribed) {
       window.dispatchEvent(
-        new CustomEvent("pathward:open-subscription", {
-          detail: { plan: "pathward_pro" },
+        new CustomEvent("backlox:open-subscription", {
+          detail: { plan: "backlox_pro" },
         })
       );
       return;
@@ -313,9 +313,9 @@ export default function BranchDetail() {
                         type="button"
                         className="cyber-btn cyber-btn--primary w-full mt-1"
                         style={{ padding: "8px 14px", fontSize: "12.5px" }}
-                        onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+                        onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription"))}
                       >
-                        ⭐ Subscribe to Pathward Pro (₹499)
+                        ⭐ Subscribe to Backlox Pro (₹499)
                       </button>
                     </div>
                   </div>
@@ -334,14 +334,14 @@ export default function BranchDetail() {
                     <div>
                       <h4>Interactive Milestone Checkpoints &amp; Telemetry (Pro)</h4>
                       <p>
-                        You are browsing the curriculum outline. Subscribe to <strong>Pathward Pro</strong> to check off completed syllabus stages, sync streaks to your Student Dashboard, and take practice quizzes.
+                        You are browsing the curriculum outline. Subscribe to <strong>Backlox Pro</strong> to check off completed syllabus stages, sync streaks to your Student Dashboard, and take practice quizzes.
                       </p>
                     </div>
                   </div>
                   <button
                     type="button"
                     className="cyber-btn cyber-btn--primary"
-                    onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+                    onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription"))}
                   >
                     ⚡ Unlock Pro Tracking (₹499) →
                   </button>
@@ -373,7 +373,7 @@ export default function BranchDetail() {
                           <button
                             type="button"
                             className="locked-check-btn mono text-xs"
-                            onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+                            onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription"))}
                           >
                             🔒 Unlock Checkpoint
                           </button>
@@ -420,14 +420,14 @@ export default function BranchDetail() {
                     <div>
                       <h4>Verified Capstones &amp; Code Sandboxes (Pro)</h4>
                       <p>
-                        Pathward Pro members receive starter code repositories, automated evaluation rubrics, and faculty portfolio reviews.
+                        Backlox Pro members receive starter code repositories, automated evaluation rubrics, and faculty portfolio reviews.
                       </p>
                     </div>
                   </div>
                   <button
                     type="button"
                     className="cyber-btn cyber-btn--primary"
-                    onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription", { detail: { plan: "pathward_pro" } }))}
+                    onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription", { detail: { plan: "backlox_pro" } }))}
                   >
                     ⚡ Unlock All Capstones →
                   </button>
@@ -522,7 +522,7 @@ export default function BranchDetail() {
                   <div className="pro-gate-left">
                     <span className="material-symbols-outlined pro-lock-icon">psychology</span>
                     <div>
-                      <h4>✨ AI Syllabus Architect is a Pathward Pro Feature</h4>
+                      <h4>✨ AI Syllabus Architect is a Backlox Pro Feature</h4>
                       <p>
                         Synthesize customized modular curriculums for electives, hackathons, and sub-specialties with curated video lectures and practical checkpoints.
                       </p>
@@ -531,7 +531,7 @@ export default function BranchDetail() {
                   <button
                     type="button"
                     className="cyber-btn cyber-btn--primary"
-                    onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+                    onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription"))}
                   >
                     ⭐ Upgrade to Pro (₹499) →
                   </button>
@@ -568,7 +568,7 @@ export default function BranchDetail() {
                         type="submit"
                         className="cyber-btn cyber-btn--primary"
                         disabled={aiGenerating || !aiCustomTopic.trim()}
-                        title={!isSubscribed ? "Subscribe to Pathward Pro to synthesize custom paths" : "Synthesize custom modular curriculum"}
+                        title={!isSubscribed ? "Subscribe to Backlox Pro to synthesize custom paths" : "Synthesize custom modular curriculum"}
                       >
                         {aiGenerating ? "Synthesizing…" : "⚡ Synthesize Path"}
                       </button>

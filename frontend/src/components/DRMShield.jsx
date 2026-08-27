@@ -88,8 +88,8 @@ export default function DRMShield({ children, enabled = true, showWatermark = tr
   }
 
   const watermarkText = user?.email
-    ? `PATHWARD DRM · ${user.email} · USER #${user.id || "104"}`
-    : "PATHWARD SECURE LMS · PATENT & IP PROTECTED";
+    ? `BACKLOX DRM · ${user.email} · USER #${user.id || "104"}`
+    : "BACKLOX SECURE LMS · PATENT & IP PROTECTED";
 
   return (
     <div className="drm-shield-wrapper">

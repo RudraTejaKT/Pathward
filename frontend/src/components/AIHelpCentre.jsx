@@ -87,12 +87,12 @@ export default function AIHelpCentre() {
     function handleToggleEvent() {
       setIsOpen((prev) => !prev);
     }
-    window.addEventListener("pathward:open-ai-chat", handleOpenEvent);
-    window.addEventListener("pathward:toggle-ai-chat", handleToggleEvent);
+    window.addEventListener("backlox:open-ai-chat", handleOpenEvent);
+    window.addEventListener("backlox:toggle-ai-chat", handleToggleEvent);
 
     return () => {
-      window.removeEventListener("pathward:open-ai-chat", handleOpenEvent);
-      window.removeEventListener("pathward:toggle-ai-chat", handleToggleEvent);
+      window.removeEventListener("backlox:open-ai-chat", handleOpenEvent);
+      window.removeEventListener("backlox:toggle-ai-chat", handleToggleEvent);
     };
   }, []);
 

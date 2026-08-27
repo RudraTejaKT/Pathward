@@ -15,8 +15,8 @@ export default function StressMeter() {
     function handleOpenEvent() {
       setIsOpen(true);
     }
-    window.addEventListener("pathward:open-stress-meter", handleOpenEvent);
-    return () => window.removeEventListener("pathward:open-stress-meter", handleOpenEvent);
+    window.addEventListener("backlox:open-stress-meter", handleOpenEvent);
+    return () => window.removeEventListener("backlox:open-stress-meter", handleOpenEvent);
   }, []);
 
   // Track session timer
@@ -98,7 +98,7 @@ export default function StressMeter() {
   // Broadcast stress update
   useEffect(() => {
     window.dispatchEvent(
-      new CustomEvent("pathward:stress-update", {
+      new CustomEvent("backlox:stress-update", {
         detail: { stressScore, label: levelInfo.label, color: levelInfo.color },
       })
     );

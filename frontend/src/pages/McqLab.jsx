@@ -86,8 +86,8 @@ export default function McqLab() {
   function handleSelectOption(qIndex, optIndex) {
     if (!isSubscribed) {
       window.dispatchEvent(
-        new CustomEvent("pathward:open-subscription", {
-          detail: { plan: "pathward_pro" },
+        new CustomEvent("backlox:open-subscription", {
+          detail: { plan: "backlox_pro" },
         })
       );
       return;
@@ -109,8 +109,8 @@ export default function McqLab() {
   function toggleHint(qIndex) {
     if (!isSubscribed) {
       window.dispatchEvent(
-        new CustomEvent("pathward:open-subscription", {
-          detail: { plan: "pathward_pro" },
+        new CustomEvent("backlox:open-subscription", {
+          detail: { plan: "backlox_pro" },
         })
       );
       return;
@@ -144,7 +144,7 @@ export default function McqLab() {
         <div className="container mcq-header-inner">
           <div className="cyber-pill">
             <span className="pulsing-dot" />
-            <span>PATHWARD NATIONAL PRACTICE GYM &amp; APTITUDE MATRIX</span>
+            <span>BACKLOX NATIONAL PRACTICE GYM &amp; APTITUDE MATRIX</span>
           </div>
 
           <div className="gym-title-row">
@@ -253,10 +253,10 @@ export default function McqLab() {
               <div className="mcq-pro-gate-content">
                 <span className="material-symbols-outlined mcq-pro-gate-icon">lock</span>
                 <div>
-                  <div className="mcq-pro-badge mono">💎 PATHWARD PRO EXCLUSIVE</div>
+                  <div className="mcq-pro-badge mono">💎 BACKLOX PRO EXCLUSIVE</div>
                   <h3>MCQ Practice Batteries &amp; Solutions are Gated</h3>
                   <p>
-                    You are browsing question previews in the Practice Gym. Subscribe to <strong>Pathward Pro (₹499 Lifetime)</strong> to solve interactive MCQs, unlock step-by-step mathematical solutions, formulas, and track placement exam readiness.
+                    You are browsing question previews in the Practice Gym. Subscribe to <strong>Backlox Pro (₹499 Lifetime)</strong> to solve interactive MCQs, unlock step-by-step mathematical solutions, formulas, and track placement exam readiness.
                   </p>
                 </div>
               </div>
@@ -265,8 +265,8 @@ export default function McqLab() {
                 className="cyber-btn cyber-btn--primary mcq-upgrade-btn"
                 onClick={() =>
                   window.dispatchEvent(
-                    new CustomEvent("pathward:open-subscription", {
-                      detail: { plan: "pathward_pro" },
+                    new CustomEvent("backlox:open-subscription", {
+                      detail: { plan: "backlox_pro" },
                     })
                   )
                 }
@@ -362,7 +362,7 @@ export default function McqLab() {
                             className={btnClass}
                             onClick={() => handleSelectOption(i, j)}
                             disabled={isAnswered}
-                            title={!isSubscribed ? "Subscribe to Pathward Pro to solve MCQs" : ""}
+                            title={!isSubscribed ? "Subscribe to Backlox Pro to solve MCQs" : ""}
                           >
                             <span className="option-letter mono">{OPTION_LETTERS[j]}</span>
                             <span className="option-text">{opt}</span>

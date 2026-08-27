@@ -9,7 +9,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("pathward_pro"); // "pathward_pro" | "pathward_pro_annual"
+  const [selectedPlan, setSelectedPlan] = useState("backlox_pro"); // "backlox_pro" | "backlox_pro_annual"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
@@ -28,8 +28,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
       if (e.detail?.plan) setSelectedPlan(e.detail.plan);
       setIsOpen(true);
     }
-    window.addEventListener("pathward:open-subscription", handleOpenEvent);
-    return () => window.removeEventListener("pathward:open-subscription", handleOpenEvent);
+    window.addEventListener("backlox:open-subscription", handleOpenEvent);
+    return () => window.removeEventListener("backlox:open-subscription", handleOpenEvent);
   }, []);
 
   function handleClose() {
@@ -56,8 +56,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
 
       // 2. Open Razorpay widget
       const result = await openRazorpayCheckout(order, user, {
-        name: "Pathward Career Universe",
-        description: selectedPlan === "pathward_pro_annual" ? "Pathward Pro — 1 Year Access" : "Pathward Pro — Lifetime Access",
+        name: "Backlox Career Universe",
+        description: selectedPlan === "backlox_pro_annual" ? "Backlox Pro — 1 Year Access" : "Backlox Pro — Lifetime Access",
         themeColor: "#6366f1",
       });
 
@@ -69,8 +69,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
       });
 
       await refreshUser();
-      setSuccessMsg("🎉 Welcome to Pathward Pro! All universes, practice gyms, and roadmaps are now unlocked.");
-      window.dispatchEvent(new CustomEvent("pathward:subscribed"));
+      setSuccessMsg("🎉 Welcome to Backlox Pro! All universes, practice gyms, and roadmaps are now unlocked.");
+      window.dispatchEvent(new CustomEvent("backlox:subscribed"));
       setTimeout(() => {
         handleClose();
       }, 2500);
@@ -97,7 +97,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
       await api.instantSubscribe(selectedPlan);
       await refreshUser();
       setSuccessMsg("⚡ Pro Membership Activated (Instant Unlock)! Full access granted.");
-      window.dispatchEvent(new CustomEvent("pathward:subscribed"));
+      window.dispatchEvent(new CustomEvent("backlox:subscribed"));
       setTimeout(() => {
         handleClose();
       }, 2000);
@@ -123,13 +123,13 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
         {/* Header Header */}
         <div className="subscription-modal-header text-center">
           <div className="pro-sparkle-badge mono">
-            <span>✨</span> PATHWARD PRO ACCESS
+            <span>✨</span> BACKLOX PRO ACCESS
           </div>
           <h2 className="subscription-modal-title gradient-text">
             Unlock the Full Career Universe
           </h2>
           <p className="subscription-modal-subtitle">
-            Free branch orientation videos are open for everyone. Upgrade to <strong>Pathward Pro</strong> to unlock multi-year interactive roadmaps, full course libraries, practice gym, and AI mentorship.
+            Free branch orientation videos are open for everyone. Upgrade to <strong>Backlox Pro</strong> to unlock multi-year interactive roadmaps, full course libraries, practice gym, and AI mentorship.
           </p>
         </div>
 
@@ -149,8 +149,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
             <div className="subscription-plans-grid">
               {/* Lifetime Plan */}
               <div
-                className={`plan-card ${selectedPlan === "pathward_pro" ? "plan-card--active" : ""}`}
-                onClick={() => setSelectedPlan("pathward_pro")}
+                className={`plan-card ${selectedPlan === "backlox_pro" ? "plan-card--active" : ""}`}
+                onClick={() => setSelectedPlan("backlox_pro")}
               >
                 <div className="plan-tag mono">MOST POPULAR · BEST VALUE</div>
                 <div className="plan-card__header">
@@ -166,8 +166,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                   <input
                     type="radio"
                     name="plan_choice"
-                    checked={selectedPlan === "pathward_pro"}
-                    onChange={() => setSelectedPlan("pathward_pro")}
+                    checked={selectedPlan === "backlox_pro"}
+                    onChange={() => setSelectedPlan("backlox_pro")}
                   />
                   <span>Select Lifetime Plan</span>
                 </div>
@@ -175,8 +175,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
 
               {/* Annual Plan */}
               <div
-                className={`plan-card ${selectedPlan === "pathward_pro_annual" ? "plan-card--active" : ""}`}
-                onClick={() => setSelectedPlan("pathward_pro_annual")}
+                className={`plan-card ${selectedPlan === "backlox_pro_annual" ? "plan-card--active" : ""}`}
+                onClick={() => setSelectedPlan("backlox_pro_annual")}
               >
                 <div className="plan-tag mono">1 YEAR PASS</div>
                 <div className="plan-card__header">
@@ -192,8 +192,8 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                   <input
                     type="radio"
                     name="plan_choice"
-                    checked={selectedPlan === "pathward_pro_annual"}
-                    onChange={() => setSelectedPlan("pathward_pro_annual")}
+                    checked={selectedPlan === "backlox_pro_annual"}
+                    onChange={() => setSelectedPlan("backlox_pro_annual")}
                   />
                   <span>Select Annual Plan</span>
                 </div>
@@ -215,7 +215,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
               </div>
 
               <div className="comparison-col comparison-col--pro">
-                <span className="col-title mono text-primary">⭐ PATHWARD PRO INCLUDES</span>
+                <span className="col-title mono text-primary">⭐ BACKLOX PRO INCLUDES</span>
                 <ul>
                   <li><span className="check-pro">✓</span> <strong>Everything in Free +</strong></li>
                   <li><span className="check-pro">✓</span> Complete 4-Year Syllabus Checkpoints & Progress Tracking</li>
@@ -264,7 +264,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                     {loading ? (
                       <span>Processing Gateway…</span>
                     ) : (
-                      <span>⚡ Pay ₹{selectedPlan === "pathward_pro_annual" ? "299" : "499"} via Razorpay</span>
+                      <span>⚡ Pay ₹{selectedPlan === "backlox_pro_annual" ? "299" : "499"} via Razorpay</span>
                     )}
                   </button>
 

@@ -10,7 +10,7 @@ const uploadDir = path.join(__dirname, "..", "uploads");
 fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({ dest: uploadDir, limits: { fileSize: 100 * 1024 * 1024 } });
 
-// Pathward's expanded India-wide pathway catalogue.
+// Backlox's expanded India-wide pathway catalogue.
 const EXAMS = [
   { id:"jee-main", name:"JEE Main", category:"Engineering", streams:["science"], subjects:["Physics","Chemistry","Mathematics"], description:"National level engineering entrance for NITs, IIITs, CFTIs." },
   { id:"jee-advanced", name:"JEE Advanced", category:"Engineering", streams:["science"], subjects:["Physics","Chemistry","Mathematics"], description:"Advanced entrance for Indian Institutes of Technology (IITs)." },
@@ -110,7 +110,7 @@ const STREAM_MODULES = {
       description: "JEE Main/Advanced, NEET-UG, CUET-UG, NATA and NDA exam mastery with timed test strategies.",
       topics: ["High-Yield Problem Solving Techniques", "Previous 10 Years Question Bank Analysis", "Speed & Accuracy Optimization", "Negative Marking Avoidance Strategy"],
       duration: "8–12 Weeks",
-      resources: ["Pathward MCQ Lab Engine", "NTA Official Mock Tests Bank", "Subject Concept Formula Maps"],
+      resources: ["Backlox MCQ Lab Engine", "NTA Official Mock Tests Bank", "Subject Concept Formula Maps"],
       checkpoints: ["Achieve 85%+ accuracy in Chapterwise MCQs", "Complete 5 full-length timed mock tests", "Create error log notebook for revision"]
     },
     {
@@ -118,7 +118,7 @@ const STREAM_MODULES = {
       description: "Compare Engineering, Medicine, Dental, Pure Science Research, Architecture, and Biotechnology outcomes.",
       topics: ["4-Year Degree Curricula Comparison", "Eligibility, Cutoffs & Counseling Rounds (JoSAA, MCC, State CETs)", "Global Career Opportunities & ROI", "Industry Trends: AI, Genomics, Clean Energy"],
       duration: "2 Weeks",
-      resources: ["NIRF College Rankings", "AICTE & NMC Official Portals", "Pathward Branch Matcher"],
+      resources: ["NIRF College Rankings", "AICTE & NMC Official Portals", "Backlox Branch Matcher"],
       checkpoints: ["Shortlist top 5 target colleges and courses", "Understand category quotas and reservation rules", "Map higher study paths (GATE/CAT/GRE/USMLE)"]
     },
     {
@@ -152,7 +152,7 @@ const STREAM_MODULES = {
       description: "Intensive biology, chemistry, and physics high-yield review for medical college admissions.",
       topics: ["Human Physiology, Reproduction & Genetics NCERT Line-by-Line", "Organic Chemistry Reactions & Named Mechanisms", "Optics, Modern Physics & Mechanics Shortcuts", "Mock Test Analysis & High-Speed Elimination"],
       duration: "10–14 Weeks",
-      resources: ["Pathward Medical MCQ Lab", "AIIMS & NEET Previous Year Papers", "NCERT Biology Fingertips"],
+      resources: ["Backlox Medical MCQ Lab", "AIIMS & NEET Previous Year Papers", "NCERT Biology Fingertips"],
       checkpoints: ["Score 340+ in Biology Practice Tests", "Master physics numerical shortcuts", "Analyze weak areas in full mock tests"]
     },
     {
@@ -160,7 +160,7 @@ const STREAM_MODULES = {
       description: "Compare MBBS, BDS (Dental), BAMS (Ayurveda), Pharmacy, Nursing, Physiotherapy, and Allied Health careers.",
       topics: ["Degree Scope, Duration & Internship Requirements", "Hospital Career Hierarchies (Resident to Consultant)", "Government Medical Officer vs Private Practice vs Clinical Research", "Emerging Fields: Medical Genetics, Health Informatics, Telemedicine"],
       duration: "2 Weeks",
-      resources: ["National Medical Commission (NMC) Portal", "WHO Health Careers Guide", "Pathward Medical Universe"],
+      resources: ["National Medical Commission (NMC) Portal", "WHO Health Careers Guide", "Backlox Medical Universe"],
       checkpoints: ["Compare undergraduate medical options", "Review fee structures and bond requirements across states", "Explore Medical PG options (MD/MS/DNB)"]
     },
     {
@@ -194,7 +194,7 @@ const STREAM_MODULES = {
       description: "CA Foundation, CMA Foundation, CS Executive Entrance (CSEET), and IPMAT preparation.",
       topics: ["Business Laws & Regulatory Framework", "Business Mathematics & Logical Reasoning", "Micro & Macro Economics", "Management Aptitude & Interview Readiness"],
       duration: "8–12 Weeks",
-      resources: ["ICAI / ICMAI / ICSI Portals", "IPMAT Previous Years Questions", "Pathward Commerce MCQ Lab"],
+      resources: ["ICAI / ICMAI / ICSI Portals", "IPMAT Previous Years Questions", "Backlox Commerce MCQ Lab"],
       checkpoints: ["Complete CA Foundation mock test series", "Master contract law and partnership acts", "Practice quantitative aptitude speed tests"]
     },
     {
@@ -236,7 +236,7 @@ const STREAM_MODULES = {
       description: "CLAT, AILET, CUET-UG Humanities, and Civil Services Foundation.",
       topics: ["Legal Reasoning & Landmark Supreme Court Judgments", "Current Affairs & Global Geopolitics", "Verbal Ability & Reading Comprehension", "General Mental Ability & Analytical Logic"],
       duration: "8–10 Weeks",
-      resources: ["Pathward CLAT Practice Lab", "LiveLaw & Bar and Bench", "The Hindu / Indian Express Editorial Analysis"],
+      resources: ["Backlox CLAT Practice Lab", "LiveLaw & Bar and Bench", "The Hindu / Indian Express Editorial Analysis"],
       checkpoints: ["Score 80%+ in CLAT Reading Comprehension sets", "Summarize 10 landmark constitutional cases", "Solve 5 full-length legal reasoning test series"]
     },
     {

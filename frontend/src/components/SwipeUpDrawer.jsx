@@ -30,8 +30,8 @@ export default function SwipeUpDrawer() {
         setStoredProgress(e.detail);
       }
     }
-    window.addEventListener("pathward:progress-updated", handleProgressUpdate);
-    return () => window.removeEventListener("pathward:progress-updated", handleProgressUpdate);
+    window.addEventListener("backlox:progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("backlox:progress-updated", handleProgressUpdate);
   }, []);
 
   // Close drawer on route change
@@ -41,7 +41,7 @@ export default function SwipeUpDrawer() {
 
   // Active course telemetry
   const isInstructorMode = user?.role === "instructor" || location.pathname.startsWith("/instructor");
-  const instructorBalance = parseInt(localStorage.getItem("pathward_instructor_balance") || "38200", 10);
+  const instructorBalance = parseInt(localStorage.getItem("backlox_instructor_balance") || "38200", 10);
   const activeCourseId = storedProgress?.activeCourseId || "feat-1";
   const activeCourse = COURSE_CATALOG[activeCourseId] || COURSE_CATALOG["feat-1"] || Object.values(COURSE_CATALOG)[0];
   const completedLessonsMap = (storedProgress?.completedLessons && activeCourse?.id && storedProgress.completedLessons[activeCourse.id]) || {};
@@ -92,7 +92,7 @@ export default function SwipeUpDrawer() {
     setIsOpen(false);
     navigate("/instructor");
     setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("pathward:switch-instructor-tab", { detail: tab }));
+      window.dispatchEvent(new CustomEvent("backlox:switch-instructor-tab", { detail: tab }));
     }, 50);
   }
 
@@ -296,7 +296,7 @@ export default function SwipeUpDrawer() {
                     className="drawer-action-tile glass-card"
                     onClick={() => {
                       setIsOpen(false);
-                      window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"));
+                      window.dispatchEvent(new CustomEvent("backlox:open-ai-chat"));
                     }}
                   >
                     <div className="tile-icon-wrap bg-rose">
@@ -313,7 +313,7 @@ export default function SwipeUpDrawer() {
                     className="drawer-action-tile glass-card"
                     onClick={() => {
                       setIsOpen(false);
-                      window.dispatchEvent(new CustomEvent("pathward:open-stress-meter"));
+                      window.dispatchEvent(new CustomEvent("backlox:open-stress-meter"));
                     }}
                   >
                     <div className="tile-icon-wrap bg-teal">
@@ -419,7 +419,7 @@ export default function SwipeUpDrawer() {
                     className="drawer-action-tile glass-card"
                     onClick={() => {
                       setIsOpen(false);
-                      window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"));
+                      window.dispatchEvent(new CustomEvent("backlox:open-ai-chat"));
                     }}
                   >
                     <div className="tile-icon-wrap bg-purple">

@@ -3,7 +3,7 @@ import { api, setAuthToken } from "../api";
 import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
-const TOKEN_KEY = "pathward_token";
+const TOKEN_KEY = "backlox_token";
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));

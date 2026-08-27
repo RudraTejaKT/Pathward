@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
-import PathwardLogo from "./PathwardLogo.jsx";
+import BackloxLogo from "./BackloxLogo.jsx";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -53,8 +53,8 @@ export default function Navbar() {
         });
       }
     }
-    window.addEventListener("pathward:stress-update", handleStressUpdate);
-    return () => window.removeEventListener("pathward:stress-update", handleStressUpdate);
+    window.addEventListener("backlox:stress-update", handleStressUpdate);
+    return () => window.removeEventListener("backlox:stress-update", handleStressUpdate);
   }, []);
 
   // On student or instructor workspaces, render null since they have full-bleed custom command headers
@@ -63,11 +63,11 @@ export default function Navbar() {
   }
 
   function handleOpenStressMeter() {
-    window.dispatchEvent(new CustomEvent("pathward:open-stress-meter"));
+    window.dispatchEvent(new CustomEvent("backlox:open-stress-meter"));
   }
 
   function handleOpenOcti() {
-    window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"));
+    window.dispatchEvent(new CustomEvent("backlox:open-ai-chat"));
   }
 
   function handleLogout() {
@@ -88,8 +88,8 @@ export default function Navbar() {
           {/* 1. BRAND LOGO */}
           {/* ========================================================= */}
           <div className="navbar__brand-wrapper">
-            <Link to="/" className="navbar__brand" title="Pathward — Career Universe">
-              <PathwardLogo size="default" />
+            <Link to="/" className="navbar__brand" title="Backlox — Career Universe">
+              <BackloxLogo size="default" />
             </Link>
           </div>
 
@@ -422,8 +422,8 @@ export default function Navbar() {
               <button
                 type="button"
                 className="navbar-upgrade-pro-btn mono"
-                onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
-                title="Upgrade to Pathward Pro"
+                onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription"))}
+                title="Upgrade to Backlox Pro"
               >
                 <span>⭐</span>
                 <span>Upgrade to Pro</span>
@@ -446,7 +446,7 @@ export default function Navbar() {
                     {user.name ? user.name.split(" ")[0] : "Scholar"}
                   </span>
                   {user.isPremium ? (
-                    <span className="navbar-pro-gem-badge" title="Active Pathward Pro Scholar">💎</span>
+                    <span className="navbar-pro-gem-badge" title="Active Backlox Pro Scholar">💎</span>
                   ) : null}
                   <span className="material-symbols-outlined nav-caret">
                     {activeMenu === "user" ? "expand_less" : "expand_more"}
@@ -470,7 +470,7 @@ export default function Navbar() {
                           style={{ padding: "6px 10px", fontSize: "11.5px" }}
                           onClick={() => {
                             setActiveMenu(null);
-                            window.dispatchEvent(new CustomEvent("pathward:open-subscription"));
+                            window.dispatchEvent(new CustomEvent("backlox:open-subscription"));
                           }}
                         >
                           ⭐ Unlock Pro (₹499)

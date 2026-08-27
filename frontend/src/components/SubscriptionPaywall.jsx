@@ -6,7 +6,7 @@ export default function SubscriptionPaywall({ title = "Pro Scholar Subscription 
   const { user } = useAuth();
 
   function handleOpenSubscribeModal() {
-    window.dispatchEvent(new CustomEvent("pathward:open-subscription"));
+    window.dispatchEvent(new CustomEvent("backlox:open-subscription"));
   }
 
   return (
@@ -25,7 +25,7 @@ export default function SubscriptionPaywall({ title = "Pro Scholar Subscription 
         <h1 className="paywall-title gradient-text">{title}</h1>
         <p className="paywall-desc">
           {subtitle ||
-            "This advanced curriculum, practice lab, and telemetry suite is exclusive to Pathward Pro scholars. Basic branch orientation videos and the front page remain completely free."}
+            "This advanced curriculum, practice lab, and telemetry suite is exclusive to Backlox Pro scholars. Basic branch orientation videos and the front page remain completely free."}
         </p>
 
         {/* What You Unlock Grid */}
@@ -70,7 +70,7 @@ export default function SubscriptionPaywall({ title = "Pro Scholar Subscription 
             className="cyber-btn cyber-btn--primary paywall-cta-btn"
             onClick={handleOpenSubscribeModal}
           >
-            ⚡ Subscribe to Pathward Pro (from ₹299) →
+            ⚡ Subscribe to Backlox Pro (from ₹299) →
           </button>
 
           <div className="paywall-secondary-links">

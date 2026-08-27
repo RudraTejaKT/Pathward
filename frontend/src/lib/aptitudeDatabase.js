@@ -1,4 +1,4 @@
-// Pathward Master Aptitude Question Bank
+// Backlox Master Aptitude Question Bank
 // Sourced from TCS NQT, Infosys, CAT, GATE, UPSC CSAT, Bank PO, NEET, and Technical Placement tests
 
 export const APTITUDE_CATEGORIES = [
@@ -225,7 +225,7 @@ export const MASTER_APTITUDE_BANK = [
     category: "verbal",
     subject: "Critical Reasoning & Assumptions",
     difficulty: "Standard",
-    question: "Statement: 'Pathward provides interactive cloud compilation sandboxes so that aspiring software engineers can build verified proof-of-work repositories.'\nAssumption I: Practical coding implementations demonstrate engineering competency better than passive video watching.\nAssumption II: Cloud compilation eliminates local machine dependency for learners.",
+    question: "Statement: 'Backlox provides interactive cloud compilation sandboxes so that aspiring software engineers can build verified proof-of-work repositories.'\nAssumption I: Practical coding implementations demonstrate engineering competency better than passive video watching.\nAssumption II: Cloud compilation eliminates local machine dependency for learners.",
     options: [
       "Both Assumption I and II are implicit",
       "Only Assumption I is implicit",

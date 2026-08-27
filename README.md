@@ -1,4 +1,4 @@
-# Pathward — Post-12th Career Roadmap App
+# Backlox — Post-12th Career Roadmap App
 
 A web app that walks a student through: **12th grade → Stream → Engineering branch →
 Semester-wise courses/skills → Project ideas → Trending IT job roles.**
@@ -6,10 +6,10 @@ Semester-wise courses/skills → Project ideas → Trending IT job roles.**
 Built as a working MVP matching the functional requirements discussed for the client project
 (career guidance / roadmap tool). React + Node/Express. Career-guide content (streams, branches,
 roadmaps, projects, jobs) still lives in a structured JS module, but user accounts, trainee
-progress, and payments are now backed by a real SQLite database (`backend/pathward.db`).
+progress, and payments are now backed by a real SQLite database (`backend/backlox.db`).
 
 **v2 additions:** trainee login/signup (JWT), per-branch progress tracking (roadmap stages +
-projects), and a Razorpay-based "Pathward Pro" one-time unlock.
+projects), and a Razorpay-based "Backlox Pro" one-time unlock.
 
 ## Project structure
 
@@ -45,7 +45,7 @@ cp .env.example .env
 # (use your Razorpay *test* keys from the dashboard while developing)
 npm start
 ```
-On first run this creates `backend/pathward.db` (SQLite) with the users, trainee-progress, and
+On first run this creates `backend/backlox.db` (SQLite) with the users, trainee-progress, and
 payments tables.
 
 **2. Frontend (runs on port 5173)**
@@ -95,7 +95,7 @@ Branch IDs currently available: `cse`, `it`, `aids`, `ece`, `mech`, `civil`
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/api/payments/plans` | Available plans and pricing |
-| POST | `/api/payments/create-order` | `{ plan: 'pathward_pro' }` → creates a Razorpay order |
+| POST | `/api/payments/create-order` | `{ plan: 'backlox_pro' }` → creates a Razorpay order |
 | POST | `/api/payments/verify` | Verifies the Razorpay signature and unlocks premium on success |
 | GET | `/api/payments/history` | The current user's past payment attempts |
 
@@ -132,7 +132,7 @@ Still out of scope for this build — flagging for the next sprint:
 
 ## Tech notes for QA
 
-- Users, trainee progress, and payments now persist in `backend/pathward.db` — safe to restart
+- Users, trainee progress, and payments now persist in `backend/backlox.db` — safe to restart
   the server between test runs.
 - All 6 engineering branches were verified to return complete `roadmap`, `projects`, and `jobs`
   arrays via the combined `/api/branch-details/:branchId` endpoint.

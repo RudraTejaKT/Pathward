@@ -43,7 +43,7 @@ export async function openRazorpayCheckout(order, user, options = {}) {
           amount: order.amount,
           currency: order.currency || "INR",
           order_id: order.orderId,
-          name: options.name || "Pathward Career Universe",
+          name: options.name || "Backlox Career Universe",
           description: options.description || order.itemLabel || "Course & Career Access",
           image: options.image || "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=128&q=80",
           prefill: {

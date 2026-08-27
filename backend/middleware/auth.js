@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "pathward-universe-production-jwt-secret-key-2026";
+const JWT_SECRET = process.env.JWT_SECRET || "backlox-universe-production-jwt-secret-key-2026";
 
 if (!process.env.JWT_SECRET) {
   console.warn("⚠️ JWT_SECRET is not explicitly set in environment variables. Using secure default secret.");

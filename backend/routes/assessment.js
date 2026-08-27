@@ -4,7 +4,7 @@ const { requireAuth } = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "pathward-dev-secret-change-in-prod";
+const JWT_SECRET = process.env.JWT_SECRET || "backlox-dev-secret-change-in-prod";
 
 // 12 curated multi-dimensional assessment questions
 const ASSESSMENT_QUESTIONS = [

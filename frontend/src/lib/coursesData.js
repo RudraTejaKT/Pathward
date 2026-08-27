@@ -292,7 +292,7 @@ const DEFAULT_USER_PROGRESS = {
   },
 };
 
-const STORAGE_KEY = "pathward_scholar_progress_v2";
+const STORAGE_KEY = "backlox_scholar_progress_v2";
 
 export function getStoredProgress() {
   try {
@@ -308,7 +308,7 @@ export function getStoredProgress() {
 export function saveStoredProgress(progress) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-    window.dispatchEvent(new CustomEvent("pathward:progress-updated", { detail: progress }));
+    window.dispatchEvent(new CustomEvent("backlox:progress-updated", { detail: progress }));
   } catch (err) {
     console.error("Failed to save progress", err);
   }
@@ -391,12 +391,12 @@ export function computeCourseProgress(course, completedLessonsMap = {}) {
 
 export function saveCustomCourse(course) {
   try {
-    const raw = localStorage.getItem("pathward_custom_courses");
+    const raw = localStorage.getItem("backlox_custom_courses");
     const map = raw ? JSON.parse(raw) : {};
     map[course.id] = course;
-    localStorage.setItem("pathward_custom_courses", JSON.stringify(map));
+    localStorage.setItem("backlox_custom_courses", JSON.stringify(map));
     COURSE_CATALOG[course.id] = course;
-    window.dispatchEvent(new CustomEvent("pathward:courses-updated", { detail: course }));
+    window.dispatchEvent(new CustomEvent("backlox:courses-updated", { detail: course }));
   } catch (err) {
     console.error("Failed to save custom course", err);
   }
@@ -404,7 +404,7 @@ export function saveCustomCourse(course) {
 
 export function loadSavedCustomCourses() {
   try {
-    const raw = localStorage.getItem("pathward_custom_courses");
+    const raw = localStorage.getItem("backlox_custom_courses");
     if (!raw) return {};
     const map = JSON.parse(raw);
     Object.assign(COURSE_CATALOG, map);

@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext.jsx";
 import { api } from "../api";
 import { openRazorpayCheckout } from "../lib/razorpay";
 import VideoPlayer from "../components/VideoPlayer.jsx";
-import PathwardLogo from "../components/PathwardLogo.jsx";
+import BackloxLogo from "../components/BackloxLogo.jsx";
 import {
   COURSE_CATALOG,
   getStoredProgress,
@@ -192,8 +192,8 @@ export default function Dashboard() {
         if (e.detail.activeCourseId) setActiveCourseId(e.detail.activeCourseId);
       }
     }
-    window.addEventListener("pathward:progress-updated", handleProgressUpdate);
-    return () => window.removeEventListener("pathward:progress-updated", handleProgressUpdate);
+    window.addEventListener("backlox:progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("backlox:progress-updated", handleProgressUpdate);
   }, []);
 
   // Listen for stress telemetry updates
@@ -207,8 +207,8 @@ export default function Dashboard() {
         });
       }
     }
-    window.addEventListener("pathward:stress-update", handleStressUpdate);
-    return () => window.removeEventListener("pathward:stress-update", handleStressUpdate);
+    window.addEventListener("backlox:stress-update", handleStressUpdate);
+    return () => window.removeEventListener("backlox:stress-update", handleStressUpdate);
   }, []);
 
   // Load payment history
@@ -243,7 +243,7 @@ export default function Dashboard() {
 
     try {
       await api.submitAssignment(selectedAssignment.id, {
-        submissionContent: submissionText.trim() || "Completed solution submitted via Pathward Student Hub.",
+        submissionContent: submissionText.trim() || "Completed solution submitted via Backlox Student Hub.",
         submissionUrl: submissionUrl.trim(),
       });
       setSubmitSuccess("✓ Assignment submitted successfully for instructor review & grading!");
@@ -281,7 +281,7 @@ export default function Dashboard() {
     setChatInput("");
   }
 
-  async function handleUpgrade(planId = "pathward_pro", planName = "Pathward Pro") {
+  async function handleUpgrade(planId = "backlox_pro", planName = "Backlox Pro") {
     setPayError(null);
     setPaySuccessMessage(null);
     setPayingPlan(planId);
@@ -289,7 +289,7 @@ export default function Dashboard() {
     try {
       const order = await api.createOrder(planId);
       const result = await openRazorpayCheckout(order, user, {
-        name: "Pathward Universe",
+        name: "Backlox Universe",
         description: `${planName} Upgrade`,
         notes: { plan: planId, userId: user.id },
       });
@@ -334,7 +334,7 @@ export default function Dashboard() {
         <div className="dash-workspace-header__inner">
           <div className="dash-workspace-brand">
             <Link to="/" className="dash-brand-link" title="Return to Platform Home">
-              <PathwardLogo size="default" />
+              <BackloxLogo size="default" />
             </Link>
 
             {/* Chosen Course Selector Dropdown */}
@@ -366,7 +366,7 @@ export default function Dashboard() {
             <button
               type="button"
               className="navbar-stress-pill"
-              onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-stress-meter"))}
+              onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-stress-meter"))}
               title="Click to open Cognitive Stress Meter & Box Breathing tool"
             >
               <span className="pulsing-dot" style={{ backgroundColor: stressData.color }} />
@@ -507,7 +507,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 className="rail-nav-btn"
-                onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-stress-meter"))}
+                onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-stress-meter"))}
                 title="Cognitive Stress Meter & Box Breathing"
               >
                 <span className="material-symbols-outlined">monitor_heart</span>
@@ -516,7 +516,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 className="rail-nav-btn"
-                onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-ai-chat"))}
+                onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-ai-chat"))}
                 title="Backlox AI Advisor & Doubt Solver"
               >
                 <span className="material-symbols-outlined">school</span>
@@ -1034,7 +1034,7 @@ export default function Dashboard() {
               {/* Pro Upgrade & Subscription Row */}
               <div className="pro-subscription-banner glass-card">
                 <div className="pro-banner-left">
-                  <div className="pro-pill-large mono">PATHWARD PRO UNIVERSE</div>
+                  <div className="pro-pill-large mono">BACKLOX PRO UNIVERSE</div>
                   <h2>Unlock All 35+ Engineering &amp; Medical Branches</h2>
                   <p>Get lifetime verified certifications, 1-on-1 doubt sessions, and unlimited mock MCQ exams.</p>
                   {paySuccessMessage && <div className="submit-success-alert mono text-xs">{paySuccessMessage}</div>}
@@ -1044,7 +1044,7 @@ export default function Dashboard() {
                 <button
                   type="button"
                   className="cyber-btn cyber-btn--primary pro-upgrade-btn"
-                  onClick={() => handleUpgrade("pathward_pro", "Pathward Pro Lifetime")}
+                  onClick={() => handleUpgrade("backlox_pro", "Backlox Pro Lifetime")}
                   disabled={payingPlan !== null}
                 >
                   <span className="material-symbols-outlined">bolt</span>
@@ -1071,7 +1071,7 @@ export default function Dashboard() {
                         payments.map((p) => (
                           <tr key={p.id}>
                             <td className="mono">{p.razorpay_payment_id || `PW-${p.id}`}</td>
-                            <td><strong>{p.plan_name || "Pathward Pro"}</strong></td>
+                            <td><strong>{p.plan_name || "Backlox Pro"}</strong></td>
                             <td className="mono text-emerald">₹{p.amount || 499}</td>
                             <td><span className="completed-tag mono">Confirmed</span></td>
                             <td className="mono text-xs">{new Date(p.created_at || Date.now()).toLocaleDateString()}</td>
@@ -1080,7 +1080,7 @@ export default function Dashboard() {
                       ) : (
                         <tr>
                           <td className="mono">pay_PW_99214</td>
-                          <td><strong>Pathward Pro Membership</strong></td>
+                          <td><strong>Backlox Pro Membership</strong></td>
                           <td className="mono text-emerald font-bold">₹499</td>
                           <td><span className="completed-tag mono">Active</span></td>
                           <td className="mono text-xs">July 2026</td>

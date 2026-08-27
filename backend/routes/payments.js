@@ -9,8 +9,8 @@ const router = express.Router();
 
 // Defined membership and mentorship plans
 const PLANS = {
-  pathward_pro: { amountPaise: 49900, currency: "INR", label: "Pathward Pro — Lifetime Membership" },
-  pathward_pro_annual: { amountPaise: 29900, currency: "INR", label: "Pathward Pro — 1 Year Access" },
+  backlox_pro: { amountPaise: 49900, currency: "INR", label: "Backlox Pro — Lifetime Membership" },
+  backlox_pro_annual: { amountPaise: 29900, currency: "INR", label: "Backlox Pro — 1 Year Access" },
   mentorship_session: { amountPaise: 19900, currency: "INR", label: "1-on-1 Career Mentorship & Portfolio Review" },
 };
 
@@ -51,7 +51,7 @@ router.get("/plans", (req, res) => {
 router.use(requireAuth);
 
 // --- POST /api/payments/create-order ---
-// Body: { plan: 'pathward_pro' } OR { courseId: 'feat-1' } OR { plan: 'course_feat-1' }
+// Body: { plan: 'backlox_pro' } OR { courseId: 'feat-1' } OR { plan: 'course_feat-1' }
 router.post("/create-order", async (req, res) => {
   const { plan, courseId } = req.body || {};
   let targetPlan = plan;
@@ -179,7 +179,7 @@ router.post("/verify", (req, res) => {
   }
 
   // If user bought Pro membership, unlock premium
-  if (payment.plan === "pathward_pro" || payment.plan === "pathward_pro_annual") {
+  if (payment.plan === "backlox_pro" || payment.plan === "backlox_pro_annual") {
     db.prepare("UPDATE users SET is_premium = 1 WHERE id = ?").run(req.user.id);
   }
 
@@ -213,10 +213,10 @@ router.post("/verify", (req, res) => {
 // --- POST /api/payments/instant-subscribe ---
 // Direct test/sandbox instant unlock for immediate platform access
 router.post("/instant-subscribe", (req, res) => {
-  const { plan = "pathward_pro" } = req.body || {};
+  const { plan = "backlox_pro" } = req.body || {};
   const orderId = `pw_instant_${req.user.id}_${Date.now()}`;
   const paymentId = `pay_instant_${Date.now()}`;
-  const amountPaise = plan === "pathward_pro_annual" ? 29900 : 49900;
+  const amountPaise = plan === "backlox_pro_annual" ? 29900 : 49900;
 
   try {
     db.prepare(
@@ -228,7 +228,7 @@ router.post("/instant-subscribe", (req, res) => {
 
     res.json({
       success: true,
-      message: "Pathward Pro subscription successfully activated!",
+      message: "Backlox Pro subscription successfully activated!",
       data: {
         plan,
         status: "paid",

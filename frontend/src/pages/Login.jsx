@@ -36,7 +36,7 @@ export default function Login() {
   function handleDemoFill(demoRole) {
     if (demoRole === "instructor") {
       setRole("instructor");
-      setEmail("instructor@pathward.edu");
+      setEmail("instructor@backlox.edu");
       setPassword("password123");
     } else {
       setRole("trainee");
@@ -61,7 +61,7 @@ export default function Login() {
               <span className="pulsing-dot" />
               <span>AUTHENTICATION GATEWAY</span>
             </div>
-            <h1 className="login-title gradient-text">Sign in to Pathward</h1>
+            <h1 className="login-title gradient-text">Sign in to Backlox</h1>
             <p className="login-sub">
               {role === "instructor"
                 ? "Access Instructor Studio, publish courses in ₹ INR, and manage students."
@@ -98,7 +98,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder={role === "instructor" ? "instructor@pathward.edu" : "student@university.edu"}
+                placeholder={role === "instructor" ? "instructor@backlox.edu" : "student@university.edu"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -113,7 +113,7 @@ export default function Login() {
                   className="auth-link text-xs"
                   onClick={(e) => {
                     e.preventDefault();
-                    alert("Enter your registered email address or contact support@pathward.edu to reset password.");
+                    alert("Enter your registered email address or contact support@backlox.edu to reset password.");
                   }}
                 >
                   Forgot Password?

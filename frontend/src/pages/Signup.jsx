@@ -111,7 +111,7 @@ export default function Signup() {
               <span>{role === "instructor" ? "CREATOR & FACULTY PORTAL" : "COMPREHENSIVE SCHOLAR ONBOARDING"}</span>
             </div>
             <h1 className="login-title gradient-text">
-              {role === "instructor" ? "Become a Pathward Faculty" : "Build Your Scholar Profile"}
+              {role === "instructor" ? "Become a Backlox Faculty" : "Build Your Scholar Profile"}
             </h1>
             <p className="login-sub">
               {role === "instructor"
@@ -168,7 +168,7 @@ export default function Signup() {
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder={role === "instructor" ? "instructor@pathward.edu" : "student@university.edu"}
+                  placeholder={role === "instructor" ? "instructor@backlox.edu" : "student@university.edu"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -391,7 +391,7 @@ export default function Signup() {
           <div className="auth-switch">
             <span>Already registered? </span>
             <Link to="/login" className="auth-link">
-              Sign in to Pathward
+              Sign in to Backlox
             </Link>
           </div>
         </div>

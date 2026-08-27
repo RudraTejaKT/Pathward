@@ -139,7 +139,7 @@ export default function CourseDetail() {
 
   useEffect(() => {
     // Check if user already enrolled or is Pro/instructor
-    const enrolledMap = JSON.parse(localStorage.getItem("pathward_enrolled_courses") || "{}");
+    const enrolledMap = JSON.parse(localStorage.getItem("backlox_enrolled_courses") || "{}");
     if (enrolledMap[course.id] || (user && (user.isPremium || user.role === "instructor" || user.role === "admin"))) {
       setIsEnrolled(true);
     }
@@ -204,9 +204,9 @@ export default function CourseDetail() {
 
       // 4. Mark enrolled
       enrollCourse(course.id);
-      const enrolledMap = JSON.parse(localStorage.getItem("pathward_enrolled_courses") || "{}");
+      const enrolledMap = JSON.parse(localStorage.getItem("backlox_enrolled_courses") || "{}");
       enrolledMap[course.id] = true;
-      localStorage.setItem("pathward_enrolled_courses", JSON.stringify(enrolledMap));
+      localStorage.setItem("backlox_enrolled_courses", JSON.stringify(enrolledMap));
 
       setIsEnrolled(true);
       setReceiptData({
@@ -442,7 +442,7 @@ export default function CourseDetail() {
                   </div>
                   <div className="feat-line">
                     <span className="material-symbols-outlined">verified</span>
-                    <span>Accredited Pathward Certificate</span>
+                    <span>Accredited Backlox Certificate</span>
                   </div>
                   <div className="feat-line">
                     <span className="material-symbols-outlined">support_agent</span>

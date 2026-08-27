@@ -1,7 +1,7 @@
 {
-  "name": "pathward-universe",
+  "name": "backlox-universe",
   "version": "2.0.0",
-  "description": "Pathward Career Guide India Universe Full-Stack Platform",
+  "description": "Backlox Career Guide India Universe Full-Stack Platform",
   "private": true,
   "scripts": {
     "postinstall": "npm install --prefix backend && npm install --prefix frontend",

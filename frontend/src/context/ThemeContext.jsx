@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext(null);
-const THEME_KEY = "pathward_theme";
+const THEME_KEY = "backlox_theme";
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {

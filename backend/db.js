@@ -122,9 +122,9 @@ if (Database) {
     let DB_PATH = process.env.DB_PATH;
     if (!DB_PATH) {
       if (process.env.VERCEL) {
-        DB_PATH = path.join("/tmp", "pathward.db");
+        DB_PATH = path.join("/tmp", "backlox.db");
       } else {
-        DB_PATH = path.join(__dirname, "pathward.db");
+        DB_PATH = path.join(__dirname, "backlox.db");
       }
     }
     db = new Database(DB_PATH);

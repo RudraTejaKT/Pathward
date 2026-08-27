@@ -115,14 +115,14 @@ export default function Home() {
                   Choose a Branch to Watch Free Foundation Videos
                 </h2>
                 <p className="theater-main-subtitle">
-                  Preview high-yield introductory lectures, core syllabi, and industry career projections for any branch before subscribing to Pathward Pro.
+                  Preview high-yield introductory lectures, core syllabi, and industry career projections for any branch before subscribing to Backlox Pro.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="cyber-btn cyber-btn--primary subscribe-pill-cta"
-                onClick={() => window.dispatchEvent(new CustomEvent("pathward:open-subscription"))}
+                onClick={() => window.dispatchEvent(new CustomEvent("backlox:open-subscription"))}
               >
                 ⭐ Unlock All Universes (₹499)
               </button>

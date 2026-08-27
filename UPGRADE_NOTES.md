@@ -1,4 +1,4 @@
-# Pathward Career Guide — India Career Universe Upgrade
+# Backlox Career Guide — India Career Universe Upgrade
 
 Implemented in this package:
 

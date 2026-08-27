@@ -24,7 +24,7 @@ export default function ProtectedRoute({ children, requireSubscription = true, t
   if (requireSubscription && !isSubscribed) {
     return (
       <SubscriptionPaywall
-        title={title || "Pathward Pro Subscription Required"}
+        title={title || "Backlox Pro Subscription Required"}
         subtitle={subtitle || "This workspace, practice gym, and full syllabus suite is exclusive to Pro scholars. Upgrade below to unlock instant lifetime or annual access."}
       />
     );

@@ -21,11 +21,11 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
         })
         .catch(() => {
           // Fallback to local storage
-          const local = JSON.parse(localStorage.getItem("pathward_study_notes") || "[]");
+          const local = JSON.parse(localStorage.getItem("backlox_study_notes") || "[]");
           setNotes(local);
         });
     } else {
-      const local = JSON.parse(localStorage.getItem("pathward_study_notes") || "[]");
+      const local = JSON.parse(localStorage.getItem("backlox_study_notes") || "[]");
       setNotes(local);
     }
   }, [user]);
@@ -56,13 +56,13 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
       } else {
         const updated = [newNoteObj, ...notes];
         setNotes(updated);
-        localStorage.setItem("pathward_study_notes", JSON.stringify(updated));
+        localStorage.setItem("backlox_study_notes", JSON.stringify(updated));
       }
       setCurrentNote("");
     } catch {
       const updated = [newNoteObj, ...notes];
       setNotes(updated);
-      localStorage.setItem("pathward_study_notes", JSON.stringify(updated));
+      localStorage.setItem("backlox_study_notes", JSON.stringify(updated));
       setCurrentNote("");
     } finally {
       setSaving(false);
@@ -79,7 +79,7 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
     }
     const updated = notes.filter((n) => n.id !== id);
     setNotes(updated);
-    localStorage.setItem("pathward_study_notes", JSON.stringify(updated));
+    localStorage.setItem("backlox_study_notes", JSON.stringify(updated));
   }
 
   function handleCopyNote(n) {
@@ -90,14 +90,14 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
   }
 
   function handleExportNotes() {
-    const markdown = `# Study Notes: ${topic}\nGenerated via Pathward Universe DRM Protected LMS\n\n` +
+    const markdown = `# Study Notes: ${topic}\nGenerated via Backlox Universe DRM Protected LMS\n\n` +
       notes.map((n) => `### [${n.tags || "Note"}] ${n.topic}\n*${n.created_at || "Recent"}*\n\n${n.note_content}\n\n---`).join("\n\n");
 
     const blob = new Blob([markdown], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Pathward_Notes_${(topic || "Course").replace(/\s+/g, "_")}.md`;
+    a.download = `Backlox_Notes_${(topic || "Course").replace(/\s+/g, "_")}.md`;
     a.click();
     URL.revokeObjectURL(url);
   }

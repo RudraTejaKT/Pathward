@@ -1,5 +1,5 @@
 -- =========================================================
--- PATHWARD UNIVERSE — SUPABASE POSTGRESQL DATABASE SCHEMA
+-- BACKLOX UNIVERSE — SUPABASE POSTGRESQL DATABASE SCHEMA
 -- =========================================================
 
 -- 1. Users Table

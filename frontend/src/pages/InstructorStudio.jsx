@@ -4,7 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import VideoPlayer from "../components/VideoPlayer.jsx";
-import PathwardLogo from "../components/PathwardLogo.jsx";
+import BackloxLogo from "../components/BackloxLogo.jsx";
 import { COURSE_CATALOG, enrollCourse, saveCustomCourse, loadSavedCustomCourses, formatVideoEmbedUrl } from "../lib/coursesData.js";
 import "./InstructorStudio.css";
 
@@ -99,12 +99,12 @@ export default function InstructorStudio() {
 
   // Payout & Balance State with LocalStorage Persistence
   const [availableBalance, setAvailableBalance] = useState(() => {
-    const saved = localStorage.getItem("pathward_instructor_balance");
+    const saved = localStorage.getItem("backlox_instructor_balance");
     return saved !== null ? Number(saved) : 38200;
   });
 
   const [payoutLedger, setPayoutLedger] = useState(() => {
-    const saved = localStorage.getItem("pathward_payout_ledger");
+    const saved = localStorage.getItem("backlox_payout_ledger");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -224,8 +224,8 @@ export default function InstructorStudio() {
         setActiveTab(e.detail);
       }
     }
-    window.addEventListener("pathward:switch-instructor-tab", handleTabSwitch);
-    return () => window.removeEventListener("pathward:switch-instructor-tab", handleTabSwitch);
+    window.addEventListener("backlox:switch-instructor-tab", handleTabSwitch);
+    return () => window.removeEventListener("backlox:switch-instructor-tab", handleTabSwitch);
   }, []);
 
   useEffect(() => {
@@ -365,7 +365,7 @@ export default function InstructorStudio() {
       setCourses((prev) => [newCourseObj, ...prev.filter(x => String(x.id) !== String(finalCourseId))]);
       setLastCreatedCourse(newCourseObj);
       setModuleForm((prev) => ({ ...prev, courseId: finalCourseId }));
-      setMsg(`Course "${courseForm.title}" uploaded and published to Pathward Catalog!`);
+      setMsg(`Course "${courseForm.title}" uploaded and published to Backlox Catalog!`);
       setMsgType("success");
 
       setCourseForm({
@@ -537,7 +537,7 @@ export default function InstructorStudio() {
       const newBal = Math.max(0, availableBalance - transferAmount);
       
       setAvailableBalance(newBal);
-      localStorage.setItem("pathward_instructor_balance", String(newBal));
+      localStorage.setItem("backlox_instructor_balance", String(newBal));
 
       const refId = `PW-PO-${Math.floor(1000 + Math.random() * 9000)}`;
       const newEntry = {
@@ -550,7 +550,7 @@ export default function InstructorStudio() {
 
       const updatedLedger = [newEntry, ...payoutLedger];
       setPayoutLedger(updatedLedger);
-      localStorage.setItem("pathward_payout_ledger", JSON.stringify(updatedLedger));
+      localStorage.setItem("backlox_payout_ledger", JSON.stringify(updatedLedger));
 
       setPayoutSuccess(false);
       setIsPayoutModalOpen(false);
@@ -576,7 +576,7 @@ export default function InstructorStudio() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Pathward_Instructor_Sales_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `Backlox_Instructor_Sales_Report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -621,7 +621,7 @@ export default function InstructorStudio() {
         <div className="dash-workspace-header__inner">
           <div className="dash-workspace-brand">
             <Link to="/" className="dash-brand-link" title="Return to Platform Home">
-              <PathwardLogo size="default" />
+              <BackloxLogo size="default" />
             </Link>
             <div className="navbar__workspace-pill navbar__workspace-pill--instructor">
               <span className="workspace-dot" />
@@ -1556,7 +1556,7 @@ export default function InstructorStudio() {
                       style={{ padding: "3px 8px", fontSize: "11px", color: "#38bdf8" }}
                       onClick={() => {
                         setAvailableBalance(38200);
-                        localStorage.setItem("pathward_instructor_balance", "38200");
+                        localStorage.setItem("backlox_instructor_balance", "38200");
                         setPayoutAmount("₹38,200");
                       }}
                     >

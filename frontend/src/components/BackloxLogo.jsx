@@ -1,2 +1,2 @@
-import BackloxLogo from "./PathwardLogo.jsx";
+import BackloxLogo from "./BackloxLogo.jsx";
 export default BackloxLogo;
