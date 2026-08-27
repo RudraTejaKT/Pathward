@@ -1,7 +1,7 @@
-# Multi-stage Dockerfile for Pathward Full-Stack Platform
+# Multi-stage Production Dockerfile (Compatible with AWS, Railway, Render, Docker)
 
 # Stage 1: Build React Frontend
-FROM node:20-alpine AS frontend-builder
+FROM node:20-slim AS frontend-builder
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
@@ -10,8 +10,8 @@ RUN npm ci --prefer-offline --no-audit
 COPY frontend/ ./
 RUN npm run build
 
-# Stage 2: Setup Backend & Assemble Production App
-FROM node:20-alpine AS production
+# Stage 2: Production Backend Server
+FROM node:20-slim AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -27,12 +27,8 @@ COPY backend/ ./backend/
 # Copy built frontend assets from stage 1
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-# Expose backend port
+# Expose standard container port
 EXPOSE 4000
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/health || exit 1
-
-# Start the full-stack server
+# Start full-stack server
 CMD ["node", "backend/server.js"]

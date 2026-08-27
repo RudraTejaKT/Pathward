@@ -167,8 +167,8 @@ app.use((err, req, res, next) => {
 });
 
 if (process.env.NODE_ENV !== "test" && !process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Career Guide API running on http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Career Guide API running on http://0.0.0.0:${PORT}`);
   });
 }
 
