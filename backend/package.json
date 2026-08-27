@@ -1,7 +1,7 @@
 {
-  "name": "career-guide-backend",
+  "name": "backlox-backend",
   "version": "2.0.0",
-  "description": "API for the post-12th / engineering career roadmap app",
+  "description": "API for Backlox Career Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,12 +13,14 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.8.1",
     "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "razorpay": "^2.9.4"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.8.1"
   }
 }
