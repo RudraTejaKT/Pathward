@@ -271,6 +271,27 @@ try {
       db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT;`);
     } catch {}
   });
+
+  // Seed default demo student and instructor accounts if not present
+  try {
+    const demoStudent = db.prepare("SELECT id FROM users WHERE email = ?").get("student@university.edu");
+    if (!demoStudent) {
+      db.prepare(`
+        INSERT INTO users (name, email, password_hash, role, is_premium)
+        VALUES ('Student Demo', 'student@university.edu', '$2a$10$f3OASITq3Z3V0eOcU1Uz9OdSQwhHG8R8S1oY8bMBP/IvxRaQv4yT2', 'trainee', 1)
+      `).run();
+    }
+
+    const demoInstructor = db.prepare("SELECT id FROM users WHERE email = ?").get("instructor@backlox.edu");
+    if (!demoInstructor) {
+      db.prepare(`
+        INSERT INTO users (name, email, password_hash, role, is_premium)
+        VALUES ('Prof. Alex Vance', 'instructor@backlox.edu', '$2a$10$f3OASITq3Z3V0eOcU1Uz9OdSQwhHG8R8S1oY8bMBP/IvxRaQv4yT2', 'instructor', 1)
+      `).run();
+    }
+  } catch (seedErr) {
+    console.warn("Notice: demo user seeding:", seedErr.message);
+  }
 } catch (e) {
   console.warn("DB table setup warning:", e.message);
 }
