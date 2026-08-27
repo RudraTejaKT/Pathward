@@ -1,4 +1,11 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const BASE_URL = (() => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && !envUrl.includes("localhost:4000")) {
+    return envUrl.replace(/\/+$/, "");
+  }
+  // In development Vite proxies /api to port 4000; in production it uses relative host /api
+  return "/api";
+})();
 
 let authToken = null;
 export function setAuthToken(token) {
@@ -24,7 +31,7 @@ async function request(path, { method = "GET", body, auth = false, optionalAuth 
     });
   } catch (err) {
     throw new Error(
-      `Could not connect to API (${err.message}). Make sure the backend server is running on http://localhost:4000.`
+      `Could not connect to API (${err.message}). Check your network connection or server status.`
     );
   }
 
@@ -38,7 +45,7 @@ async function request(path, { method = "GET", body, auth = false, optionalAuth 
     }
   } else {
     throw new Error(
-      `Received non-JSON response from server (Status: ${res.status}). Ensure the backend server is running on http://localhost:4000.`
+      `Received non-JSON response from server (Status: ${res.status}). Endpoint: ${path}`
     );
   }
 
