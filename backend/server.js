@@ -142,20 +142,15 @@ const fs = require("fs");
 
 if (fs.existsSync(frontendDistPath)) {
   app.use(express.static(frontendDistPath));
-  app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
-      return next();
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api") && !req.path.startsWith("/uploads")) {
+      return res.sendFile(path.join(frontendDistPath, "index.html"));
     }
-    res.sendFile(path.join(frontendDistPath, "index.html"));
+    next();
   });
 }
 
-// --- 404 JSON fallback for unmatched API routes ---
-app.use("/api/*", (req, res) => {
-  res.status(404).json({ success: false, message: `API endpoint not found: ${req.method} ${req.originalUrl}` });
-});
-
-// General 404 fallback if static files aren't available
+// --- 404 JSON fallback for unmatched routes ---
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Endpoint not found: ${req.method} ${req.originalUrl}` });
 });
