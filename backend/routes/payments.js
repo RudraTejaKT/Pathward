@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const Razorpay = require("razorpay");
 const db = require("../db");
 const { requireAuth } = require("../middleware/auth");
+const { sendProUpgradeEmail } = require("../lib/email");
 
 const router = express.Router();
 
@@ -181,6 +182,16 @@ router.post("/verify", (req, res) => {
   // If user bought Pro membership, unlock premium
   if (payment.plan === "backlox_pro" || payment.plan === "backlox_pro_annual") {
     db.prepare("UPDATE users SET is_premium = 1 WHERE id = ?").run(req.user.id);
+    const userRow = db.prepare("SELECT name, email FROM users WHERE id = ?").get(req.user.id);
+    if (userRow) {
+      sendProUpgradeEmail({
+        name: userRow.name,
+        email: userRow.email,
+        planName: payment.plan === "backlox_pro_annual" ? "Backlox Pro (Annual)" : "Backlox Pro (Lifetime)",
+        amount: `₹${(payment.amount_paise / 100).toFixed(0)}`,
+        orderId: razorpay_order_id,
+      });
+    }
   }
 
   // If user bought a course, enroll user if it's a numeric course ID
@@ -225,6 +236,17 @@ router.post("/instant-subscribe", (req, res) => {
     ).run(req.user.id, plan, amountPaise, orderId, paymentId);
 
     db.prepare("UPDATE users SET is_premium = 1 WHERE id = ?").run(req.user.id);
+
+    const userRow = db.prepare("SELECT name, email FROM users WHERE id = ?").get(req.user.id);
+    if (userRow) {
+      sendProUpgradeEmail({
+        name: userRow.name,
+        email: userRow.email,
+        planName: plan === "backlox_pro_annual" ? "Backlox Pro (Annual)" : "Backlox Pro (Lifetime)",
+        amount: `₹${(amountPaise / 100).toFixed(0)}`,
+        orderId,
+      });
+    }
 
     res.json({
       success: true,

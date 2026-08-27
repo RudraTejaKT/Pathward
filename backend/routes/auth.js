@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const db = require("../db");
 const { signToken, requireAuth } = require("../middleware/auth");
 const { supabase } = require("../lib/supabase");
+const { sendWelcomeEmail, sendPasswordResetEmail } = require("../lib/email");
+
 
 const router = express.Router();
 
@@ -123,6 +125,9 @@ router.post("/signup", async (req, res) => {
   // Trigger non-blocking Supabase sync
   syncUserToSupabase(user);
 
+  // Trigger non-blocking Welcome Email via Resend
+  sendWelcomeEmail({ name: user.name, email: user.email, role: user.role });
+
   res.status(201).json({ success: true, data: { token, user: publicUser(user) } });
 });
 
@@ -149,20 +154,41 @@ router.post("/login", async (req, res) => {
   res.json({ success: true, data: { token, user: publicUser(user) } });
 });
 
-// --- GET /api/auth/me ---
-// Returns the current user based on the Bearer token. Also used by the
-// frontend on load to validate a stored token and refresh premium status.
+// --- POST /api/auth/forgot-password ---
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body || {};
+  if (!email || !EMAIL_RE.test(email)) {
+    return res.status(400).json({ success: false, message: "A valid email address is required" });
+  }
+  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email.toLowerCase());
+  if (user) {
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    sendPasswordResetEmail({ name: user.name, email: user.email, resetCode });
+  }
+  res.json({
+    success: true,
+    message: "If an account with that email exists, password reset instructions have been sent via email.",
+  });
+});
+
+// --- POST /api/auth/instructor-signup ---
 router.post("/instructor-signup", async (req, res) => {
   const { name, email, password } = req.body || {};
   if (!name || !email || !EMAIL_RE.test(email) || !password || password.length < 8) {
     return res.status(400).json({ success: false, message: "Name, valid email and password of at least 8 characters are required" });
   }
-  const normalized=email.toLowerCase();
-  if(db.prepare("SELECT id FROM users WHERE email=?").get(normalized)) return res.status(409).json({success:false,message:"An account with this email already exists"});
-  const passwordHash=await bcrypt.hash(password,10);
-  const info=db.prepare("INSERT INTO users(name,email,password_hash,role) VALUES(?,?,?,?)").run(name.trim(),normalized,passwordHash,"instructor");
-  const user=db.prepare("SELECT * FROM users WHERE id=?").get(info.lastInsertRowid);
-  res.status(201).json({success:true,data:{token:signToken(user),user:publicUser(user)}});
+  const normalized = email.toLowerCase();
+  if (db.prepare("SELECT id FROM users WHERE email=?").get(normalized)) {
+    return res.status(409).json({ success: false, message: "An account with this email already exists" });
+  }
+  const passwordHash = await bcrypt.hash(password, 10);
+  const info = db.prepare("INSERT INTO users(name,email,password_hash,role) VALUES(?,?,?,?)").run(name.trim(), normalized, passwordHash, "instructor");
+  const user = db.prepare("SELECT * FROM users WHERE id=?").get(info.lastInsertRowid);
+  
+  // Send Welcome Email
+  sendWelcomeEmail({ name: user.name, email: user.email, role: "instructor" });
+
+  res.status(201).json({ success: true, data: { token: signToken(user), user: publicUser(user) } });
 });
 
 router.get("/me", requireAuth, (req, res) => {
