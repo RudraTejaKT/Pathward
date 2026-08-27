@@ -1,10 +1,13 @@
 const BASE_URL = (() => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && !envUrl.includes("localhost:4000")) {
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.startsWith("/")) {
     return envUrl.replace(/\/+$/, "");
   }
-  // In development Vite proxies /api to port 4000; in production it uses relative host /api
-  return "/api";
+  // When running on hosted domains (e.g. backlogx.vercel.app), direct API calls to live Railway backend
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+    return "https://hopeful-education-production-cdb9.up.railway.app/api";
+  }
+  return "http://127.0.0.1:4000/api";
 })();
 
 let authToken = null;
