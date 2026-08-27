@@ -21,10 +21,15 @@
     "multer": "^2.0.2",
     "razorpay": "^2.9.4"
   },
-  "optionalDependencies": {
-    "better-sqlite3": "^11.8.1"
-  },
-  "keywords": ["career", "education", "roadmap", "aws", "vercel", "railway", "github-actions"],
+  "keywords": [
+    "career",
+    "education",
+    "roadmap",
+    "aws",
+    "vercel",
+    "railway",
+    "github-actions"
+  ],
   "author": "RudratejaKT",
   "license": "ISC"
 }
