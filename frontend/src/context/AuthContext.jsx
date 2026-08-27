@@ -14,22 +14,32 @@ export function AuthProvider({ children }) {
 
   // Monitor Supabase Auth Session
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (!error && session?.user) {
-        setSupabaseUser(session.user);
-        setSupabaseConnected(true);
-      } else if (!error) {
-        setSupabaseConnected(true);
+    try {
+      if (supabase && supabase.auth) {
+        supabase.auth.getSession()
+          .then(({ data, error }) => {
+            if (!error && data?.session?.user) {
+              setSupabaseUser(data.session.user);
+              setSupabaseConnected(true);
+            } else if (!error) {
+              setSupabaseConnected(true);
+            }
+          })
+          .catch((err) => {
+            console.warn("Supabase session check notice:", err?.message || err);
+          });
+
+        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+          setSupabaseUser(session?.user || null);
+        });
+
+        return () => {
+          authListener?.subscription?.unsubscribe();
+        };
       }
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSupabaseUser(session?.user || null);
-    });
-
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
+    } catch (e) {
+      console.warn("Supabase init notice:", e?.message || e);
+    }
   }, []);
 
   useEffect(() => {
