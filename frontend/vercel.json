@@ -1,7 +1,4 @@
 {
-  "framework": "vite",
-  "buildCommand": "node build-helper.js",
-  "outputDirectory": "frontend/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
