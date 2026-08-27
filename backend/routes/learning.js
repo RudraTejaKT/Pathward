@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const db = require("../db");
 const { requireAuth } = require("../middleware/auth");
+const { streams: STREAMS } = require("../data");
 
 const router = express.Router();
 

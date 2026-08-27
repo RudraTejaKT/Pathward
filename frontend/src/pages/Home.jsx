@@ -14,9 +14,42 @@ const FEATURED_BRANCH_TABS = [
   { id: "bds", name: "BDS Dental Surgery", stream: "medical" },
 ];
 
+const FALLBACK_STREAMS = [
+  {
+    id: "science",
+    name: "Science (PCM / Engineering)",
+    groups: ["MPC", "PCMB", "CS"],
+    courses: ["B.Tech / B.E.", "B.Sc Computing", "B.Arch", "Integrated M.Sc"],
+  },
+  {
+    id: "medical",
+    name: "Medical & Health Sciences",
+    groups: ["BiPC", "PCMB"],
+    courses: ["MBBS", "BDS Dental", "B.Pharm", "BAMS / BHMS"],
+  },
+  {
+    id: "commerce",
+    name: "Commerce & Finance",
+    groups: ["MEC", "CEC"],
+    courses: ["CA Foundation", "B.Com (Hons)", "BBA Finance", "IPMAT Management"],
+  },
+  {
+    id: "arts",
+    name: "Humanities & Social Sciences",
+    groups: ["HEC", "Arts"],
+    courses: ["BA Economics", "CLAT Integrated Law", "Design (NIFT/UCEED)", "Journalism"],
+  },
+  {
+    id: "vocational",
+    name: "Vocational & Applied Tech",
+    groups: ["Vocational"],
+    courses: ["B.Voc AI & Data", "Polytechnic Diploma", "Aviation & Logistics"],
+  },
+];
+
 export default function Home() {
-  const [streams, setStreams] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [streams, setStreams] = useState(FALLBACK_STREAMS);
+  const [loading, setLoading] = useState(false);
 
   // Front page Free Branch Video Theater State
   const [activeBranchId, setActiveBranchId] = useState("cse");
@@ -30,9 +63,15 @@ export default function Home() {
 
   useEffect(() => {
     api
-      .getLearningStreams()
-      .then(setStreams)
-      .finally(() => setLoading(false));
+      .getStreams()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setStreams(data);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using fallback streams:", err?.message || err);
+      });
   }, []);
 
   return (
@@ -378,8 +417,8 @@ export default function Home() {
                       <h3>{s.name}</h3>
                       <span className="pathway-card__badge mono">ACTIVE</span>
                     </div>
-                    <p className="pathway-card__groups mono">{s.groups.join(" · ")}</p>
-                    <p className="pathway-card__desc">{s.courses.slice(0, 4).join(", ")}...</p>
+                    <p className="pathway-card__groups mono">{Array.isArray(s.groups) ? s.groups.join(" · ") : ""}</p>
+                    <p className="pathway-card__desc">{Array.isArray(s.courses) ? s.courses.slice(0, 4).join(", ") : ""}...</p>
                     <div className="pathway-card__footer">
                       <span className="pathway-card__cta">
                         {s.id === "science"
