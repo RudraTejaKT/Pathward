@@ -1,6 +1,6 @@
 {
   "framework": "vite",
-  "buildCommand": "npm run build --prefix frontend",
+  "buildCommand": "node build-helper.js",
   "outputDirectory": "frontend/dist",
   "functions": {
     "api/index.js": {
