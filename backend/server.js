@@ -132,6 +132,10 @@ app.get("/api/supabase/status", async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.json({ status: "ok", service: "Backlox Cloud Backend", version: "2.0.0", timestamp: new Date().toISOString() });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString(), supabase: isConfigured ? "ready" : "disabled" });
 });

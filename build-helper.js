@@ -2,6 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// On Railway backend container, skip building frontend to prevent memory exhaustion
+if (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_SERVICE_ID) {
+  console.log('🚂 Railway backend environment detected. Skipping frontend build.');
+  process.exit(0);
+}
+
 let frontendDir = '';
 let rootDir = __dirname;
 
