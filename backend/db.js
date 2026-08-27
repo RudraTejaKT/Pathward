@@ -3,13 +3,37 @@
 // trainee progress, and payment records to actually persist across restarts.
 
 const path = require("path");
+const fs = require("fs");
 const Database = require("better-sqlite3");
 
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, "pathward.db");
-const db = new Database(DB_PATH);
+const isVercel = !!process.env.VERCEL || process.env.NODE_ENV === "production" && !fs.existsSync(__dirname);
+let DB_PATH = process.env.DB_PATH;
 
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = ON");
+if (!DB_PATH) {
+  if (process.env.VERCEL) {
+    DB_PATH = path.join("/tmp", "pathward.db");
+  } else {
+    DB_PATH = path.join(__dirname, "pathward.db");
+  }
+}
+
+let db;
+try {
+  db = new Database(DB_PATH);
+  db.pragma("journal_mode = WAL");
+  db.pragma("foreign_keys = ON");
+} catch (err) {
+  console.warn("Primary DB initialization fallback to /tmp:", err.message);
+  try {
+    DB_PATH = path.join("/tmp", "pathward.db");
+    db = new Database(DB_PATH);
+    db.pragma("foreign_keys = ON");
+  } catch (innerErr) {
+    console.error("Database initialization failed:", innerErr.message);
+    throw innerErr;
+  }
+}
+
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (

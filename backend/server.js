@@ -166,6 +166,11 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ success: false, message: err.message || "Internal server error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Career Guide API running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== "test" && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Career Guide API running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
+
