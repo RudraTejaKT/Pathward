@@ -16,8 +16,8 @@ async function sendEmail({ to, subject, html, text, tags = [] }) {
 
   try {
     const formattedTags = [
-      { name: "tag", value: DEFAULT_TAG },
-      ...tags.map((t) => (typeof t === "string" ? { name: "category", value: t } : t)),
+      { name: "platform", value: DEFAULT_TAG },
+      ...tags.map((t, idx) => (typeof t === "string" ? { name: `topic_${idx}`, value: t.replace(/[^a-zA-Z0-9_-]/g, "_") } : t)),
     ];
 
     const payload = {
