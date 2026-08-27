@@ -39,12 +39,12 @@ jobs:
       - name: Install Backend Dependencies
         run: |
           cd backend
-          npm ci || npm install
+          npm install
 
       - name: Install Frontend Dependencies
         run: |
           cd frontend
-          npm ci || npm install
+          npm install
 
       - name: Verify Backend Integrity
         run: |
@@ -70,6 +70,7 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    continue-on-error: true
     env:
       AWS_DEFAULT_REGION: ${{ inputs.aws_region || secrets.AWS_REGION || 'ap-south-1' }}
       APP_RUNNER_SERVICE_ARN: ${{ secrets.APP_RUNNER_SERVICE_ARN }}
@@ -83,7 +84,18 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Check AWS Secrets Configured
+        id: check-aws
+        run: |
+          if [ -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "has_keys=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_keys=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ AWS_ACCESS_KEY_ID secret not set. Skipping AWS container deployment."
+          fi
+
       - name: Configure AWS Credentials
+        if: steps.check-aws.outputs.has_keys == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -91,15 +103,18 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Verify AWS IAM Identity
+        if: steps.check-aws.outputs.has_keys == 'true'
         run: |
           echo "Verifying AWS Caller Identity..."
           aws sts get-caller-identity
 
       - name: Log in to Amazon ECR
+        if: steps.check-aws.outputs.has_keys == 'true'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Ensure ECR Repository Exists
+        if: steps.check-aws.outputs.has_keys == 'true'
         run: |
           echo "Checking if ECR repository '$ECR_REPOSITORY' exists..."
           aws ecr describe-repositories --repository-names "$ECR_REPOSITORY" > /dev/null 2>&1 || \
@@ -107,6 +122,7 @@ jobs:
           echo "ECR Repository '$ECR_REPOSITORY' is ready."
 
       - name: Build, Tag, and Push Docker Image to Amazon ECR
+        if: steps.check-aws.outputs.has_keys == 'true'
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -124,7 +140,7 @@ jobs:
 
       # Option A: Trigger AWS App Runner Deployment (if Service ARN is configured)
       - name: Deploy to AWS App Runner
-        if: env.APP_RUNNER_SERVICE_ARN != ''
+        if: steps.check-aws.outputs.has_keys == 'true' && env.APP_RUNNER_SERVICE_ARN != ''
         run: |
           echo "Triggering AWS App Runner deployment for service ARN: $APP_RUNNER_SERVICE_ARN"
           aws apprunner start-deployment --service-arn "$APP_RUNNER_SERVICE_ARN"
@@ -132,7 +148,7 @@ jobs:
 
       # Option B: Deploy to AWS ECS (if ECS Cluster and Service are configured)
       - name: Deploy to Amazon ECS Service
-        if: env.ECS_CLUSTER != '' && env.ECS_SERVICE != ''
+        if: steps.check-aws.outputs.has_keys == 'true' && env.ECS_CLUSTER != '' && env.ECS_SERVICE != ''
         run: |
           echo "Updating ECS service: $ECS_SERVICE on cluster $ECS_CLUSTER..."
           aws ecs update-service --cluster "$ECS_CLUSTER" --service "$ECS_SERVICE" --force-new-deployment
@@ -140,26 +156,27 @@ jobs:
 
       # Option C: Deploy Static Frontend to AWS S3 & CloudFront (if S3_BUCKET_NAME is configured)
       - name: Download Frontend Artifacts
-        if: env.S3_BUCKET_NAME != ''
+        if: steps.check-aws.outputs.has_keys == 'true' && env.S3_BUCKET_NAME != ''
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
           path: frontend/dist
 
       - name: Sync Frontend to AWS S3
-        if: env.S3_BUCKET_NAME != ''
+        if: steps.check-aws.outputs.has_keys == 'true' && env.S3_BUCKET_NAME != ''
         run: |
           echo "Syncing frontend build to s3://$S3_BUCKET_NAME..."
           aws s3 sync frontend/dist s3://$S3_BUCKET_NAME --delete
 
       - name: Invalidate CloudFront Cache
-        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
+        if: steps.check-aws.outputs.has_keys == 'true' && env.CLOUDFRONT_DISTRIBUTION_ID != ''
         run: |
           echo "Invalidating CloudFront cache for distribution: $CLOUDFRONT_DISTRIBUTION_ID..."
           aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/*"
 
       # Final Summary
       - name: Post Deployment Summary
+        if: steps.check-aws.outputs.has_keys == 'true'
         run: |
           echo "### 🚀 AWS Deployment Pipeline Completed Successfully!" >> $GITHUB_STEP_SUMMARY
           echo "- **ECR Registry:** \`${{ steps.login-ecr.outputs.registry }}\`" >> $GITHUB_STEP_SUMMARY

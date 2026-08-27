@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 // Resend Email Delivery Engine for Backlox Platform
 const RESEND_API_URL = "https://api.resend.com/emails";
 
