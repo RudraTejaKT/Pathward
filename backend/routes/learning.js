@@ -6,8 +6,16 @@ const db = require("../db");
 const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
-const uploadDir = path.join(__dirname, "..", "uploads");
-fs.mkdirSync(uploadDir, { recursive: true });
+
+const uploadDir = process.env.VERCEL
+  ? path.join("/tmp", "uploads")
+  : path.join(__dirname, "..", "uploads");
+
+try {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} catch (e) {
+  // Ignore read-only filesystem errors on serverless
+}
 const upload = multer({ dest: uploadDir, limits: { fileSize: 100 * 1024 * 1024 } });
 
 // Backlox's expanded India-wide pathway catalogue.
