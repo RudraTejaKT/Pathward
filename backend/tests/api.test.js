@@ -123,4 +123,66 @@ describe("API Endpoints Testing with Jest", () => {
             .set("Authorization", `Bearer ${tokenB}`);
         expect(notesB.body.data.length).toBe(0);
     });
+
+    // 9. Test Razorpay Standard Order Creation & Signature Verification
+    test("POST /api/create-order & POST /api/verify-payment with HMAC-SHA256", async () => {
+        const crypto = require("crypto");
+
+        // Login demo student
+        const loginRes = await request(app)
+            .post("/api/auth/login")
+            .send({ email: "student@university.edu", password: "Password123!" });
+        const token = loginRes.body.data.token;
+
+        // 9a. Validate minimum amount constraint (< 100 paise rejected)
+        const invalidOrderRes = await request(app)
+            .post("/api/create-order")
+            .set("Authorization", `Bearer ${token}`)
+            .send({ amount: 50 }); // 50 paise is < 100
+        expect(invalidOrderRes.statusCode).toEqual(400);
+
+        // 9b. Create valid order (e.g. 49900 paise = ₹499)
+        const orderRes = await request(app)
+            .post("/api/create-order")
+            .set("Authorization", `Bearer ${token}`)
+            .send({ amount: 49900, currency: "INR" });
+        expect(orderRes.statusCode).toEqual(200);
+        expect(orderRes.body.success).toBe(true);
+        expect(orderRes.body.data).toHaveProperty("order_id");
+        expect(orderRes.body.data.amount).toBe(49900);
+
+        const orderId = orderRes.body.data.order_id;
+        const fakePaymentId = `pay_test_${Date.now()}`;
+
+        // 9c. Compute valid HMAC-SHA256 signature
+        const secret = process.env.RAZORPAY_KEY_SECRET || "Z7jxi6RByVIfhRZM7hfoYQiX";
+        const validSignature = crypto
+            .createHmac("sha256", secret)
+            .update(`${orderId}|${fakePaymentId}`)
+            .digest("hex");
+
+        // 9d. Test verification with INVALID signature -> should return 400
+        const badVerifyRes = await request(app)
+            .post("/api/verify-payment")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                razorpay_order_id: orderId,
+                razorpay_payment_id: fakePaymentId,
+                razorpay_signature: "invalid_tampered_signature_12345",
+            });
+        expect(badVerifyRes.statusCode).toEqual(400);
+        expect(badVerifyRes.body.success).toBe(false);
+
+        // 9e. Test verification with VALID HMAC-SHA256 signature -> should return 200
+        const goodVerifyRes = await request(app)
+            .post("/api/verify-payment")
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                razorpay_order_id: orderId,
+                razorpay_payment_id: fakePaymentId,
+                razorpay_signature: validSignature,
+            });
+        expect(goodVerifyRes.statusCode).toEqual(200);
+        expect(goodVerifyRes.body.success).toBe(true);
+    });
 });

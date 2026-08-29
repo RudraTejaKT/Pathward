@@ -26,6 +26,8 @@ app.use("/api/trainee", traineeRoutes);
 
 // --- Payments (requires login) ---
 app.use("/api/payments", paymentRoutes);
+app.post("/api/create-order", (req, res, next) => { req.url = "/create-order"; paymentRoutes(req, res, next); });
+app.post("/api/verify-payment", (req, res, next) => { req.url = "/verify"; paymentRoutes(req, res, next); });
 
 // --- Extended learning platform ---
 app.use("/api/learning", learningRoutes.router);

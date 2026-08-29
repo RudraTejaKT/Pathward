@@ -33,7 +33,8 @@ export async function openRazorpayCheckout(order, user, options = {}) {
     console.warn("Razorpay external checkout script deferred:", e.message);
   }
 
-  const key = order.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TTWeyie2qe80Hx";
+  const key = order.keyId || order.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TVUdKzLb9ySwmd";
+  const orderId = order.order_id || order.orderId;
 
   return new Promise((resolve, reject) => {
     if (window.Razorpay && !order.isSandbox) {
@@ -42,7 +43,7 @@ export async function openRazorpayCheckout(order, user, options = {}) {
           key,
           amount: order.amount,
           currency: order.currency || "INR",
-          order_id: order.orderId,
+          order_id: orderId,
           name: options.name || "Backlox Career Universe",
           description: options.description || order.itemLabel || "Course & Career Access",
           image: options.image || "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=128&q=80",
@@ -52,7 +53,7 @@ export async function openRazorpayCheckout(order, user, options = {}) {
             contact: user?.phone || "",
           },
           notes: {
-            orderId: order.orderId,
+            orderId: orderId,
             ...(options.notes || {}),
           },
           theme: {

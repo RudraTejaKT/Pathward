@@ -52,15 +52,20 @@ router.get("/plans", (req, res) => {
 router.use(requireAuth);
 
 // --- POST /api/payments/create-order ---
-// Body: { plan: 'backlox_pro' } OR { courseId: 'feat-1' } OR { plan: 'course_feat-1' }
+// Body: { amount, currency, receipt } OR { plan: 'backlox_pro' } OR { courseId: 'feat-1' }
 router.post("/create-order", async (req, res) => {
-  const { plan, courseId } = req.body || {};
-  let targetPlan = plan;
+  const { plan, courseId, amount, currency: reqCurrency, receipt: reqReceipt } = req.body || {};
+  let targetPlan = plan || "custom_order";
   let amountPaise = 0;
-  let currency = "INR";
-  let itemLabel = "";
+  let currency = reqCurrency || "INR";
+  let itemLabel = "Backlox Platform Access";
 
-  if (plan && PLANS[plan]) {
+  if (amount !== undefined && amount !== null) {
+    amountPaise = Number(amount);
+    if (isNaN(amountPaise) || amountPaise < 100) {
+      return res.status(400).json({ success: false, message: "Amount must be at least 100 paise (₹1.00)" });
+    }
+  } else if (plan && PLANS[plan]) {
     const planDef = PLANS[plan];
     amountPaise = planDef.amountPaise;
     currency = planDef.currency;
@@ -88,15 +93,21 @@ router.post("/create-order", async (req, res) => {
       }
     }
   } else {
-    return res.status(400).json({ success: false, message: "Invalid plan or course requested" });
+    return res.status(400).json({ success: false, message: "Invalid payment request: amount, plan, or courseId is required" });
   }
+
+  if (amountPaise < 100) {
+    return res.status(400).json({ success: false, message: "Amount must be at least 100 paise (₹1.00)" });
+  }
+
+  const receipt = (reqReceipt || `pw_${req.user.id}_${Date.now()}`).slice(0, 40);
 
   try {
     const client = getClient();
     const order = await client.orders.create({
       amount: amountPaise,
       currency,
-      receipt: `pw_${req.user.id}_${Date.now()}`.slice(0, 40),
+      receipt,
       notes: {
         userId: String(req.user.id),
         userEmail: req.user.email || "",
@@ -113,74 +124,62 @@ router.post("/create-order", async (req, res) => {
     res.json({
       success: true,
       data: {
+        order_id: order.id,
         orderId: order.id,
         amount: order.amount,
         currency: order.currency,
+        key_id: process.env.RAZORPAY_KEY_ID,
         keyId: process.env.RAZORPAY_KEY_ID,
         itemLabel,
       },
     });
   } catch (err) {
-    console.warn("Razorpay API order error, switching to resilient fallback order:", err.message);
-    const mockOrderId = `order_sb_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-    db.prepare(
-      `INSERT INTO payments (user_id, plan, amount_paise, currency, razorpay_order_id, status)
-       VALUES (?, ?, ?, ?, ?, 'created')`
-    ).run(req.user.id, targetPlan, amountPaise, currency, mockOrderId);
-
-    res.json({
-      success: true,
-      data: {
-        orderId: mockOrderId,
-        amount: amountPaise,
-        currency,
-        keyId: process.env.RAZORPAY_KEY_ID || "rzp_test_fallback",
-        itemLabel,
-        isSandbox: true,
-      },
+    console.error("Razorpay API order error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create Razorpay order",
+      error: err.message,
     });
   }
 });
 
-// --- POST /api/payments/verify ---
-// Body: { razorpay_order_id, razorpay_payment_id, razorpay_signature }
-router.post("/verify", (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
+// --- POST /api/payments/verify & /api/payments/verify-payment ---
+// Body: { razorpay_order_id, razorpay_payment_id, razorpay_signature } OR { order_id, payment_id, signature }
+const handlePaymentVerification = (req, res) => {
+  const body = req.body || {};
+  const orderId = body.razorpay_order_id || body.order_id;
+  const paymentId = body.razorpay_payment_id || body.payment_id;
+  const signature = body.razorpay_signature || body.signature;
 
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    return res.status(400).json({ success: false, message: "Missing payment verification fields" });
+  if (!orderId || !paymentId || !signature) {
+    return res.status(400).json({ success: false, message: "Missing payment verification fields: order_id, payment_id, and signature are required" });
   }
 
   const payment = db
     .prepare("SELECT * FROM payments WHERE razorpay_order_id = ? AND user_id = ?")
-    .get(razorpay_order_id, req.user.id);
+    .get(orderId, req.user.id);
 
-  if (!payment) {
-    return res.status(404).json({ success: false, message: "No matching order found for this user" });
+  const secret = process.env.RAZORPAY_KEY_SECRET || "";
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(`${orderId}|${paymentId}`)
+    .digest("hex");
+
+  const isValid = expectedSignature === signature;
+
+  if (payment) {
+    db.prepare(
+      `UPDATE payments SET status = ?, razorpay_payment_id = ?, razorpay_signature = ?, updated_at = datetime('now')
+       WHERE id = ?`
+    ).run(isValid ? "paid" : "failed", paymentId, signature, payment.id);
   }
-
-  let isValid = false;
-  if (razorpay_order_id.startsWith("order_sb_") || razorpay_signature.startsWith("sig_sb_")) {
-    isValid = true;
-  } else {
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-    isValid = expectedSignature === razorpay_signature;
-  }
-
-  db.prepare(
-    `UPDATE payments SET status = ?, razorpay_payment_id = ?, razorpay_signature = ?, updated_at = datetime('now')
-     WHERE id = ?`
-  ).run(isValid ? "paid" : "failed", razorpay_payment_id, razorpay_signature, payment.id);
 
   if (!isValid) {
-    return res.status(400).json({ success: false, message: "Payment signature verification failed" });
+    return res.status(400).json({ success: false, message: "Invalid payment signature" });
   }
 
   // If user bought Pro membership, unlock premium
-  if (payment.plan === "backlox_pro" || payment.plan === "backlox_pro_annual") {
+  if (payment && (payment.plan === "backlox_pro" || payment.plan === "backlox_pro_annual")) {
     db.prepare("UPDATE users SET is_premium = 1 WHERE id = ?").run(req.user.id);
     const userRow = db.prepare("SELECT name, email FROM users WHERE id = ?").get(req.user.id);
     if (userRow) {
@@ -189,13 +188,13 @@ router.post("/verify", (req, res) => {
         email: userRow.email,
         planName: payment.plan === "backlox_pro_annual" ? "Backlox Pro (Annual)" : "Backlox Pro (Lifetime)",
         amount: `₹${(payment.amount_paise / 100).toFixed(0)}`,
-        orderId: razorpay_order_id,
+        orderId: orderId,
       });
     }
   }
 
   // If user bought a course, enroll user if it's a numeric course ID
-  if (payment.plan && payment.plan.startsWith("course_")) {
+  if (payment && payment.plan && payment.plan.startsWith("course_")) {
     const courseIdNum = Number(payment.plan.replace(/^course_/, ""));
     if (Number.isInteger(courseIdNum) && courseIdNum > 0) {
       try {
@@ -214,12 +213,14 @@ router.post("/verify", (req, res) => {
       plan: payment.plan,
       status: "paid",
       amountPaise: payment.amount_paise,
-      currency: payment.currency,
-      paymentId: razorpay_payment_id,
-      orderId: razorpay_order_id,
+      paymentId: paymentId,
+      orderId: orderId,
     },
   });
-});
+};
+
+router.post("/verify", handlePaymentVerification);
+router.post("/verify-payment", handlePaymentVerification);
 
 // --- POST /api/payments/instant-subscribe ---
 // Direct test/sandbox instant unlock for immediate platform access
