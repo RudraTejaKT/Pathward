@@ -72,6 +72,11 @@ export default function CourseDetail() {
             trailerVideoUrl: primaryVid,
             trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
             description: c.description || "",
+            outcomes: c.outcomes || [
+              "Master core engineering & architectural blueprints",
+              "Execute real-world industry hands-on projects",
+              "Obtain accredited Backlox mastery certification"
+            ],
             curriculumSummary: `${mods.length || 1} modules • 1h 30m`,
             curriculum: mods.length > 0
               ? mods.map((m, idx) => ({
@@ -343,7 +348,11 @@ export default function CourseDetail() {
                 <div className="course-outcomes-box">
                   <h3>What you'll master:</h3>
                   <ul className="outcomes-list">
-                    {course.outcomes.map((item, idx) => (
+                    {(course.outcomes || [
+                      "Master core foundational principles",
+                      "Build hands-on industry-standard projects",
+                      "Acquire verified Backlox credentials"
+                    ]).map((item, idx) => (
                       <li key={idx}>
                         <span className="material-symbols-outlined check-icon">check_circle</span>
                         <span>{item}</span>
@@ -359,13 +368,13 @@ export default function CourseDetail() {
                   <div>
                     <h2 className="curriculum-title">Course Modules &amp; Video Lectures</h2>
                     <p className="curriculum-sub mono text-xs">
-                      {course.curriculumSummary} · {isEnrolled ? "All modules unlocked" : "Module 1 free / Modules 2+ pro"}
+                      {course.curriculumSummary || "Comprehensive Curriculum"} · {isEnrolled ? "All modules unlocked" : "Module 1 free / Modules 2+ pro"}
                     </p>
                   </div>
                 </div>
 
                 <div className="curriculum-modules-stack">
-                  {course.curriculum.map((mod, mIdx) => {
+                  {(course.curriculum || []).map((mod, mIdx) => {
                     const isUnlocked = mod.isFreePreview || isEnrolled || (user && user.isPremium);
 
                     return (
@@ -378,7 +387,7 @@ export default function CourseDetail() {
                             <div>
                               <h3 className="mod-title-text">{mod.title}</h3>
                               <span className="mod-meta-sub mono text-xs">
-                                {mod.lessonsCount} · {mod.duration}
+                                {mod.lessonsCount || `${(mod.lessons || []).length} lessons`} · {mod.duration || "45:00"}
                               </span>
                             </div>
                           </div>
@@ -401,7 +410,7 @@ export default function CourseDetail() {
 
                         {/* Lessons List */}
                         <div className="lessons-list">
-                          {mod.lessons.map((lesson, lIdx) => (
+                          {(mod.lessons || []).map((lesson, lIdx) => (
                             <div
                               className={`lesson-row ${isUnlocked ? "playable" : "disabled"}`}
                               key={lesson.id || lIdx}
@@ -414,7 +423,7 @@ export default function CourseDetail() {
                                 <span className="lesson-name">{lesson.title}</span>
                               </div>
                               <div className="lesson-right mono text-xs">
-                                <span>{lesson.duration}</span>
+                                <span>{lesson.duration || "15:00"}</span>
                                 {isUnlocked && <span className="play-action-tag">▶ Play</span>}
                               </div>
                             </div>
