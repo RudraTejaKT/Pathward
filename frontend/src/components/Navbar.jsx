@@ -479,17 +479,15 @@ export default function Navbar() {
                     </div>
 
                     <div className="user-dropdown-links">
-                      {user.role === "instructor" ? (
-                        <Link to="/instructor" className="user-drop-link">
-                          <span className="material-symbols-outlined">dashboard</span>
-                          <span>Instructor Studio</span>
-                        </Link>
-                      ) : (
-                        <Link to="/dashboard" className="user-drop-link">
-                          <span className="material-symbols-outlined">dashboard</span>
-                          <span>Student Dashboard {user.isPremium ? "" : "(Pro)"}</span>
-                        </Link>
-                      )}
+                      <Link to="/dashboard" className="user-drop-link" onClick={() => setActiveMenu(null)}>
+                        <span className="material-symbols-outlined">school</span>
+                        <span>Student Dashboard 🎓</span>
+                      </Link>
+
+                      <Link to="/instructor" className="user-drop-link" onClick={() => setActiveMenu(null)}>
+                        <span className="material-symbols-outlined">co_present</span>
+                        <span>Instructor Studio 👨‍🏫</span>
+                      </Link>
 
                       <Link to="/mcq" className="user-drop-link">
                         <span className="material-symbols-outlined">sports_esports</span>

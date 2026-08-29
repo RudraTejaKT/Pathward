@@ -775,3 +775,58 @@
     display: none;
   }
 }
+
+@media (max-width: 640px) {
+  .navbar__inner {
+    height: 56px;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .octi-nav-trigger-pill {
+    display: none; /* Redundant on mobile since floating Octi button is active */
+  }
+
+  .navbar__brand-wrapper {
+    gap: 8px;
+  }
+
+  .navbar-logo-text {
+    font-size: 17px;
+  }
+
+  .enterprise-nav-actions {
+    gap: 6px;
+  }
+
+  .theme-toggle-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .mobile-hamburger-btn {
+    padding: 4px;
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 400px) {
+  .navbar__inner {
+    padding: 0 8px;
+    gap: 4px;
+  }
+
+  .navbar-logo-text {
+    font-size: 15px;
+  }
+
+  .enterprise-nav-actions {
+    gap: 4px;
+  }
+
+  .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+

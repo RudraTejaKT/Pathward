@@ -21,11 +21,11 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
         })
         .catch(() => {
           // Fallback to local storage
-          const local = JSON.parse(localStorage.getItem("backlox_study_notes") || "[]");
+          const local = JSON.parse(localStorage.getItem(`backlox_study_notes_${user?.id || "guest"}`) || "[]");
           setNotes(local);
         });
     } else {
-      const local = JSON.parse(localStorage.getItem("backlox_study_notes") || "[]");
+      const local = JSON.parse(localStorage.getItem(`backlox_study_notes_${user?.id || "guest"}`) || "[]");
       setNotes(local);
     }
   }, [user]);
@@ -56,13 +56,13 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
       } else {
         const updated = [newNoteObj, ...notes];
         setNotes(updated);
-        localStorage.setItem("backlox_study_notes", JSON.stringify(updated));
+        localStorage.setItem(`backlox_study_notes_${user?.id || "guest"}`, JSON.stringify(updated));
       }
       setCurrentNote("");
     } catch {
       const updated = [newNoteObj, ...notes];
       setNotes(updated);
-      localStorage.setItem("backlox_study_notes", JSON.stringify(updated));
+      localStorage.setItem(`backlox_study_notes_${user?.id || "guest"}`, JSON.stringify(updated));
       setCurrentNote("");
     } finally {
       setSaving(false);
@@ -79,7 +79,7 @@ export default function StudyNotesPad({ topic = "General Study Notes", courseId 
     }
     const updated = notes.filter((n) => n.id !== id);
     setNotes(updated);
-    localStorage.setItem("backlox_study_notes", JSON.stringify(updated));
+    localStorage.setItem(`backlox_study_notes_${user?.id || "guest"}`, JSON.stringify(updated));
   }
 
   function handleCopyNote(n) {

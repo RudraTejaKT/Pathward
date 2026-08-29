@@ -376,3 +376,41 @@
 [data-theme="light"] .ai-help-close-btn:hover {
   color: #0f172a;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .ai-help-centre-root {
+    bottom: 48px;
+    right: 12px;
+  }
+
+  .ai-help-floating-btn {
+    padding: 7px 12px;
+    gap: 6px;
+    background: rgba(26, 29, 38, 0.96);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .backlox-ai-avatar-icon {
+    font-size: 20px;
+  }
+
+  .help-btn-sub {
+    display: none;
+  }
+
+  .help-btn-label {
+    font-size: 11.5px;
+  }
+
+  .ai-help-window {
+    width: calc(100vw - 20px);
+    max-width: 100%;
+    right: 0;
+    bottom: 48px;
+    height: 75vh;
+    max-height: 520px;
+    border-radius: 16px;
+  }
+}
+

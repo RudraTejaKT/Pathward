@@ -130,10 +130,10 @@ export default function SwipeUpDrawer() {
             </span>
             <span className="mono text-xs peek-text">
               {isOpen
-                ? "Swipe down to close"
+                ? "Tap or swipe to close"
                 : isInstructorMode
-                ? "Swipe up for Instructor Studio & Quick Controls"
-                : "Swipe up for Quick Actions & Shortcuts"}
+                ? "Instructor Studio"
+                : "Quick Shortcuts"}
             </span>
             <span className="pulsing-dot" />
           </div>

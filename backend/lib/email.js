@@ -11,6 +11,9 @@ const DEFAULT_TAG = process.env.RESEND_TAG || "rt_backlox";
  * Universal Resend Email Sender
  */
 async function sendEmail({ to, subject, html, text, tags = [] }) {
+  if (process.env.NODE_ENV === "test") {
+    return { success: true, message: "Email skipped in test mode" };
+  }
   if (!RESEND_API_KEY) {
     console.warn("⚠️ Resend API Key is not set. Email skipped for:", to);
     return { success: false, message: "Resend API Key missing" };

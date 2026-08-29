@@ -9,7 +9,9 @@
     "start": "node backend/server.js",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev": "npm run dev:frontend"
+    "dev": "npm run dev:frontend",
+    "test": "npm test --prefix backend",
+    "test:backend": "npm test --prefix backend"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
@@ -20,6 +22,14 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "razorpay": "^2.9.4"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cloudfront": "^3.1120.0",
+    "@aws-sdk/client-ec2": "^3.750.0",
+    "@aws-sdk/client-route-53": "^3.1120.0",
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@aws-sdk/s3-request-presigner": "^3.750.0",
+    "archiver": "^7.0.1"
   },
   "keywords": [
     "career",

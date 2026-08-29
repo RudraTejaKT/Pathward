@@ -63,11 +63,12 @@ export const api = {
   getBranchDetails: (id) => request(`/branch-details/${id}`),
 
   // --- Auth ---
-  signup: (payload) =>
-    request("/auth/signup", {
-      method: "POST",
-      body: typeof payload === "object" ? payload : { name: arguments[0], email: arguments[1], password: arguments[2], role: arguments[3] },
-    }),
+  signup: (payloadOrName, email, password, role) => {
+    const body = typeof payloadOrName === "object"
+      ? payloadOrName
+      : { name: payloadOrName, email, password, role };
+    return request("/auth/signup", { method: "POST", body });
+  },
   login: (email, password) => request("/auth/login", { method: "POST", body: { email, password } }),
   me: () => request("/auth/me", { auth: true }),
 

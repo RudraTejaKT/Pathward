@@ -139,9 +139,12 @@ export default function CourseDetail() {
 
   useEffect(() => {
     // Check if user already enrolled or is Pro/instructor
-    const enrolledMap = JSON.parse(localStorage.getItem("backlox_enrolled_courses") || "{}");
+    const key = `backlox_enrolled_courses_${user?.id || "guest"}`;
+    const enrolledMap = JSON.parse(localStorage.getItem(key) || "{}");
     if (enrolledMap[course.id] || (user && (user.isPremium || user.role === "instructor" || user.role === "admin"))) {
       setIsEnrolled(true);
+    } else {
+      setIsEnrolled(false);
     }
   }, [course.id, user]);
 
@@ -153,9 +156,9 @@ export default function CourseDetail() {
     }
 
     if (lesson && lesson.id) {
-      toggleLessonCompletion(course.id, lesson.id, true);
+      toggleLessonCompletion(course.id, lesson.id, true, user?.id);
     }
-    setActiveCourse(course.id);
+    setActiveCourse(course.id, user?.id);
 
     const targetUrl = formatVideoEmbedUrl(lesson?.videoUrl || module?.videoUrl || course.trailerVideoUrl);
     setCurrentVideoUrl(targetUrl);
@@ -202,11 +205,12 @@ export default function CourseDetail() {
         razorpay_signature: paymentResult.razorpay_signature,
       });
 
-      // 4. Mark enrolled
-      enrollCourse(course.id);
-      const enrolledMap = JSON.parse(localStorage.getItem("backlox_enrolled_courses") || "{}");
+      // 4. Mark enrolled (User-namespaced)
+      enrollCourse(course.id, user?.id);
+      const key = `backlox_enrolled_courses_${user?.id || "guest"}`;
+      const enrolledMap = JSON.parse(localStorage.getItem(key) || "{}");
       enrolledMap[course.id] = true;
-      localStorage.setItem("backlox_enrolled_courses", JSON.stringify(enrolledMap));
+      localStorage.setItem(key, JSON.stringify(enrolledMap));
 
       setIsEnrolled(true);
       setReceiptData({

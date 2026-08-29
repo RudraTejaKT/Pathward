@@ -132,9 +132,18 @@ export default function Dashboard() {
     navigate("/login");
   }
 
-  // Dynamic Chosen Course Progress State
-  const [storedProgress, setStoredProgress] = useState(getStoredProgress());
-  const [activeCourseId, setActiveCourseId] = useState(storedProgress.activeCourseId || "feat-1");
+  // Dynamic Chosen Course Progress State (User-Isolated)
+  const [storedProgress, setStoredProgress] = useState(() => getStoredProgress(user?.id));
+  const [activeCourseId, setActiveCourseId] = useState(() => (storedProgress?.activeCourseId || "feat-1"));
+
+  // Synchronize progress whenever active user changes
+  useEffect(() => {
+    const userProgress = getStoredProgress(user?.id);
+    setStoredProgress(userProgress);
+    if (userProgress.activeCourseId) {
+      setActiveCourseId(userProgress.activeCourseId);
+    }
+  }, [user?.id]);
 
   // Live stress monitor data
   const [stressData, setStressData] = useState({ score: 12, label: "Optimal Flow", color: "#22c55e" });
@@ -218,7 +227,7 @@ export default function Dashboard() {
         if (Array.isArray(res)) setPayments(res);
       })
       .catch(() => {});
-  }, []);
+  }, [user?.id]);
 
   // Compute active course & its dynamic module progress
   const activeCourse = COURSE_CATALOG[activeCourseId] || COURSE_CATALOG["feat-1"] || Object.values(COURSE_CATALOG)[0];
@@ -232,7 +241,7 @@ export default function Dashboard() {
   // Handler to switch chosen course
   function handleSelectCourse(courseId) {
     setActiveCourseId(courseId);
-    saveActiveCourseId(courseId);
+    saveActiveCourseId(courseId, user?.id);
   }
 
   async function handleSubmitAssignment(e) {
@@ -260,7 +269,7 @@ export default function Dashboard() {
         submitted_content: submissionText,
         submitted_url: submissionUrl,
       };
-      saveStoredProgress(updated);
+      saveStoredProgress(updated, user?.id);
       setSubmitting(false);
       setSubmissionUrl("");
       setSubmissionText("");
@@ -357,6 +366,11 @@ export default function Dashboard() {
 
           <div className="dash-workspace-actions">
             {/* Explore Catalog quick link */}
+            <Link to="/instructor" className="dash-action-btn workspace-switch-btn" title="Switch to Instructor & Creator Studio" style={{ background: "rgba(168, 85, 247, 0.15)", borderColor: "#a855f7", color: "#c084fc" }}>
+              <span className="material-symbols-outlined">co_present</span>
+              <span>Instructor Studio 👨‍🏫</span>
+            </Link>
+
             <Link to="/discover" className="dash-action-btn" title="Explore All Courses">
               <span className="material-symbols-outlined">explore</span>
               <span>Catalog</span>

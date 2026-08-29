@@ -37,11 +37,11 @@ export default function Login() {
     if (demoRole === "instructor") {
       setRole("instructor");
       setEmail("instructor@backlox.edu");
-      setPassword("password123");
+      setPassword("Password123!");
     } else {
       setRole("trainee");
       setEmail("student@university.edu");
-      setPassword("password123");
+      setPassword("Password123!");
     }
   }
 
@@ -98,7 +98,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder={role === "instructor" ? "instructor@backlox.edu" : "student@university.edu"}
+                placeholder={role === "instructor" ? "e.g. professor@university.edu" : "e.g. student@college.edu"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

@@ -97,14 +97,16 @@ export default function InstructorStudio() {
     },
   ]);
 
-  // Payout & Balance State with LocalStorage Persistence
+  // Payout & Balance State with User-Namespaced LocalStorage Persistence
   const [availableBalance, setAvailableBalance] = useState(() => {
-    const saved = localStorage.getItem("backlox_instructor_balance");
-    return saved !== null ? Number(saved) : 38200;
+    const key = `backlox_instructor_balance_${user?.id || "guest"}`;
+    const saved = localStorage.getItem(key);
+    return saved !== null ? Number(saved) : (user?.role === "instructor" ? 38200 : 0);
   });
 
   const [payoutLedger, setPayoutLedger] = useState(() => {
-    const saved = localStorage.getItem("backlox_payout_ledger");
+    const key = `backlox_payout_ledger_${user?.id || "guest"}`;
+    const saved = localStorage.getItem(key);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -117,6 +119,24 @@ export default function InstructorStudio() {
       { id: "PW-PO-8920", date: "2026-07-28", method: "Razorpay Route (HDFC Bank ...4892)", amount: "₹64,800", status: "settled" },
     ];
   });
+
+  // Re-sync whenever active user changes
+  useEffect(() => {
+    const balKey = `backlox_instructor_balance_${user?.id || "guest"}`;
+    const savedBal = localStorage.getItem(balKey);
+    setAvailableBalance(savedBal !== null ? Number(savedBal) : (user?.role === "instructor" ? 38200 : 0));
+
+    const ledgerKey = `backlox_payout_ledger_${user?.id || "guest"}`;
+    const savedLedger = localStorage.getItem(ledgerKey);
+    if (savedLedger) {
+      try {
+        const parsed = JSON.parse(savedLedger);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPayoutLedger(parsed);
+        }
+      } catch {}
+    }
+  }, [user?.id, user?.role]);
 
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState(null);
@@ -537,7 +557,9 @@ export default function InstructorStudio() {
       const newBal = Math.max(0, availableBalance - transferAmount);
       
       setAvailableBalance(newBal);
-      localStorage.setItem("backlox_instructor_balance", String(newBal));
+      const balKey = `backlox_instructor_balance_${user?.id || "guest"}`;
+      const ledgerKey = `backlox_payout_ledger_${user?.id || "guest"}`;
+      localStorage.setItem(balKey, String(newBal));
 
       const refId = `PW-PO-${Math.floor(1000 + Math.random() * 9000)}`;
       const newEntry = {
@@ -550,7 +572,7 @@ export default function InstructorStudio() {
 
       const updatedLedger = [newEntry, ...payoutLedger];
       setPayoutLedger(updatedLedger);
-      localStorage.setItem("backlox_payout_ledger", JSON.stringify(updatedLedger));
+      localStorage.setItem(ledgerKey, JSON.stringify(updatedLedger));
 
       setPayoutSuccess(false);
       setIsPayoutModalOpen(false);
@@ -630,6 +652,11 @@ export default function InstructorStudio() {
           </div>
 
           <div className="dash-workspace-actions">
+            <Link to="/dashboard" className="dash-action-btn workspace-switch-btn" title="Switch to Student Command Dashboard" style={{ background: "rgba(99, 102, 241, 0.15)", borderColor: "#6366f1", color: "#818cf8" }}>
+              <span className="material-symbols-outlined">school</span>
+              <span>Student Dashboard 🎓</span>
+            </Link>
+
             <Link to="/discover" className="dash-action-btn" title="Explore Course Catalog">
               <span className="material-symbols-outlined">explore</span>
               <span>Catalog</span>

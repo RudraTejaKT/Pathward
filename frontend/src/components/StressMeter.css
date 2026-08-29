@@ -4,13 +4,12 @@
   position: fixed;
   bottom: 24px;
   left: 24px; /* Placed bottom-left so it never overlaps with bottom-right AI Help Centre */
-  z-index: 90;
+  z-index: 80;
 }
 
 @media (max-width: 768px) {
   .stress-floating-trigger {
-    bottom: 84px;
-    left: 16px;
+    display: none; /* Hide floating obstruction on mobile; accessible via Navbar & Drawer */
   }
 }
 

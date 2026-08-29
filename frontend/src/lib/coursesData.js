@@ -278,26 +278,46 @@ export const COURSE_CATALOG = {
 };
 
 // Default initial progress state for a fresh student
-const DEFAULT_USER_PROGRESS = {
+export const DEFAULT_USER_PROGRESS = {
   activeCourseId: "feat-1",
-  enrolledCourseIds: ["feat-1", "feat-2"],
-  completedLessons: {
-    "feat-1": { "l-1": true, "l-2": true, "l-3": true, "l-4": true, "l-5": true }, // Module 1 100%, Module 2 66%
-    "feat-2": { "l-1": true, "l-2": true }, // Module 1 100%
-    "feat-3": { "l-1": true, "l-2": true },
-    "feat-4": { "l-1": true, "l-2": true },
-  },
-  submittedAssignments: {
-    1: { status: "graded", score: 96, feedback: "Exceptional transformation pipeline with clean seaborn charts." },
-  },
+  enrolledCourseIds: ["feat-1"],
+  completedLessons: {},
+  submittedAssignments: {},
 };
 
-const STORAGE_KEY = "backlox_scholar_progress_v2";
-
-export function getStoredProgress() {
+export function getStorageKey(userId) {
+  if (userId) return `backlox_scholar_progress_u_${userId}`;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_USER_PROGRESS;
+    const u = localStorage.getItem("backlox_user");
+    if (u) {
+      const parsed = JSON.parse(u);
+      if (parsed?.id) return `backlox_scholar_progress_u_${parsed.id}`;
+    }
+  } catch {}
+  return "backlox_scholar_progress_guest";
+}
+
+export function getStoredProgress(userId) {
+  try {
+    const key = getStorageKey(userId);
+    const raw = localStorage.getItem(key);
+    if (!raw) {
+      // If demo student, provide rich sample data
+      if (userId === 1 || userId === "1") {
+        return {
+          activeCourseId: "feat-1",
+          enrolledCourseIds: ["feat-1", "feat-2"],
+          completedLessons: {
+            "feat-1": { "l-1": true, "l-2": true, "l-3": true, "l-4": true, "l-5": true },
+            "feat-2": { "l-1": true, "l-2": true },
+          },
+          submittedAssignments: {
+            1: { status: "graded", score: 96, feedback: "Exceptional transformation pipeline with clean seaborn charts." },
+          },
+        };
+      }
+      return DEFAULT_USER_PROGRESS;
+    }
     const parsed = JSON.parse(raw);
     return { ...DEFAULT_USER_PROGRESS, ...parsed };
   } catch {
@@ -305,39 +325,40 @@ export function getStoredProgress() {
   }
 }
 
-export function saveStoredProgress(progress) {
+export function saveStoredProgress(progress, userId) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    const key = getStorageKey(userId);
+    localStorage.setItem(key, JSON.stringify(progress));
     window.dispatchEvent(new CustomEvent("backlox:progress-updated", { detail: progress }));
   } catch (err) {
     console.error("Failed to save progress", err);
   }
 }
 
-export function enrollCourse(courseId) {
-  const current = getStoredProgress();
+export function enrollCourse(courseId, userId) {
+  const current = getStoredProgress(userId);
   if (!current.enrolledCourseIds.includes(courseId)) {
     current.enrolledCourseIds.push(courseId);
   }
   current.activeCourseId = courseId;
-  saveStoredProgress(current);
+  saveStoredProgress(current, userId);
   return current;
 }
 
-export function setActiveCourse(courseId) {
-  const current = getStoredProgress();
+export function setActiveCourse(courseId, userId) {
+  const current = getStoredProgress(userId);
   current.activeCourseId = courseId;
-  saveStoredProgress(current);
+  saveStoredProgress(current, userId);
   return current;
 }
 
-export function toggleLessonCompletion(courseId, lessonId, isComplete) {
-  const current = getStoredProgress();
+export function toggleLessonCompletion(courseId, lessonId, isComplete, userId) {
+  const current = getStoredProgress(userId);
   if (!current.completedLessons[courseId]) {
     current.completedLessons[courseId] = {};
   }
   current.completedLessons[courseId][lessonId] = isComplete;
-  saveStoredProgress(current);
+  saveStoredProgress(current, userId);
   return current;
 }
 

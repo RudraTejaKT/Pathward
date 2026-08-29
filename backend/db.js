@@ -1,4 +1,4 @@
-// SQLite persistence layer with robust in-memory & serverless fallback
+// Dual SQLite & File-Persisted Storage Layer for Backlox Platform
 const path = require("path");
 const fs = require("fs");
 
@@ -6,13 +6,16 @@ let Database;
 try {
   Database = require("better-sqlite3");
 } catch (e) {
-  console.warn("Native better-sqlite3 not available in this environment, using serverless in-memory store:", e.message);
+  console.warn("Notice: better-sqlite3 native driver not found, using JSON disk store:", e.message);
 }
 
 let db;
 
-function createInMemoryStore() {
-  const tables = {
+// Persistent JSON File Store Backup
+function createDiskStore(dbFilePath) {
+  const jsonPath = dbFilePath ? dbFilePath.replace(/\.db$/, ".json") : path.join(__dirname, "backlox_store.json");
+
+  let tables = {
     users: [],
     trainee_progress: [],
     courses: [],
@@ -25,7 +28,31 @@ function createInMemoryStore() {
     assignment_submissions: []
   };
 
+  // Load from disk if exists
+  try {
+    if (fs.existsSync(jsonPath)) {
+      const data = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+      tables = { ...tables, ...data };
+      console.log(`📁 Loaded ${tables.users.length} users from persistent disk store: ${jsonPath}`);
+    }
+  } catch (e) {
+    console.warn("Disk store load notice:", e.message);
+  }
+
+  function saveToDisk() {
+    try {
+      fs.writeFileSync(jsonPath, JSON.stringify(tables, null, 2), "utf8");
+    } catch (e) {
+      console.error("Failed to persist data to disk:", e.message);
+    }
+  }
+
   let autoInc = 100;
+  Object.values(tables).forEach(list => {
+    list.forEach(item => {
+      if (item && item.id && item.id > autoInc) autoInc = item.id;
+    });
+  });
 
   return {
     pragma: () => {},
@@ -41,15 +68,25 @@ function createInMemoryStore() {
             const user = {
               id: autoInc,
               name: params[0],
-              email: params[1],
+              email: (params[1] || "").toLowerCase(),
               password_hash: params[2],
               role: params[3] || "trainee",
+              phone: params[4] || "",
+              gender: params[5] || "",
+              education: params[6] || "",
+              institution: params[7] || "",
+              interests: params[8] || "",
+              experience: params[9] || "",
+              expertise: params[10] || "",
+              bio: params[11] || "",
               is_premium: 0,
               created_at: new Date().toISOString()
             };
             tables.users.push(user);
+            saveToDisk();
             return { lastInsertRowid: user.id, changes: 1 };
           }
+
           if (lowerSql.startsWith("insert into courses")) {
             const course = {
               id: autoInc,
@@ -63,8 +100,10 @@ function createInMemoryStore() {
               created_at: new Date().toISOString()
             };
             tables.courses.push(course);
+            saveToDisk();
             return { lastInsertRowid: course.id, changes: 1 };
           }
+
           if (lowerSql.startsWith("insert into study_notes")) {
             const note = {
               id: autoInc,
@@ -77,10 +116,19 @@ function createInMemoryStore() {
               updated_at: new Date().toISOString()
             };
             tables.study_notes.push(note);
+            saveToDisk();
             return { lastInsertRowid: note.id, changes: 1 };
           }
+
+          if (lowerSql.startsWith("update users")) {
+            saveToDisk();
+            return { changes: 1 };
+          }
+
+          saveToDisk();
           return { lastInsertRowid: autoInc, changes: 1 };
         },
+
         get: (...params) => {
           if (lowerSql.includes("from users where email")) {
             const email = (params[0] || "").toLowerCase();
@@ -100,9 +148,13 @@ function createInMemoryStore() {
           }
           return null;
         },
+
         all: (...params) => {
           if (lowerSql.includes("from courses")) {
             return tables.courses;
+          }
+          if (lowerSql.includes("from users")) {
+            return tables.users;
           }
           if (lowerSql.includes("from study_notes")) {
             return tables.study_notes.filter(n => n.user_id === Number(params[0]));
@@ -117,32 +169,24 @@ function createInMemoryStore() {
   };
 }
 
+// 1. Initialize SQLite Database
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, "backlox.db");
+
 if (Database) {
   try {
-    let DB_PATH = process.env.DB_PATH;
-    if (!DB_PATH) {
-      if (process.env.VERCEL) {
-        DB_PATH = path.join("/tmp", "backlox.db");
-      } else {
-        DB_PATH = path.join(__dirname, "backlox.db");
-      }
-    }
     db = new Database(DB_PATH);
     db.pragma("journal_mode = WAL");
     db.pragma("foreign_keys = ON");
+    console.log(`💾 SQLite Database connected on disk: ${DB_PATH}`);
   } catch (err) {
-    console.warn("SQLite disk init failed, switching to in-memory store:", err.message);
-    try {
-      db = new Database(":memory:");
-      db.pragma("foreign_keys = ON");
-    } catch (e2) {
-      db = createInMemoryStore();
-    }
+    console.warn("SQLite disk init warning, using disk JSON store:", err.message);
+    db = createDiskStore(DB_PATH);
   }
 } else {
-  db = createInMemoryStore();
+  db = createDiskStore(DB_PATH);
 }
 
+// 2. Initialize Database Schema
 try {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -278,16 +322,20 @@ try {
     if (!demoStudent) {
       db.prepare(`
         INSERT INTO users (name, email, password_hash, role, is_premium)
-        VALUES ('Student Demo', 'student@university.edu', '$2a$10$f3OASITq3Z3V0eOcU1Uz9OdSQwhHG8R8S1oY8bMBP/IvxRaQv4yT2', 'trainee', 1)
+        VALUES ('Student Demo', 'student@university.edu', '$2a$10$ElF7sdCtqflZJ2yl.9Q9oe7Vsa6m3e/.DvVmzrcTAVbdnMboMoiaS', 'trainee', 1)
       `).run();
+    } else {
+      db.prepare(`UPDATE users SET password_hash = ? WHERE email = ?`).run('$2a$10$ElF7sdCtqflZJ2yl.9Q9oe7Vsa6m3e/.DvVmzrcTAVbdnMboMoiaS', 'student@university.edu');
     }
 
     const demoInstructor = db.prepare("SELECT id FROM users WHERE email = ?").get("instructor@backlox.edu");
     if (!demoInstructor) {
       db.prepare(`
         INSERT INTO users (name, email, password_hash, role, is_premium)
-        VALUES ('Prof. Alex Vance', 'instructor@backlox.edu', '$2a$10$f3OASITq3Z3V0eOcU1Uz9OdSQwhHG8R8S1oY8bMBP/IvxRaQv4yT2', 'instructor', 1)
+        VALUES ('Prof. Alex Vance', 'instructor@backlox.edu', '$2a$10$ElF7sdCtqflZJ2yl.9Q9oe7Vsa6m3e/.DvVmzrcTAVbdnMboMoiaS', 'instructor', 1)
       `).run();
+    } else {
+      db.prepare(`UPDATE users SET password_hash = ? WHERE email = ?`).run('$2a$10$ElF7sdCtqflZJ2yl.9Q9oe7Vsa6m3e/.DvVmzrcTAVbdnMboMoiaS', 'instructor@backlox.edu');
     }
   } catch (seedErr) {
     console.warn("Notice: demo user seeding:", seedErr.message);

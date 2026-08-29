@@ -55,4 +55,6 @@ lerna-debug.log*
 *.key
 *.cert
 aws-credentials.json
+deploy_to_aws.js
+setup_cloudfront_ssl.js
 

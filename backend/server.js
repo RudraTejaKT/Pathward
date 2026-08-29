@@ -132,26 +132,34 @@ app.get("/api/supabase/status", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.json({ status: "ok", service: "Backlox Cloud Backend", version: "2.0.0", timestamp: new Date().toISOString() });
-});
-
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString(), supabase: isConfigured ? "ready" : "disabled" });
 });
 
 // --- Static Frontend Serving in Production ---
 const path = require("path");
-const frontendDistPath = path.join(__dirname, "../frontend/dist");
 const fs = require("fs");
 
-if (fs.existsSync(frontendDistPath)) {
+const possibleDistPaths = [
+  path.join(__dirname, "../frontend/dist"),
+  path.join(__dirname, "frontend/dist"),
+  path.join(__dirname, "dist"),
+  path.join(__dirname, "../dist"),
+];
+
+let frontendDistPath = possibleDistPaths.find((p) => fs.existsSync(p));
+
+if (frontendDistPath) {
   app.use(express.static(frontendDistPath));
   app.use((req, res, next) => {
     if (req.method === "GET" && !req.path.startsWith("/api") && !req.path.startsWith("/uploads")) {
       return res.sendFile(path.join(frontendDistPath, "index.html"));
     }
     next();
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.json({ status: "ok", service: "Backlox Cloud Backend", version: "2.0.0", timestamp: new Date().toISOString() });
   });
 }
 
