@@ -152,16 +152,19 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                 className={`plan-card ${selectedPlan === "backlox_pro" ? "plan-card--active" : ""}`}
                 onClick={() => setSelectedPlan("backlox_pro")}
               >
-                <div className="plan-tag mono">MOST POPULAR · BEST VALUE</div>
+                <div className="plan-tag mono" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#f59e0b", borderColor: "#f59e0b" }}>
+                  ⚡ EARLY BIRD · FIRST 100 USERS
+                </div>
                 <div className="plan-card__header">
                   <h3>Lifetime Mastery</h3>
-                  <div className="plan-price">
+                  <div className="plan-price" style={{ alignItems: "baseline" }}>
+                    <span style={{ textDecoration: "line-through", opacity: 0.45, fontSize: "1.1rem", marginRight: "6px" }}>₹499</span>
                     <span className="currency">₹</span>
-                    <span className="amount">499</span>
+                    <span className="amount" style={{ color: "#22c55e", fontWeight: "bold" }}>11</span>
                     <span className="term">/ one-time</span>
                   </div>
                 </div>
-                <p className="plan-desc">Single investment. Permanent access to all present and future engineering & medical streams.</p>
+                <p className="plan-desc">Special launch pricing for the first 100 scholars. Permanent access to all present & future engineering & medical streams.</p>
                 <div className="plan-radio-marker">
                   <input
                     type="radio"
@@ -169,7 +172,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                     checked={selectedPlan === "backlox_pro"}
                     onChange={() => setSelectedPlan("backlox_pro")}
                   />
-                  <span>Select Lifetime Plan</span>
+                  <span>Select Lifetime Plan (₹11)</span>
                 </div>
               </div>
 
@@ -181,13 +184,14 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                 <div className="plan-tag mono">1 YEAR PASS</div>
                 <div className="plan-card__header">
                   <h3>Annual Scholar</h3>
-                  <div className="plan-price">
+                  <div className="plan-price" style={{ alignItems: "baseline" }}>
+                    <span style={{ textDecoration: "line-through", opacity: 0.45, fontSize: "1.1rem", marginRight: "6px" }}>₹299</span>
                     <span className="currency">₹</span>
-                    <span className="amount">299</span>
+                    <span className="amount" style={{ color: "#22c55e", fontWeight: "bold" }}>11</span>
                     <span className="term">/ year</span>
                   </div>
                 </div>
-                <p className="plan-desc">12 months access to full syllabus roadmaps, MCQ test batteries, and lecture flashcards.</p>
+                <p className="plan-desc">12 months full access to interactive roadmaps, question gyms, and lecture notes.</p>
                 <div className="plan-radio-marker">
                   <input
                     type="radio"
@@ -195,7 +199,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                     checked={selectedPlan === "backlox_pro_annual"}
                     onChange={() => setSelectedPlan("backlox_pro_annual")}
                   />
-                  <span>Select Annual Plan</span>
+                  <span>Select Annual Plan (₹11)</span>
                 </div>
               </div>
             </div>
@@ -264,7 +268,7 @@ export default function SubscriptionModal({ isOpen: propIsOpen, onClose: propOnC
                     {loading ? (
                       <span>Processing Gateway…</span>
                     ) : (
-                      <span>⚡ Pay ₹{selectedPlan === "backlox_pro_annual" ? "299" : "499"} via Razorpay</span>
+                      <span>⚡ Pay ₹11 via Razorpay (Launch Offer)</span>
                     )}
                   </button>
 

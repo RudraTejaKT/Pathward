@@ -1048,9 +1048,11 @@ export default function Dashboard() {
               {/* Pro Upgrade & Subscription Row */}
               <div className="pro-subscription-banner glass-card">
                 <div className="pro-banner-left">
-                  <div className="pro-pill-large mono">BACKLOX PRO UNIVERSE</div>
-                  <h2>Unlock All 35+ Engineering &amp; Medical Branches</h2>
-                  <p>Get lifetime verified certifications, 1-on-1 doubt sessions, and unlimited mock MCQ exams.</p>
+                  <div className="pro-pill-large mono" style={{ background: "rgba(245, 158, 11, 0.2)", color: "#f59e0b", border: "1px solid #f59e0b" }}>
+                    ⚡ EARLY BIRD · ₹11 FOR FIRST 100 SCHOLARS
+                  </div>
+                  <h2>Unlock All 35+ Engineering &amp; Medical Branches for ₹11</h2>
+                  <p>Special Early Bird Launch: First 100 users get complete lifetime access for just ₹11 (regular ₹499).</p>
                   {paySuccessMessage && <div className="submit-success-alert mono text-xs">{paySuccessMessage}</div>}
                   {payError && <div className="submit-error-alert mono text-xs">{payError}</div>}
                 </div>
@@ -1058,11 +1060,11 @@ export default function Dashboard() {
                 <button
                   type="button"
                   className="cyber-btn cyber-btn--primary pro-upgrade-btn"
-                  onClick={() => handleUpgrade("backlox_pro", "Backlox Pro Lifetime")}
+                  onClick={() => handleUpgrade("backlox_pro", "Backlox Pro Lifetime (Early Bird)")}
                   disabled={payingPlan !== null}
                 >
                   <span className="material-symbols-outlined">bolt</span>
-                  <span>{payingPlan ? "Processing Razorpay…" : "Upgrade via Razorpay (₹499)"}</span>
+                  <span>{payingPlan ? "Processing Razorpay…" : "Claim ₹11 Launch Offer via Razorpay"}</span>
                 </button>
               </div>
 

@@ -8,10 +8,10 @@ const { sendProUpgradeEmail } = require("../lib/email");
 
 const router = express.Router();
 
-// Defined membership and mentorship plans
+// Defined membership and mentorship plans — ₹11 Early Bird for first 100 users
 const PLANS = {
-  backlox_pro: { amountPaise: 49900, currency: "INR", label: "Backlox Pro — Lifetime Membership" },
-  backlox_pro_annual: { amountPaise: 29900, currency: "INR", label: "Backlox Pro — 1 Year Access" },
+  backlox_pro: { amountPaise: 1100, originalAmountPaise: 49900, currency: "INR", label: "Backlox Pro — Early Bird Launch (First 100 Users)" },
+  backlox_pro_annual: { amountPaise: 1100, originalAmountPaise: 29900, currency: "INR", label: "Backlox Pro — 1 Year Access (Launch Offer)" },
   mentorship_session: { amountPaise: 19900, currency: "INR", label: "1-on-1 Career Mentorship & Portfolio Review" },
 };
 
@@ -229,7 +229,7 @@ router.post("/instant-subscribe", (req, res) => {
   const { plan = "backlox_pro" } = req.body || {};
   const orderId = `pw_instant_${req.user.id}_${Date.now()}`;
   const paymentId = `pay_instant_${Date.now()}`;
-  const amountPaise = plan === "backlox_pro_annual" ? 29900 : 49900;
+  const amountPaise = 1100; // Launch Offer ₹11
 
   try {
     db.prepare(
