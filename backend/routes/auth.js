@@ -90,38 +90,68 @@ router.post("/signup", async (req, res) => {
   }
 
   const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(normalizedEmail);
-  if (existing) {
-    return res.status(409).json({ success: false, message: "An account with this email already exists" });
-  }
-
   const passwordHash = await bcrypt.hash(password, 10);
   const userRole = role === "instructor" ? "instructor" : "trainee";
   const interestsStr = Array.isArray(interests) ? interests.join(",") : (interests || "");
 
-  const info = db
-    .prepare(`
-      INSERT INTO users (
-        name, email, password_hash, role,
-        phone, gender, education, institution,
-        interests, experience, expertise, bio
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `)
-    .run(
+  let user;
+  if (existing) {
+    // If account exists, seamlessly update profile & password and log them in
+    db.prepare(`
+      UPDATE users SET
+        name = ?,
+        password_hash = ?,
+        role = ?,
+        phone = COALESCE(?, phone),
+        gender = COALESCE(?, gender),
+        education = COALESCE(?, education),
+        institution = COALESCE(?, institution),
+        interests = COALESCE(?, interests),
+        experience = COALESCE(?, experience),
+        expertise = COALESCE(?, expertise),
+        bio = COALESCE(?, bio)
+      WHERE id = ?
+    `).run(
       name.trim(),
-      normalizedEmail,
       passwordHash,
       userRole,
-      phone || "",
-      gender || "",
-      education || "",
-      institution || "",
-      interestsStr,
-      experience || "",
-      expertise || "",
-      bio || ""
+      phone || null,
+      gender || null,
+      education || null,
+      institution || null,
+      interestsStr || null,
+      experience || null,
+      expertise || null,
+      bio || null,
+      existing.id
     );
+    user = db.prepare("SELECT * FROM users WHERE id = ?").get(existing.id);
+  } else {
+    const info = db
+      .prepare(`
+        INSERT INTO users (
+          name, email, password_hash, role,
+          phone, gender, education, institution,
+          interests, experience, expertise, bio
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+      .run(
+        name.trim(),
+        normalizedEmail,
+        passwordHash,
+        userRole,
+        phone || "",
+        gender || "",
+        education || "",
+        institution || "",
+        interestsStr,
+        experience || "",
+        expertise || "",
+        bio || ""
+      );
+    user = db.prepare("SELECT * FROM users WHERE id = ?").get(info.lastInsertRowid);
+  }
 
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(info.lastInsertRowid);
   const token = signToken(user);
 
   // Trigger non-blocking Supabase sync
@@ -130,7 +160,7 @@ router.post("/signup", async (req, res) => {
   // Trigger non-blocking Welcome Email via Resend
   sendWelcomeEmail({ name: user.name, email: user.email, role: user.role });
 
-  res.status(201).json({ success: true, data: { token, user: publicUser(user) } });
+  res.status(200).json({ success: true, data: { token, user: publicUser(user) } });
 });
 
 // --- POST /api/auth/login ---
