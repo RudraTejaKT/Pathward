@@ -20,53 +20,95 @@ const DEFAULT_PROMPT_PILLS = [
 
 function generateOfflineReply(query) {
   const q = query.toLowerCase();
+  
+  if (q.includes("salary") || q.includes("ctc") || q.includes("package") || q.includes("placement") || q.includes("earn")) {
+    return {
+      reply: `💼 **Career CTC & Salary Benchmarks (2026 Telemetry)**:
+- **AI & Data Science**: ₹22 LPA – ₹52 LPA (Tier-1), ₹8 LPA – ₹16 LPA (Tier-2/3), Top US/Remote: $180k+.
+- **Computer Science (CSE)**: ₹18 LPA – ₹48 LPA (Tier-1), Top International: ₹1.2 Cr+.
+- **VLSI & Semiconductor (ECE)**: ₹16 LPA – ₹38 LPA (NVIDIA, Qualcomm, Intel, TI).
+- **MBBS Specialist (MD/MS)**: ₹18 LPA – ₹36 LPA (Hospital Consultant), ₹60 LPA+ in Super-specialty.
+- **Investment Banking & CA**: ₹25 LPA – ₹55 LPA (Front Office / Big 4).`,
+      suggestedPills: ["Explore CSE Roadmap", "How to prepare for FAANG Placements", "Compare VLSI vs Software Salaries"],
+    };
+  }
+
+  if (q.includes("transformer") || q.includes("attention") || q.includes("llm") || q.includes("gpt")) {
+    return {
+      reply: `🧠 **Transformer Self-Attention Formulation**:
+Attention allows each token to dynamically weight context from all other tokens:
+
+$$\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{d_k}}\\right) V$$
+
+- **Q (Query)**: What the current token seeks.
+- **K (Key)**: What each token represents.
+- **V (Value)**: The semantic payload.
+- **$\\sqrt{d_k}$**: Scaling factor preventing gradient vanishing during Softmax.
+- **Multi-Head Attention (MHA)** runs $h$ attention heads in parallel to capture distinct syntax and semantic relationships simultaneously!`,
+      suggestedPills: ["Explain RAG Architecture", "Deep Learning Loss Functions", "Encoder vs Decoder LLMs"],
+    };
+  }
+
+  if (q.includes("ecg") || q.includes("stemi") || q.includes("cardio") || q.includes("heart")) {
+    return {
+      reply: `🩺 **12-Lead ECG STEMI Localization Protocol**:
+- **Anterior Wall Infarct**: ST elevation in leads **V1, V2, V3, V4** (LAD Artery).
+- **Inferior Wall Infarct**: ST elevation in leads **II, III, aVF** (RCA Artery).
+- **Lateral Wall Infarct**: ST elevation in leads **I, aVL, V5, V6** (LCx Artery).
+- **Posterior Wall**: Tall R waves & ST depression in **V1–V3** (Confirm with V7–V9).
+- **Emergency Action**: Immediate Aspirin (300mg) + P2Y12 inhibitor + transfer for Primary PCI (Door-to-Balloon < 90 min)!`,
+      suggestedPills: ["Cardiology Pharmacology", "Cardiac Action Potential", "NEET-PG Cardiology MCQs"],
+    };
+  }
+
+  if (q.includes("dsa") || q.includes("algorithm") || q.includes("big o") || q.includes("complexity") || q.includes("dynamic programming")) {
+    return {
+      reply: `💻 **Data Structures & Algorithms (DSA) Blueprint**:
+- **Time Complexities**:
+  - $O(1)$: Hash Map lookup, Array index.
+  - $O(\\log N)$: Binary Search, AVL tree operations.
+  - $O(N \\log N)$: Merge Sort, Quick Sort (Avg), Heap Sort.
+  - $O(2^N)$: Recursive exponential subsets.
+- **Core Patterns**: Sliding Window, Two Pointers, Fast/Slow Pointers, BFS/DFS, 0/1 Knapsack DP, Topological Sort.`,
+      suggestedPills: ["Dynamic Programming Guide", "Graph Algorithms (Dijkstra)", "Top 50 Interview Problems"],
+    };
+  }
+
   if (q.includes("branch") || q.includes("stream") || q.includes("pcm") || q.includes("pcb") || q.includes("12th") || q.includes("career")) {
     return {
       reply: `🎓 **Stream & Branch Guidance**:
-- **Engineering (PCM)**: Computer Science (CSE), AI & Data Engineering, Electronics (VLSI/Embedded), and Aerospace are top high-growth pathways. Visit the **Engineering Pathways** tab to view semester roadmaps and starting CTC benchmarks (₹12 LPA - ₹38 LPA).
-- **Medical (PCB)**: Explore **MBBS, BDS, and Allied Health Sciences** in our **Medical Universe** section with clinical case audits and PG entrance prep.
-- **Aptitude Quiz**: Take our **15-question AI Career Aptitude Assessment** to receive personalized scientific stream recommendations!`,
-      suggestedPills: ["Take Career Aptitude Test", "Explore Engineering Branches", "View Medical Universe"],
+- **Engineering (PCM)**: Computer Science (CSE), AI & Data Science, Electronics (VLSI/Embedded), and Aerospace are top high-growth pathways (CTC ₹12 LPA - ₹48 LPA).
+- **Medical (PCB)**: MBBS, BDS, Pharmacy (Pharm.D), and Allied Health Sciences in our **Medical Universe** section.
+- **Commerce & Law**: CA (Chartered Accountancy), Investment Banking, 5-Year Integrated BA/BBA LLB via CLAT.
+- Take our **AI Career Aptitude Assessment** to receive personalized scientific stream recommendations!`,
+      suggestedPills: ["Take Career Aptitude Test", "Explore 35+ Engineering Branches", "View Medical Universe"],
     };
   }
-  if (q.includes("drm") || q.includes("screen") || q.includes("record") || q.includes("protect") || q.includes("patent")) {
-    return {
-      reply: `🔒 **DRM & Intellectual Property Shield**:
-Backlox employs an active DRM Shield protecting video masterclasses and proprietary course notes:
-1. **Dynamic Scholar Watermarking**: Overlays your verified ID to deter camcorder recording.
-2. **Keyboard Shortcut Blocking**: Disables PrintScreen, Ctrl+P, Ctrl+S, and DevTools inspection.
-3. **Anti-Capture Enforcement**: Complies with copyright and educational patent protections.`,
-      suggestedPills: ["How to enroll in courses?", "Open Study Notes", "Take Stress Test"],
-    };
-  }
-  if (q.includes("stress") || q.includes("meter") || q.includes("breath") || q.includes("relax")) {
-    return {
-      reply: `⚡ **Cognitive Stress & Focus Meter**:
-The Cognitive Stress Meter in your workspace tracks your interaction density and study duration:
-- **Radial Gauge**: Visualizes stress levels (0% - 100%) with color-coded safety tiers.
-- **60s Box Breathing Tool**: Click **"Recharge Mind"** to activate guided Inhale → Hold → Exhale → Rest cycles that actively reduce mental fatigue.`,
-      suggestedPills: ["Start Box Breathing", "Practice MCQs", "Switch Light/Dark Theme"],
-    };
-  }
-  if (q.includes("pay") || q.includes("razorpay") || q.includes("pro") || q.includes("price") || q.includes("buy")) {
-    return {
-      reply: `💳 **Razorpay Secure Checkout & Plans**:
-- **Backlox Lifetime Pro** (₹499): Lifetime unrestricted access to all 35+ engineering & medical branches, courses, and verified certificates.
-- **Per-Course Enrollment**: Click **"Enroll with Razorpay"** on any course page. Module 1 is always available as a Free Preview!
-- All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`,
-      suggestedPills: ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"],
-    };
-  }
-  return {
-    reply: `🎓 **Octi (Your Academic Companion)**:
-I'm here to help with your academic journey across the Backlox Platform! You can practice **Aptitude MCQs** in the Practice Gym, watch interactive video masterclasses, submit coursework assignments, or explore full 4-year career roadmaps.
 
-Let me know what topic you'd like to dive into!`,
+  if (q.includes("11") || q.includes("pay") || q.includes("razorpay") || q.includes("pro") || q.includes("price") || q.includes("buy")) {
+    return {
+      reply: `⚡ **Backlox Pro Early Bird Launch Offer (First 100 Scholars)**:
+- **Price**: **₹11.00** *(Regular: ~~₹499~~)*
+- **Lifetime Access**: Complete 4-Year syllabus roadmaps, unlimited Practice Gym MCQs, verified masterclasses & certificates.
+- **Payment Method**: Live Razorpay Checkout via UPI (Google Pay, PhonePe, Paytm), Cards, or NetBanking with instant bank settlement!`,
+      suggestedPills: ["Claim ₹11 Launch Offer", "Browse Course Catalog", "Practice MCQ Test Gym"],
+    };
+  }
+
+  return {
+    reply: `🎓 **Octi Academic Advisor**:
+I'm here to illuminate your learning journey across Backlox Universe! You can ask me to:
+- Deconstruct scientific concepts (*Transformers, STEMI ECG, Big-O Complexity, Thermodynamics*).
+- Guide your career pathway & salary benchmarks across 35+ engineering & medical fields.
+- Formulate study roadmaps for **JEE, NEET, GATE, CAT, and CLAT**.
+- Assist with your course masterclasses and aptitude tests!
+
+What topic would you like to explore?`,
     suggestedPills: [
       "Recommend best stream for me",
       "Explain Transformer Self-Attention",
       "Explain 12-Lead ECG STEMI",
-      "How to publish a course as instructor?",
+      "Salary benchmarks for AI & CSE",
     ],
   };
 }

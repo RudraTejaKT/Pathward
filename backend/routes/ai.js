@@ -328,67 +328,32 @@ router.post("/summarize-content", async (req, res) => {
   res.json({ success: true, data: summaryData });
 });
 
+const { generateDynamicRAGReply, retrieveRelevantDocuments } = require("../lib/ragEngine");
+
 // POST /api/ai/help-assistant
-// Universal AI Campus Assistant & 24/7 Help Centre
+// Universal Dynamic AI Campus Advisor & RAG Intelligence Engine
 router.post("/help-assistant", async (req, res) => {
   const { query = "", history = [] } = req.body || {};
-  const q = query.toLowerCase();
 
-  let reply = "";
-  let suggestedPills = [];
-
-  if (q.includes("branch") || q.includes("stream") || q.includes("pcm") || q.includes("pcb") || q.includes("12th")) {
-    reply = `🎓 **Stream & Branch Guidance**:
-- **Engineering (PCM)**: Computer Science (CSE), AI & Data Engineering, Electronics (ECE), and Aerospace are high-demand pathways. Start in the **Engineering Pathways** tab to view semester roadmaps and salary benchmarks.
-- **Medical (PCB)**: Explore **MBBS, BDS, and Allied Health Sciences** in our **Medical Universe** section with clinical case audits and PG entrance prep.
-- **Aptitude Quiz**: You can take our **15-question AI Career Aptitude Assessment** to receive personalized scientific stream recommendations!`;
-    suggestedPills = ["Take Career Aptitude Test", "Explore Engineering Branches", "View Medical Universe"];
-  } else if (q.includes("drm") || q.includes("screen") || q.includes("record") || q.includes("protect") || q.includes("patent")) {
-    reply = `🔒 **DRM & Intellectual Property Shield**:
-Backlox employs an active DRM Shield that protects video masterclasses and proprietary course notes:
-1. **Dynamic Scholar Watermarking**: Overlays your verified ID to deter camcorder recording.
-2. **Keyboard Shortcut Blocking**: Disables \`PrintScreen\`, \`Ctrl+P\` (Print), \`Ctrl+S\` (Save), and DevTools inspection.
-3. **Anti-Capture Enforcement**: Complies with copyright and educational patent protections.`;
-    suggestedPills = ["How to enroll in courses?", "Open Study Notes", "Take Stress Test"];
-  } else if (q.includes("stress") || q.includes("meter") || q.includes("breath") || q.includes("relax")) {
-    reply = `⚡ **Cognitive Stress & Focus Meter**:
-The Cognitive Stress Meter in the bottom-left monitor tracks your session interaction density and study duration:
-- **Radial Gauge**: Visualizes stress levels ($0\\% - 100\\%$) with color-coded safety tiers.
-- **60s Box Breathing Tool**: Click **"Recharge Mind"** to activate guided Inhale $\\rightarrow$ Hold $\\rightarrow$ Exhale $\\rightarrow$ Rest cycles that actively reduce fatigue.`;
-    suggestedPills = ["Start Box Breathing", "Practice MCQs", "Switch Light/Dark Theme"];
-  } else if (q.includes("note") || q.includes("save") || q.includes("notes")) {
-    reply = `📝 **Smart Study Notes Pad**:
-You can record timestamped lecture notes directly while watching video masterclasses:
-- Click **"📝 Take Notes"** on any course page to open the collapsible drawer.
-- Notes are automatically tagged with the current module and synced to your profile.
-- You can export notes anytime to Markdown or PDF!`;
-    suggestedPills = ["View My Notes", "Open Course Catalog", "Summarize Lecture with AI"];
-  } else if (q.includes("pay") || q.includes("razorpay") || q.includes("pro") || q.includes("price") || q.includes("buy")) {
-    reply = `💳 **Razorpay Secure Checkout & Plans**:
-- **Backlox Lifetime Pro** (₹499): Lifetime unrestricted access to all 35+ engineering, medical, and competitive prep courses.
-- **Per-Course Enrollment**: Click **"⚡ Enroll with Razorpay"** on any course page. Module 1 is always available as a Free Preview!
-- All payments are secured via Razorpay UPI, Cards, NetBanking, and verified with cryptographic HMAC signatures.`;
-    suggestedPills = ["View Pro Plans", "Browse Free Preview Courses", "Payment Support"];
-  } else {
-    reply = `🎓 **Octi (Your Academic Companion)**:
-Hey there, Scholar! I'm Octi, your dedicated academic companion across the Backlox Universe. I can illuminate career pathways, break down salary benchmarks, summarize complex video lectures, solve competitive exam MCQs (JEE, NEET, GATE, CAT, CLAT), and keep your study journey on track!
-
-What can I help you explore today?`;
-    suggestedPills = [
-      "Recommend best stream for me",
-      "Explain Transformer Self-Attention",
-      "Explain 12-Lead ECG STEMI",
-      "How to publish a course as instructor?",
-    ];
+  if (!query || !query.trim()) {
+    return res.status(400).json({ success: false, message: "Query string is required" });
   }
 
-  res.json({
-    success: true,
-    data: {
-      reply,
-      suggestedPills,
-    },
-  });
+  try {
+    const ragResult = generateDynamicRAGReply(query, history);
+
+    res.json({
+      success: true,
+      data: {
+        reply: ragResult.reply,
+        suggestedPills: ragResult.suggestedPills,
+        sources: ragResult.sources,
+      },
+    });
+  } catch (err) {
+    console.error("RAG Engine error:", err);
+    res.status(500).json({ success: false, message: "Failed to generate dynamic RAG response" });
+  }
 });
 
 module.exports = router;
