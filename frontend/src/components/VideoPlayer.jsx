@@ -20,19 +20,19 @@ const KNOWN_EMBED_MAPPINGS = {
 
 // Convert any URL (YouTube, TED, Vimeo, or direct embed) into a bulletproof embed URL
 export function formatVideoEmbedUrl(url) {
-  if (!url) return null;
+  if (!url) return "https://www.youtube.com/embed/aircAruvnKk?rel=0";
 
   // Check known mappings
   for (const [key, embedUrl] of Object.entries(KNOWN_EMBED_MAPPINGS)) {
     if (url.toLowerCase().includes(key)) {
-      return `${embedUrl}?autoplay=1&rel=0&enablejsapi=1`;
+      return `${embedUrl}?rel=0&enablejsapi=1`;
     }
   }
 
   // Already a clean embed URL
-  if (url.includes("youtube.com/embed/")) {
+  if (url.includes("youtube.com/embed/") || url.includes("youtube-nocookie.com/embed/")) {
     const cleanUrl = url.split("?")[0];
-    return `${cleanUrl}?autoplay=1&rel=0&enablejsapi=1`;
+    return `${cleanUrl}?rel=0&enablejsapi=1`;
   }
 
   // Standard youtube.com/watch?v=ID
@@ -40,16 +40,14 @@ export function formatVideoEmbedUrl(url) {
     try {
       const u = new URL(url);
       const v = u.searchParams.get("v");
-      if (v) return `https://www.youtube.com/embed/${v}?autoplay=1&rel=0&enablejsapi=1`;
-    } catch {
-      // fallback
-    }
+      if (v) return `https://www.youtube.com/embed/${v}?rel=0&enablejsapi=1`;
+    } catch {}
   }
 
   // youtu.be/ID
   if (url.includes("youtu.be/")) {
     const id = url.split("youtu.be/")[1]?.split("?")[0];
-    if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&enablejsapi=1`;
+    if (id) return `https://www.youtube.com/embed/${id}?rel=0&enablejsapi=1`;
   }
 
   // If it's a TED talk URL
@@ -57,13 +55,13 @@ export function formatVideoEmbedUrl(url) {
     const talkSlug = url.split("ted.com/talks/")[1]?.split("?")[0] || "";
     for (const [key, embedUrl] of Object.entries(KNOWN_EMBED_MAPPINGS)) {
       if (talkSlug.includes(key)) {
-        return `${embedUrl}?autoplay=1&rel=0&enablejsapi=1`;
+        return `${embedUrl}?rel=0&enablejsapi=1`;
       }
     }
-    return `https://www.youtube.com/embed/_X0mgOOSpLU?autoplay=1&rel=0&enablejsapi=1`;
+    return `https://www.youtube.com/embed/_X0mgOOSpLU?rel=0&enablejsapi=1`;
   }
 
-  return null;
+  return "https://www.youtube.com/embed/aircAruvnKk?rel=0";
 }
 
 export default function VideoPlayer({

@@ -140,7 +140,18 @@ export default function Signup() {
             </button>
           </div>
 
-          {error && <div className="auth-error">⚠️ {error}</div>}
+          {error && (
+            <div className="auth-error animate-fade-in">
+              <div>⚠️ {error}</div>
+              {error.toLowerCase().includes("already exists") && (
+                <div style={{ marginTop: "8px", display: "flex", gap: "12px", alignItems: "center" }}>
+                  <Link to={`/login?role=${role}`} className="auth-link text-xs" style={{ textDecoration: "underline" }}>
+                    Sign in to your existing account →
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
 
           <form className="login-form glass-card" onSubmit={handleSubmit}>
             {/* Section 1: Core Personal & Contact Details */}

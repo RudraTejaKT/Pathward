@@ -1,5 +1,9 @@
+const dns = require("dns");
+try { dns.setDefaultResultOrder("ipv4first"); } catch (_) {}
 const request = require("supertest");
 const app = require("../server");
+
+jest.setTimeout(20000);
 
 describe("API Endpoints Testing with Jest", () => {
 

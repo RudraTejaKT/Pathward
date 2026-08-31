@@ -1,4 +1,8 @@
-require("dotenv").config();
+const path = require("path");
+const dns = require("dns");
+try { dns.setDefaultResultOrder("ipv4first"); } catch (_) {}
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+require("dotenv").config(); // Also check root if present
 const express = require("express");
 const cors = require("cors");
 const { streams, branches, roadmaps, projects, jobs } = require("./data");
@@ -139,7 +143,6 @@ app.get("/api/health", (req, res) => {
 });
 
 // --- Static Frontend Serving in Production ---
-const path = require("path");
 const fs = require("fs");
 
 const possibleDistPaths = [

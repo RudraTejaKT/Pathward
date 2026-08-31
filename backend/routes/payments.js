@@ -134,11 +134,12 @@ router.post("/create-order", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Razorpay API order error:", err.message);
+    const errorDetail = err?.error?.description || err?.description || err?.message || (typeof err === "object" ? JSON.stringify(err) : String(err));
+    console.error("Razorpay API order error:", errorDetail);
     res.status(500).json({
       success: false,
-      message: "Failed to create Razorpay order",
-      error: err.message,
+      message: errorDetail ? `Razorpay Error: ${errorDetail}` : "Failed to create Razorpay order",
+      error: errorDetail,
     });
   }
 });

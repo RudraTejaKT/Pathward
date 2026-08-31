@@ -1085,19 +1085,17 @@ export default function Dashboard() {
                         payments.map((p) => (
                           <tr key={p.id}>
                             <td className="mono">{p.razorpay_payment_id || `PW-${p.id}`}</td>
-                            <td><strong>{p.plan_name || "Backlox Pro"}</strong></td>
-                            <td className="mono text-emerald">₹{p.amount || 499}</td>
-                            <td><span className="completed-tag mono">Confirmed</span></td>
+                            <td><strong>{p.plan_name || p.plan || "Backlox Pro"}</strong></td>
+                            <td className="mono text-emerald">₹{p.amount ? (p.amount > 1000 ? (p.amount / 100).toFixed(0) : p.amount) : (p.amount_paise ? (p.amount_paise / 100).toFixed(0) : 499)}</td>
+                            <td><span className="completed-tag mono">{p.status === "paid" ? "Confirmed" : (p.status || "Confirmed")}</span></td>
                             <td className="mono text-xs">{new Date(p.created_at || Date.now()).toLocaleDateString()}</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td className="mono">pay_PW_99214</td>
-                          <td><strong>Backlox Pro Membership</strong></td>
-                          <td className="mono text-emerald font-bold">₹499</td>
-                          <td><span className="completed-tag mono">Active</span></td>
-                          <td className="mono text-xs">July 2026</td>
+                          <td colSpan={5} className="text-center py-4 text-muted mono text-xs" style={{ textAlign: "center", padding: "20px", color: "var(--text-muted, #94a3b8)" }}>
+                            No payment transactions recorded yet. Upgrade to Backlox Pro to unlock all branches.
+                          </td>
                         </tr>
                       )}
                     </tbody>

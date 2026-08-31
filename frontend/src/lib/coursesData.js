@@ -15,7 +15,7 @@ export const COURSE_CATALOG = {
     price: 1499,
     originalPrice: 2999,
     videoDuration: "3:40 Preview",
-    trailerVideoUrl: "https://www.youtube.com/embed/kU_t-wJ-t9c",
+    trailerVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
     trailerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80",
     description: "Master modern deep learning, transformer architectures, reinforcement learning, and production MLOps pipelines.",
     curriculumSummary: "3 modules • 14h 20m",

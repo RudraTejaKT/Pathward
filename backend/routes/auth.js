@@ -198,6 +198,72 @@ router.post("/instructor-signup", async (req, res) => {
 
   res.status(201).json({ success: true, data: { token: signToken(user), user: publicUser(user) } });
 });
+router.post("/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body || {};
+  const normalizedEmail = (email || "").trim().toLowerCase();
+
+  if (!normalizedEmail || !EMAIL_RE.test(normalizedEmail)) {
+    return res.status(400).json({ success: false, message: "A valid email address is required" });
+  }
+  if (!newPassword || newPassword.length < 8) {
+    return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
+  }
+
+  const user = db.prepare("SELECT id, name, email FROM users WHERE email = ?").get(normalizedEmail);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "No account found with this email address." });
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  db.prepare("UPDATE users SET password_hash = ? WHERE email = ?").run(passwordHash, normalizedEmail);
+
+  res.json({
+    success: true,
+    message: "Password updated successfully! You can now log in with your new password.",
+    data: {
+      email: normalizedEmail,
+      message: "Password updated successfully! You can now log in with your new password."
+    }
+  });
+});
+
+// --- PUT /api/auth/profile ---
+router.put("/profile", requireAuth, (req, res) => {
+  const { name, phone, gender, education, institution, interests, experience, expertise, bio } = req.body || {};
+  const interestsStr = Array.isArray(interests) ? interests.join(",") : (interests || "");
+
+  try {
+    db.prepare(`
+      UPDATE users SET
+        name = COALESCE(?, name),
+        phone = COALESCE(?, phone),
+        gender = COALESCE(?, gender),
+        education = COALESCE(?, education),
+        institution = COALESCE(?, institution),
+        interests = COALESCE(?, interests),
+        experience = COALESCE(?, experience),
+        expertise = COALESCE(?, expertise),
+        bio = COALESCE(?, bio)
+      WHERE id = ?
+    `).run(
+      name ? name.trim() : null,
+      phone !== undefined ? phone : null,
+      gender !== undefined ? gender : null,
+      education !== undefined ? education : null,
+      institution !== undefined ? institution : null,
+      interestsStr || null,
+      experience !== undefined ? experience : null,
+      expertise !== undefined ? expertise : null,
+      bio !== undefined ? bio : null,
+      req.user.id
+    );
+
+    const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
+    res.json({ success: true, data: publicUser(user) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to update profile", error: err.message });
+  }
+});
 
 router.get("/me", requireAuth, (req, res) => {
   const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
@@ -208,3 +274,4 @@ router.get("/me", requireAuth, (req, res) => {
 });
 
 module.exports = router;
+

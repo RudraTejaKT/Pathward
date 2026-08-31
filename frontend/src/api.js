@@ -52,7 +52,7 @@ async function request(path, { method = "GET", body, auth = false, optionalAuth 
   if (!res.ok || !json.success) {
     throw new Error(json.message || "Request failed");
   }
-  return json.data;
+  return json.data !== undefined ? json.data : json;
 }
 
 export const api = {
@@ -70,6 +70,8 @@ export const api = {
     return request("/auth/signup", { method: "POST", body });
   },
   login: (email, password) => request("/auth/login", { method: "POST", body: { email, password } }),
+  resetPassword: (email, newPassword) => request("/auth/reset-password", { method: "POST", body: { email, newPassword } }),
+  updateProfile: (payload) => request("/auth/profile", { method: "PUT", auth: true, body: payload }),
   me: () => request("/auth/me", { auth: true }),
 
   // --- Trainee progress (requires login) ---
@@ -85,6 +87,12 @@ export const api = {
   // --- Payments (requires login) ---
   getPlans: () => request("/payments/plans", { auth: true }),
   createOrder: (payload) =>
+    request("/payments/create-order", {
+      method: "POST",
+      auth: true,
+      body: typeof payload === "string" ? { plan: payload } : payload,
+    }),
+  createPaymentOrder: (payload) =>
     request("/payments/create-order", {
       method: "POST",
       auth: true,
