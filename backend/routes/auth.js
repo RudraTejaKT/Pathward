@@ -210,11 +210,25 @@ router.post("/reset-password", async (req, res) => {
   }
 
   const user = db.prepare("SELECT id, name, email FROM users WHERE email = ?").get(normalizedEmail);
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
   if (!user) {
-    return res.status(404).json({ success: false, message: "No account found with this email address." });
+    const defaultName = normalizedEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    const info = db.prepare(
+      "INSERT INTO users(name, email, password_hash, role) VALUES(?,?,?,?)"
+    ).run(defaultName, normalizedEmail, passwordHash, "trainee");
+    const newUser = db.prepare("SELECT * FROM users WHERE id = ?").get(info.lastInsertRowid);
+    return res.json({
+      success: true,
+      message: "Account created and password set successfully! You can now log in.",
+      data: {
+        email: normalizedEmail,
+        token: signToken(newUser),
+        user: publicUser(newUser),
+      },
+    });
   }
 
-  const passwordHash = await bcrypt.hash(newPassword, 10);
   db.prepare("UPDATE users SET password_hash = ? WHERE email = ?").run(passwordHash, normalizedEmail);
 
   res.json({
@@ -222,8 +236,8 @@ router.post("/reset-password", async (req, res) => {
     message: "Password updated successfully! You can now log in with your new password.",
     data: {
       email: normalizedEmail,
-      message: "Password updated successfully! You can now log in with your new password."
-    }
+      message: "Password updated successfully! You can now log in with your new password.",
+    },
   });
 });
 
