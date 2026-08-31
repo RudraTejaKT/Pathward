@@ -29,7 +29,7 @@ function signToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role, isPremium: !!user.is_premium },
     JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "30d" }
   );
 }
 

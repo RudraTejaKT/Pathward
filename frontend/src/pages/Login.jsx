@@ -10,8 +10,15 @@ export default function Login() {
   const location = useLocation();
 
   const [role, setRole] = useState("trainee"); // 'trainee' | 'instructor'
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    try {
+      return localStorage.getItem("backlox_saved_email") || "";
+    } catch {
+      return "";
+    }
+  });
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -29,8 +36,19 @@ export default function Login() {
     setError(null);
     setSuccessMsg(null);
     setSubmitting(true);
+
+    if (rememberMe && email) {
+      try {
+        localStorage.setItem("backlox_saved_email", email.trim());
+      } catch (_) {}
+    } else {
+      try {
+        localStorage.removeItem("backlox_saved_email");
+      } catch (_) {}
+    }
+
     try {
-      const user = await login(email, password);
+      const user = await login(email.trim(), password);
       if (user.role === "instructor") {
         navigate("/instructor", { replace: true });
       } else {
@@ -144,13 +162,14 @@ export default function Login() {
 
           {successMsg && <div className="auth-success animate-fade-in" style={{ color: "#10b981", background: "rgba(16, 185, 129, 0.1)", padding: "10px 14px", borderRadius: "8px", marginBottom: "16px" }}>✓ {successMsg}</div>}
 
-          <form className="login-form glass-card" onSubmit={handleSubmit}>
+          <form className="login-form glass-card" onSubmit={handleSubmit} method="POST">
             <div className="form-field">
               <label htmlFor="email">Email Address</label>
               <input
                 id="email"
+                name="email"
                 type="email"
-                autoComplete="email"
+                autoComplete="username email"
                 placeholder={role === "instructor" ? "e.g. professor@university.edu" : "e.g. student@college.edu"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -177,6 +196,7 @@ export default function Login() {
               </div>
               <input
                 id="password"
+                name="password"
                 type="password"
                 autoComplete="current-password"
                 placeholder="••••••••"
@@ -184,6 +204,19 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+            </div>
+
+            <div className="form-field-checkbox" style={{ display: "flex", alignItems: "center", gap: "8px", margin: "4px 0 14px 0", fontSize: "0.85rem", color: "var(--text-muted, #94a3b8)" }}>
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{ cursor: "pointer", accentColor: "#0f766e" }}
+              />
+              <label htmlFor="rememberMe" style={{ cursor: "pointer", userSelect: "none" }}>
+                Remember my login on this device
+              </label>
             </div>
 
             <button className="auth-submit" type="submit" disabled={submitting}>
