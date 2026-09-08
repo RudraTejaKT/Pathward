@@ -160,7 +160,7 @@ router.post("/signup", async (req, res) => {
   // Trigger non-blocking Welcome Email via Resend
   sendWelcomeEmail({ name: user.name, email: user.email, role: user.role });
 
-  res.status(200).json({ success: true, data: { token, user: publicUser(user) } });
+  res.status(201).json({ success: true, data: { token, user: publicUser(user) } });
 });
 
 // --- POST /api/auth/login ---

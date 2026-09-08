@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+  <title>BACKLOX - 15 Days of Learning & Growth | ICT Academy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    @page {
+      size: 1920px 1080px;
+      margin: 0;
+    }
+
+    body {
+      background-color: #08090e;
+      color: #f3f4f6;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 1920px;
+    }
+
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 85% 65%, rgba(225, 29, 72, 0.18) 0%, transparent 55%),
+                  radial-gradient(circle at 15% 20%, rgba(244, 63, 94, 0.08) 0%, transparent 45%),
+                  #090a10;
+      padding: 70px 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    /* Red light streak effect */
+    .light-streak {
+      position: absolute;
+      bottom: -150px;
+      left: -100px;
+      width: 1400px;
+      height: 450px;
+      background: linear-gradient(75deg, transparent 20%, rgba(255, 45, 85, 0.4) 50%, rgba(255, 99, 71, 0.8) 75%, transparent 95%);
+      filter: blur(60px);
+      transform: rotate(-12deg);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .light-streak-right {
+      position: absolute;
+      top: 20%;
+      right: -200px;
+      width: 1000px;
+      height: 350px;
+      background: linear-gradient(60deg, transparent 10%, rgba(255, 45, 85, 0.3) 50%, rgba(255, 107, 107, 0.6) 80%, transparent 98%);
+      filter: blur(80px);
+      transform: rotate(-25deg);
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .watermark-badge {
+      position: absolute;
+      bottom: 35px;
+      right: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.5px;
+      z-index: 10;
+    }
+
+    .category-tag {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .slide-header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 56px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .slide-header h1 span.highlight {
+      color: #ff3366;
+    }
+
+    .slide-header p.subtitle {
+      font-size: 21px;
+      color: #94a3b8;
+      max-width: 1400px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* Glass card styles */
+    .glass-card {
+      background: rgba(18, 20, 30, 0.72);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 51, 102, 0.6), transparent);
+    }
+
+    /* SLIDE 1 Specifics */
+    .slide-1-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 88px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      line-height: 1.05;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero-title .red-text {
+      color: #ff2a5f;
+    }
+
+    .hero-training-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #ffffff;
+      margin-bottom: 22px;
+      text-transform: uppercase;
+    }
+
+    .hero-subtags {
+      font-size: 22px;
+      color: #cbd5e1;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      margin-bottom: 75px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-subtags span.dot {
+      color: #ff2a5f;
+      font-size: 28px;
+    }
+
+    .student-info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 1640px;
+    }
+
+    .info-card {
+      background: rgba(14, 16, 24, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 24px 28px;
+      text-align: left;
+    }
+
+    .info-card .label {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    .info-card .val {
+      font-size: 20px;
+      font-weight: 600;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .info-card .val.active-white {
+      color: #f1f5f9;
+    }
+
+    /* SLIDE 2 Timeline */
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 600px;
+      position: relative;
+    }
+
+    .timeline-track {
+      position: absolute;
+      top: 50%;
+      left: 60px;
+      right: 60px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .timeline-track-glow {
+      position: absolute;
+      top: 50%;
+      left: 60px;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #ff2a5f, #ff6b3d, #ff2a5f);
+      transform: translateY(-50%);
+      box-shadow: 0 0 15px rgba(255, 42, 95, 0.8);
+      z-index: 2;
+    }
+
+    .timeline-nodes {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .timeline-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .node-top {
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .node-bottom {
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .node-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ff2a5f;
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 16px rgba(255, 42, 95, 0.9);
+      margin: 0 auto;
+    }
+
+    .node-day {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .node-desc {
+      font-size: 16px;
+      color: #cbd5e1;
+      line-height: 1.4;
+      max-width: 220px;
+    }
+
+    /* SLIDE 3 Grid */
+    .four-pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      margin-top: 25px;
+    }
+
+    .pillar-card {
+      background: rgba(18, 20, 30, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 34px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .pillar-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pillar-icon {
+      font-size: 32px;
+    }
+
+    .pillar-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .pillar-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pillar-list li {
+      font-size: 18px;
+      color: #cbd5e1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      line-height: 1.45;
+    }
+
+    .pillar-list li::before {
+      content: '•';
+      color: #ff3366;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    /* SLIDE 4 */
+    .soft-skills-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 20px;
+    }
+
+    .skills-col-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 24px;
+    }
+
+    .dev-item {
+      margin-bottom: 24px;
+    }
+
+    .dev-item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .dev-item-header span.arrow {
+      color: #ff3366;
+      font-size: 24px;
+    }
+
+    .dev-item-p {
+      font-size: 17px;
+      color: #94a3b8;
+      padding-left: 36px;
+      line-height: 1.45;
+    }
+
+    .transform-box {
+      background: rgba(18, 20, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 34px;
+    }
+
+    .before-after-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .ba-card {
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(10, 12, 18, 0.6);
+    }
+
+    .ba-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .ba-label.before { color: #f87171; }
+    .ba-label.after { color: #4ade80; }
+
+    .ba-text {
+      font-size: 17px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* SLIDE 5 & 8 Tech Grid */
+    .tools-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      margin-top: 20px;
+    }
+
+    .tool-box {
+      background: rgba(18, 20, 30, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 26px 28px;
+    }
+
+    .tool-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(255, 42, 95, 0.12);
+      border: 1px solid rgba(255, 42, 95, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #ff3366;
+      margin-bottom: 16px;
+    }
+
+    .tool-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .tool-desc {
+      font-size: 16px;
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+
+    /* SLIDE 6 Testing Lifecycle */
+    .testing-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .test-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .test-step-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: rgba(18, 20, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+
+    .step-num-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #ff2a5f;
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(255, 42, 95, 0.4);
+    }
+
+    .step-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .step-content p {
+      font-size: 16px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .lifecycle-graphic {
+      background: rgba(18, 20, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .lifecycle-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 35px;
+    }
+
+    .cycle-nodes {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .cycle-circle {
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      border: 2px solid #ff2a5f;
+      background: rgba(255, 42, 95, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      box-shadow: 0 0 20px rgba(255, 42, 95, 0.2);
+    }
+
+    .cycle-circle .icon { font-size: 24px; margin-bottom: 4px; }
+    .cycle-circle .text { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ffffff; line-height: 1.1; }
+    .cycle-arrow { font-size: 22px; color: #ff3366; }
+
+    /* SLIDE 7 Major Project */
+    .project-hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 28px;
+      margin-top: 25px;
+    }
+
+    .project-card {
+      background: rgba(18, 20, 30, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .project-card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .project-card-desc {
+      font-size: 18px;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+
+    /* SLIDE 8 THE FULL TECH STACK & DATABASES (MAJOR UPGRADE) */
+    .stack-master-grid {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 34px;
+      margin-top: 15px;
+    }
+
+    .tech-category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .tech-pill-card {
+      background: rgba(18, 20, 30, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tech-pill-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tech-pill-header .badge-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      background: rgba(255, 42, 95, 0.22);
+      color: #ff3b69;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 42, 95, 0.45);
+    }
+
+    .tech-pill-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .tech-pill-desc {
+      font-size: 15px;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .tech-pill-desc strong {
+      color: #ffffff;
+    }
+
+    .workflow-side-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .workflow-pipeline-card {
+      background: rgba(18, 20, 30, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 26px 22px;
+    }
+
+    .workflow-pipeline-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .pipeline-nodes-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .pipe-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .pipe-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #ff2a5f;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 16px rgba(255, 42, 95, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .pipe-label {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .pipe-sub {
+      font-size: 12px;
+      color: #cbd5e1;
+      max-width: 95px;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .pipe-connector {
+      color: #ff3366;
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 22px;
+    }
+
+    .quote-box {
+      background: linear-gradient(135deg, rgba(255, 42, 95, 0.15), rgba(255, 107, 61, 0.1));
+      border: 1px solid rgba(255, 42, 95, 0.35);
+      border-radius: 14px;
+      padding: 20px 24px;
+      font-size: 17px;
+      font-style: italic;
+      color: #f8fafc;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* SLIDE 9 Growth */
+    .growth-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      margin-top: 15px;
+    }
+
+    .growth-box {
+      background: rgba(18, 20, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 30px;
+    }
+
+    .growth-stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .growth-step {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .growth-step .step-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #ff3366;
+      margin-bottom: 6px;
+    }
+
+    .growth-step .step-txt {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.3;
+    }
+
+    /* SLIDE 10 Thank you */
+    .slide-10-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+    }
+
+    .ty-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 96px;
+      font-weight: 900;
+      color: #ff2a5f;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .ty-sub {
+      font-family: 'Outfit', sans-serif;
+      font-size: 40px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .ty-p {
+      font-size: 22px;
+      color: #94a3b8;
+      max-width: 1200px;
+      line-height: 1.5;
+      margin-bottom: 60px;
+    }
+
+    .ty-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      width: 100%;
+      max-width: 1400px;
+      margin-bottom: 40px;
+    }
+
+    .ty-card {
+      background: rgba(18, 20, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 26px 30px;
+      text-align: left;
+    }
+
+    .ty-card-h {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .ty-card-p {
+      font-size: 18px;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    .qa-box {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f1f5f9;
+      border-left: 4px solid #ff2a5f;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== SLIDE 1 ==================== -->
+  <div class="slide" id="slide-1">
+    <div class="light-streak"></div>
+    <div class="light-streak-right"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-1-content">
+      <div class="hero-title">15 DAYS OF <span class="red-text">LEARNING & GROWTH</span></div>
+      <div class="hero-training-badge">ICT ACADEMY TRAINING</div>
+      <div class="hero-subtags">
+        <span>Technical Skills</span> <span class="dot">•</span>
+        <span>Soft Skills</span> <span class="dot">•</span>
+        <span>Software Testing</span> <span class="dot">•</span>
+        <span>Project Development</span>
+      </div>
+
+      <div class="student-info-grid">
+        <div class="info-card">
+          <div class="label">STUDENT NAME</div>
+          <div class="val active-white">Shravya, Abhishek TM, Shwetha TR, Prathyaksh</div>
+        </div>
+        <div class="info-card">
+          <div class="label">DEPARTMENT</div>
+          <div class="val active-white">CSE / ISE</div>
+        </div>
+        <div class="info-card">
+          <div class="label">COLLEGE</div>
+          <div class="val active-white">CIT</div>
+        </div>
+        <div class="info-card">
+          <div class="label">DURATION</div>
+          <div class="val active-white">15 Days — ICT Academy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2 ==================== -->
+  <div class="slide" id="slide-2">
+    <div class="light-streak"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">JOURNEY</div>
+      <h1>OUR 15-DAY <span class="highlight">LEARNING JOURNEY</span></h1>
+      <p class="subtitle">A structured program that combined learning + practice + teamwork + project implementation — covering both technical development and professional growth.</p>
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-track"></div>
+      <div class="timeline-track-glow"></div>
+      <div class="timeline-nodes">
+        <div class="timeline-node">
+          <div class="node-top">
+            <div class="node-day">DAY 1</div>
+            <div class="node-desc">Introduction & Orientation</div>
+          </div>
+          <div class="node-dot"></div>
+          <div class="node-bottom"></div>
+        </div>
+        <div class="timeline-node">
+          <div class="node-top"></div>
+          <div class="node-dot"></div>
+          <div class="node-bottom">
+            <div class="node-day">DAYS 2–4</div>
+            <div class="node-desc">Soft Skills & Professional Behaviour</div>
+          </div>
+        </div>
+        <div class="timeline-node">
+          <div class="node-top">
+            <div class="node-day">DAYS 5–7</div>
+            <div class="node-desc">Technical Foundations — Java, Git, GitHub</div>
+          </div>
+          <div class="node-dot"></div>
+          <div class="node-bottom"></div>
+        </div>
+        <div class="timeline-node">
+          <div class="node-top"></div>
+          <div class="node-dot"></div>
+          <div class="node-bottom">
+            <div class="node-day">DAYS 8–10</div>
+            <div class="node-desc">Tools — Jira, Maven, JUnit, Selenium</div>
+          </div>
+        </div>
+        <div class="timeline-node">
+          <div class="node-top">
+            <div class="node-day">DAYS 11–13</div>
+            <div class="node-desc">Software Testing & Live Test Cases</div>
+          </div>
+          <div class="node-dot"></div>
+          <div class="node-bottom"></div>
+        </div>
+        <div class="timeline-node">
+          <div class="node-top"></div>
+          <div class="node-dot"></div>
+          <div class="node-bottom">
+            <div class="node-day">DAYS 14–15</div>
+            <div class="node-desc">Project Development & Final Learning</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 3 ==================== -->
+  <div class="slide" id="slide-3">
+    <div class="light-streak-right"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">OVERVIEW</div>
+      <h1>WHAT WE <span class="highlight">LEARNED</span></h1>
+      <p class="subtitle">Comprehensive 4-pillar foundation combining behavioral excellence, modern programming, industry testing standards, and agile project delivery.</p>
+    </div>
+
+    <div class="four-pillars-grid">
+      <div class="pillar-card">
+        <div>
+          <div class="pillar-header">
+            <span class="pillar-icon">🗣️</span>
+            <span class="pillar-title">SOFT SKILLS</span>
+          </div>
+          <ul class="pillar-list">
+            <li>Communication & workplace etiquette</li>
+            <li>Professional behaviour & body language</li>
+            <li>Greetings & executive self-introductions</li>
+            <li>Respecting opinions & team active listening</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div>
+          <div class="pillar-header">
+            <span class="pillar-icon">💻</span>
+            <span class="pillar-title">TECHNICAL SKILLS</span>
+          </div>
+          <ul class="pillar-list">
+            <li>Java OOP & Full-Stack Architecture</li>
+            <li>Git & GitHub Distributed Version Control</li>
+            <li>Jira Agile Tracking & Google Stitch IDE</li>
+            <li>Node.js, Express 5, React 19 Ecosystem</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div>
+          <div class="pillar-header">
+            <span class="pillar-icon">🧪</span>
+            <span class="pillar-title">SOFTWARE TESTING</span>
+          </div>
+          <ul class="pillar-list">
+            <li>Testing fundamentals & QA life cycle</li>
+            <li>Manual & automated browser testing</li>
+            <li>Selenium WebDriver automation scripts</li>
+            <li>JUnit & Jest unit test cases with assertions</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div>
+          <div class="pillar-header">
+            <span class="pillar-icon">🚀</span>
+            <span class="pillar-title">PROJECT DEV</span>
+          </div>
+          <ul class="pillar-list">
+            <li>Team collaboration & sprint workflows</li>
+            <li>Dual database integration (SQLite & Supabase)</li>
+            <li>End-to-end testing & payment verification</li>
+            <li>Real-world full-stack cloud deployment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 4 ==================== -->
+  <div class="slide" id="slide-4">
+    <div class="light-streak"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">SOFT SKILLS</div>
+      <h1>SOFT SKILLS & <span class="highlight">PROFESSIONAL COMMUNICATION</span></h1>
+      <p class="subtitle">Building the emotional intelligence, executive presence, and collaborative mindset required in corporate software engineering environments.</p>
+    </div>
+
+    <div class="soft-skills-layout">
+      <div>
+        <div class="skills-col-title">WHAT WE DEVELOPED</div>
+        <div class="dev-item">
+          <div class="dev-item-header"><span class="arrow">➔</span> GREETINGS & INTRODUCTIONS</div>
+          <div class="dev-item-p">Professional ways to meet, greet, and introduce ourselves in corporate meetings and workplace environments with impact.</div>
+        </div>
+        <div class="dev-item">
+          <div class="dev-item-header"><span class="arrow">➔</span> CONFIDENT COMMUNICATION</div>
+          <div class="dev-item-p">Speaking clearly, active listening during technical reviews, asking insightful questions, and expressing ideas with poise.</div>
+        </div>
+        <div class="dev-item">
+          <div class="dev-item-header"><span class="arrow">➔</span> WORKPLACE ETIQUETTE</div>
+          <div class="dev-item-p">Respecting diverse perspectives, maintaining professional email decorum, and resolving conflicts collaboratively as a team.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="skills-col-title">THE TRANSFORMATION</div>
+        <div class="transform-box">
+          <div class="before-after-grid">
+            <div class="ba-card">
+              <div class="ba-label before">BEFORE</div>
+              <div class="ba-text">Hesitation, informal unstructured communication, fear of speaking in groups, and limited presentation confidence.</div>
+            </div>
+            <div class="ba-card">
+              <div class="ba-label after">AFTER</div>
+              <div class="ba-text">Articulate clarity, professional self-assurance, active constructive listening, and structured team problem-solving.</div>
+            </div>
+          </div>
+          <p style="font-size: 16px; color: #94a3b8; line-height: 1.5;">The ICT Academy training provided us with actionable tools to communicate respectfully and lead effectively in any modern technical team.</p>
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 5 ==================== -->
+  <div class="slide" id="slide-5">
+    <div class="light-streak-right"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">TECHNICAL SKILLS</div>
+      <h1>TECHNICAL SKILLS & <span class="highlight">TOOLS WE EXPLORED</span></h1>
+      <p class="subtitle">Industry-standard tools and frameworks that shaped our full-stack engineering, testing, and deployment workflows.</p>
+    </div>
+
+    <div class="tools-grid-6">
+      <div class="tool-box">
+        <div class="tool-icon-wrap">&lt;/&gt;</div>
+        <div class="tool-title">JAVA & DEV FOUNDATIONS</div>
+        <div class="tool-desc">OOP concepts, modular code architecture, exception handling, and integrating with Maven & JUnit for test suites.</div>
+      </div>
+
+      <div class="tool-box">
+        <div class="tool-icon-wrap">🌿</div>
+        <div class="tool-title">GIT & GITHUB</div>
+        <div class="tool-desc">Distributed version control, branch management, pull requests, resolving merge conflicts, and team code reviews.</div>
+      </div>
+
+      <div class="tool-box">
+        <div class="tool-icon-wrap">📋</div>
+        <div class="tool-title">JIRA & GOOGLE STITCH</div>
+        <div class="tool-desc">Agile sprint boards, user story backlog grooming, assigning responsibilities, defect logging, and AI-accelerated workflows.</div>
+      </div>
+
+      <div class="tool-box">
+        <div class="tool-icon-wrap">⚙️</div>
+        <div class="tool-title">MAVEN, JUNIT & SELENIUM</div>
+        <div class="tool-desc">Build lifecycle automation, dependency management, unit testing assertions, and browser-driven UI test automation.</div>
+      </div>
+
+      <div class="tool-box">
+        <div class="tool-icon-wrap">✨</div>
+        <div class="tool-title">ANTIGRAVITY IDE</div>
+        <div class="tool-desc">Full-stack development workspace, real-time code generation, intelligent refactoring, and debugging across repositories.</div>
+      </div>
+
+      <div class="tool-box">
+        <div class="tool-icon-wrap">☁️</div>
+        <div class="tool-title">DEPLOYMENT & CLOUD</div>
+        <div class="tool-desc">End-to-end release engineering: AWS (S3, CloudFront, EC2), Vercel serverless hosting, Docker containerization, and HTTPS.</div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 6 ==================== -->
+  <div class="slide" id="slide-6">
+    <div class="light-streak"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">SOFTWARE TESTING</div>
+      <h1>SELENIUM & <span class="highlight">SOFTWARE TESTING LIFECYCLE</span></h1>
+      <p class="subtitle">Testing is an indispensable pillar of software engineering. We gained practical mastery across manual testing, automated script execution, and defect lifecycles.</p>
+    </div>
+
+    <div class="testing-layout">
+      <div class="test-steps-list">
+        <div class="test-step-item">
+          <div class="step-num-badge">1</div>
+          <div class="step-content">
+            <h3>MANUAL TESTING CONCEPTS</h3>
+            <p>Writing comprehensive test scenarios, mapping boundary value conditions, verifying expected vs. actual results, and bug logging.</p>
+          </div>
+        </div>
+
+        <div class="test-step-item">
+          <div class="step-num-badge">2</div>
+          <div class="step-content">
+            <h3>AUTOMATION TESTING WITH SELENIUM</h3>
+            <p>Writing and executing WebDriver automation scripts in Java to test end-to-end browser interactions, form validations, and routing.</p>
+          </div>
+        </div>
+
+        <div class="test-step-item">
+          <div class="step-num-badge">3</div>
+          <div class="step-content">
+            <h3>JUNIT & API UNIT TESTING</h3>
+            <p>Component-level unit tests, verifying pass/fail assertions, and automated REST endpoint validation with Jest & Supertest.</p>
+          </div>
+        </div>
+
+        <div class="test-step-item">
+          <div class="step-num-badge">4</div>
+          <div class="step-content">
+            <h3>LIVE TEST CASES & DEFECT TRACKING</h3>
+            <p>Executing live regression and functional test cases on our Backlox project application to ensure zero production glitches.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lifecycle-graphic">
+        <div class="lifecycle-title">TESTING LIFECYCLE</div>
+        <div class="cycle-nodes">
+          <div class="cycle-circle">
+            <div class="icon">📑</div>
+            <div class="text">Requirements</div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-circle">
+            <div class="icon">✍️</div>
+            <div class="text">Test Cases</div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-circle">
+            <div class="icon">▶️</div>
+            <div class="text">Execute</div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-circle">
+            <div class="icon">🐞</div>
+            <div class="text">Identify Defect</div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-circle">
+            <div class="icon">🔧</div>
+            <div class="text">Fix & Retest</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 7 ==================== -->
+  <div class="slide" id="slide-7">
+    <div class="light-streak-right"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">MAJOR PROJECT</div>
+      <h1>OUR MAJOR PROJECT: <span class="highlight">BACKLOX</span></h1>
+      <p class="subtitle"><strong>CAREER GUIDANCE PLATFORM FOR 12TH-PASS STUDENTS</strong> — A unified roadmap & mentoring web application empowering students with curated guidance across engineering, medicine, and technology streams.</p>
+    </div>
+
+    <div class="project-hero-grid">
+      <div class="project-card">
+        <div class="project-card-title">THE PROBLEM</div>
+        <div class="project-card-desc">
+          High school students completing 12th grade face immense confusion regarding career pathways, branch specializations, essential semester skills, and real-world IT industry role requirements.
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-title">OUR SOLUTION</div>
+        <div class="project-card-desc">
+          <strong>BACKLOX</strong> — An interactive, full-stack career platform designed to help students explore post-12th streams, compare branch curriculum, follow semester roadmaps, build project portfolios, and prepare for high-demand jobs.
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-title">WHAT WE BUILT</div>
+        <div class="project-card-desc">
+          A high-performance SPA featuring branch roadmaps (CSE, IT, AI/DS, ECE, Mech, Civil), student dashboards, project recommendations, AI-assisted career advisory, and a secure Razorpay Pro unlock.
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 8 ==================== -->
+  <div class="slide" id="slide-8">
+    <div class="light-streak"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">BACKLOX ARCHITECTURE</div>
+      <h1>BACKLOX: <span class="highlight">TECHNOLOGY STACK & DATABASES</span></h1>
+      <p class="subtitle">A robust, scalable full-stack ecosystem combining modern reactive frontend interfaces, dual-database persistence, automated testing, and cloud infrastructure.</p>
+    </div>
+
+    <div class="stack-master-grid">
+      <!-- Left column: 4 Tech categories -->
+      <div class="tech-category-grid">
+        <div class="tech-pill-card">
+          <div class="tech-pill-header">
+            <span class="badge-tag">FRONTEND</span>
+            <span class="tech-pill-title">React 19 & Vite 8</span>
+          </div>
+          <div class="tech-pill-desc">SPA architecture, React Router v7, Context API state management, responsive dark-mode Glassmorphism CSS3, and Oxlint code quality.</div>
+        </div>
+
+        <div class="tech-pill-card">
+          <div class="tech-pill-header">
+            <span class="badge-tag">BACKEND</span>
+            <span class="tech-pill-title">Node.js & Express 5</span>
+          </div>
+          <div class="tech-pill-desc">Modular RESTful API routes, JWT bearer authentication, Bcrypt.js password security, Multer asset handling, and custom RAG AI query engine.</div>
+        </div>
+
+        <div class="tech-pill-card">
+          <div class="tech-pill-header">
+            <span class="badge-tag">DATABASES</span>
+            <span class="tech-pill-title">SQLite & PostgreSQL (Supabase)</span>
+          </div>
+          <div class="tech-pill-desc">Dual data storage: <strong>better-sqlite3</strong> for fast local transactional persistence + <strong>Supabase Cloud SQL</strong> with Row-Level Security (RLS) & serverless JSON fallback.</div>
+        </div>
+
+        <div class="tech-pill-card">
+          <div class="tech-pill-header">
+            <span class="badge-tag">PAYMENTS & DEVOPS</span>
+            <span class="tech-pill-title">Razorpay & AWS Cloud</span>
+          </div>
+          <div class="tech-pill-desc">Razorpay HMAC-SHA256 signature verification, AWS S3/CloudFront CDN/EC2 deployment, Vercel edge routing, and Docker containerization.</div>
+        </div>
+      </div>
+
+      <!-- Right column: Workflow Pipeline & Quote -->
+      <div class="workflow-side-box">
+        <div class="workflow-pipeline-card">
+          <div class="workflow-pipeline-title">PROJECT LIFECYCLE & WORKFLOW</div>
+          <div class="pipeline-nodes-flow">
+            <div class="pipe-node">
+              <div class="pipe-badge">📋</div>
+              <div class="pipe-label">PLANNING</div>
+              <div class="pipe-sub">Jira Sprints & User Stories</div>
+            </div>
+            <div class="pipe-connector">➔</div>
+            <div class="pipe-node">
+              <div class="pipe-badge">💻</div>
+              <div class="pipe-label">DEVELOP</div>
+              <div class="pipe-sub">React, Node, Express, DB</div>
+            </div>
+            <div class="pipe-connector">➔</div>
+            <div class="pipe-node">
+              <div class="pipe-badge">🌿</div>
+              <div class="pipe-label">VERSION</div>
+              <div class="pipe-sub">Git & GitHub PR Workflow</div>
+            </div>
+            <div class="pipe-connector">➔</div>
+            <div class="pipe-node">
+              <div class="pipe-badge">🧪</div>
+              <div class="pipe-label">TESTING</div>
+              <div class="pipe-sub">Selenium, Jest & Supertest</div>
+            </div>
+            <div class="pipe-connector">➔</div>
+            <div class="pipe-node">
+              <div class="pipe-badge">🚀</div>
+              <div class="pipe-label">DEPLOY</div>
+              <div class="pipe-sub">AWS & Vercel Production</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-box">
+          “A successful project is not just about writing code — it is about communication, database architecture, rigorous testing, and end-to-end team responsibility.”
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 9 ==================== -->
+  <div class="slide" id="slide-9">
+    <div class="light-streak-right"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-header">
+      <div class="category-tag">GROWTH</div>
+      <h1>WHAT WE GAINED <span class="highlight">IN 15 DAYS</span></h1>
+      <p class="subtitle">A fast-paced journey from academic conceptual theory to industry-grade full-stack implementation, quality assurance, and professional teamwork.</p>
+    </div>
+
+    <div class="growth-layout">
+      <div class="growth-box">
+        <div class="before-after-grid" style="margin-bottom: 0;">
+          <div class="ba-card">
+            <div class="ba-label before">BEFORE</div>
+            <div class="ba-text">Limited exposure to industry standard tools, lack of professional QA testing workflows, and hesitation in agile collaboration.</div>
+          </div>
+          <div class="ba-card">
+            <div class="ba-label after">AFTER</div>
+            <div class="ba-text">Hands-on mastery of full-stack engineering, test-driven methodologies (Selenium/Jest), database design, and confident presentation skills.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="growth-box">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <div style="font-family: 'Outfit'; font-size: 20px; font-weight: 800; color: #ff3366; margin-bottom: 8px;">TECHNICAL TAKEAWAYS</div>
+            <p style="font-size: 15px; color: #cbd5e1; line-height: 1.45;">Testing is mandatory, not optional. Scalable architecture and version control enable seamless collaborative delivery.</p>
+          </div>
+          <div>
+            <div style="font-family: 'Outfit'; font-size: 20px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;">SOFT SKILL TAKEAWAYS</div>
+            <p style="font-size: 15px; color: #cbd5e1; line-height: 1.45;">Active listening builds stronger teams. Clear communication and accountability transform coders into engineers.</p>
+          </div>
+        </div>
+
+        <div class="growth-stepper">
+          <div class="growth-step">
+            <div class="step-tag">15 DAYS</div>
+            <div class="step-txt">Structured high-intensity learning</div>
+          </div>
+          <div class="growth-step">
+            <div class="step-tag">NEW TOOLS</div>
+            <div class="step-txt">Modern full-stack & testing stack</div>
+          </div>
+          <div class="growth-step">
+            <div class="step-tag">PRACTICE</div>
+            <div class="step-txt">Applied live test cases & code</div>
+          </div>
+          <div class="growth-step">
+            <div class="step-tag">GROWTH</div>
+            <div class="step-txt">Career readiness & teamwork</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- ==================== SLIDE 10 ==================== -->
+  <div class="slide" id="slide-10">
+    <div class="light-streak"></div>
+    <div class="light-streak-right"></div>
+    <div class="watermark-badge">ICT Academy • CIT</div>
+
+    <div class="slide-10-content">
+      <div class="ty-title">THANK YOU</div>
+      <div class="ty-sub">15 DAYS OF LEARNING. COUNTLESS LESSONS. ONE STEP FORWARD.</div>
+      <div class="ty-p">The ICT Academy training was not just about learning individual technologies — it was about understanding how to think, communicate, test, and engineer software like industry professionals.</div>
+
+      <div class="ty-grid">
+        <div class="ty-card">
+          <div class="ty-card-h">🎓 TRAINING</div>
+          <div class="ty-card-p">ICT Academy — 15-Day Industry Readiness Program</div>
+        </div>
+        <div class="ty-card">
+          <div class="ty-card-h">💡 EXPERIENCE</div>
+          <div class="ty-card-p">Hands-on • Practical • Collaborative • Quality-Driven</div>
+        </div>
+        <div class="ty-card">
+          <div class="ty-card-h">🚀 PROJECT</div>
+          <div class="ty-card-p">BACKLOX — Full-Stack Post-12th Career Guidance Platform</div>
+        </div>
+      </div>
+
+      <div class="qa-box">Questions & Discussion</div>
+    </div>
+  </div>
+
+</body>
+</html>
