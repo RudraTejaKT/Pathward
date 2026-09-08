@@ -163,20 +163,20 @@ function emailLayout(content, title = "Backlox Notification") {
 }
 
 /**
- * Template: Welcome Email
+ * Template: Welcome Email (Role-Specific)
  */
 async function sendWelcomeEmail({ name, email, role = "trainee" }) {
   const isInstructor = role === "instructor";
-  const portalName = isInstructor ? "Instructor Creator Studio" : "Student Learning Hub & Roadmap";
+  const portalName = isInstructor ? "Instructor Studio & Course Management" : "Backlox Trainee Hub";
 
   const content = `
-    <h2>Welcome to Backlox, ${name}! 👋</h2>
-    <p>We are thrilled to have you join the <strong>Backlox Career Intelligence Universe</strong>.</p>
-    
+    <h2>Welcome to Backlox, ${name || "Scholar"}! 🚀</h2>
+    <p>Your account has been successfully initialized on India's premier multi-stream career mapping platform.</p>
+
     <div class="card-box">
-      <strong>Your Account Summary:</strong><br>
-      • <strong>Role:</strong> ${isInstructor ? "Verified Instructor / Creator" : "Scholar / Trainee"}<br>
-      • <strong>Registered Email:</strong> ${email}<br>
+      <strong>Account Details:</strong><br>
+      • <strong>Role:</strong> ${role.toUpperCase()}<br>
+      • <strong>Primary Email:</strong> ${email}<br>
       • <strong>Workspace:</strong> ${portalName}
     </div>
 
@@ -187,7 +187,7 @@ async function sendWelcomeEmail({ name, email, role = "trainee" }) {
     }</p>
 
     <div style="text-align: center;">
-      <a href="https://pathward.vercel.app/login" class="button">Access Backlox Portal →</a>
+      <a href="${APP_URL}/login" class="button">Access Backlox Portal →</a>
     </div>
 
     <p style="font-size: 13px; color: #94a3b8;">If you did not create this account, please contact our support team immediately.</p>
@@ -217,7 +217,7 @@ async function sendPasswordResetEmail({ name, email, resetCode = "849201" }) {
     <p>This code is valid for <strong>15 minutes</strong>. If you did not make this request, you can safely ignore this email — your password remains secure.</p>
 
     <div style="text-align: center;">
-      <a href="https://pathward.vercel.app/login" class="button">Go to Login Screen →</a>
+      <a href="${APP_URL}/login" class="button">Go to Login Screen →</a>
     </div>
   `;
 
@@ -248,7 +248,7 @@ async function sendProUpgradeEmail({ name, email, planName = "Backlox Pro", amou
     </div>
 
     <div style="text-align: center;">
-      <a href="https://pathward.vercel.app/dashboard" class="button">Open Your Pro Dashboard →</a>
+      <a href="${APP_URL}/dashboard" class="button">Open Your Pro Dashboard →</a>
     </div>
   `;
 
